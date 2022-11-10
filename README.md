@@ -34,7 +34,7 @@ required software:
 		 - Anywhere in git bash or cmd, execute: `vcpkg install sqlite-orm`
  2) Install Qt6 
 	 1) download Qt online installer
-	 2) You'll need to create an acount, the gui will prompt that.
+	 2) You'll need to create an account, the gui will prompt that.
 	 3) Select installation folder C:\dev\Qt (or anywhere you want)
 	 4) Select custom installation
 	 5) Select  Qt 6.4.0 and deselect
