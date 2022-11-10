@@ -1,4 +1,4 @@
-#include(C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake)
+include(C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake)
 find_package(SqliteOrm CONFIG REQUIRED)
 
 add_executable(Database

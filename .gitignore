@@ -101,6 +101,9 @@ StyleCopReport.xml
 .cmake
 .idea
 
+# build folder
+build/
+
 # Chutzpah Test files
 _Chutzpah*
 
