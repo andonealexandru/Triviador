@@ -4,7 +4,7 @@
 
 ## Build on Windows
 
-- Prefered Windows OS: Windows 10 x64
+- Prefered Windows OS: **Windows 10 x64**
 
 required software:
 1) visual studio 2019
