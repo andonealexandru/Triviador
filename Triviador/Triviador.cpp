@@ -1,13 +1,12 @@
-﻿// Triviador.cpp : Defines the entry point for the application.
-//
+// Triviador.cpp : Defines the entry point for the application.
 
 #include "Triviador.h"
 #include <iostream>
 
-using namespace std;
+#include <iostream>
 
 int main()
 {
-	cout << "Hello CMake." << endl;
-	return 0;
+    std::cout << "Triviador app\nHello World!\n";
+    return 0;
 }
