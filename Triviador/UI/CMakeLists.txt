@@ -1,4 +1,3 @@
-
 set(CMAKE_CONFIGURATION_TYPES "Release;RelWithDebInfo" CACHE STRING "" FORCE)
 
 #======================= INCLUSION OF Qt =======================#
@@ -38,9 +37,16 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_AUTOUIC_SEARCH_PATHS} ${FORMS_DIR})
 add_executable(GUI ${SOURCES})
 
 # Add the target includes for MY_PROJECT 
-target_include_directories(GUI PRIVATE ${FORMS_DIR})
-target_include_directories(GUI PRIVATE ${INCLUDE_DIR})
-target_include_directories(GUI PRIVATE ${SOURCE_DIR})
+target_include_directories(GUI 
+    PUBLIC
+        ${INCLUDE_DIR}
+    PRIVATE 
+        ${FORMS_DIR}
+        ${INCLUDE_DIR}
+        ${SOURCE_DIR}
+)
+#target_include_directories(GUI PRIVATE )
+#target_include_directories(GUI PRIVATE ${SOURCE_DIR})
 
 #===================== LINKING LIBRARIES =======================#
 target_link_libraries(GUI Qt6::Widgets)
