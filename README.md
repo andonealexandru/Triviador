@@ -52,8 +52,8 @@ required software:
 3) Build project
 	1) Install CMake
 	2) Open cmake-gui (search it in the box)
-		1) where is the source code: add the path to the clone repository
-		2) where to build the binaries: add the path to the clone repository/build
+		1) where is the source code: add the path to the cloned repository
+		2) where to build the binaries: add the path to the cloned repository/build
 	3) click configure
 		1) Select "Visual Studio 16 2019" as generator
 		2) Select x64
