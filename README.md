@@ -8,7 +8,7 @@
 
 required software:
 1) visual studio 2019
-		- go to tools --> get tools and features --> individual components or look at installation detalis
+		- go to tools --> get tools and features --> individual components or look at installation details
 		- make sure that the following options are selected:
 			1) **MSVC v142 - VS 2019 C++ x64/x84 build tools**
 			2) **C++ CMake tools for Windows**
