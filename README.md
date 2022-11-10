@@ -26,7 +26,7 @@ required software:
 		 - `.\vcpkg\strap-vcpkg.bat`
 		 - `.\vpckg integrate install`
 	 - In the search box write "Edit the system environment variables", click it -->Environment Variables
-		 - In user variables double click on Path --> New --> type "C:\dev\vcpkg" --> click Ok
+		 - In user variables select Path and click edit --> New --> type "C:\dev\vcpkg" --> click Ok
 		 - At user variables click New
 			 - Variable Name: "VCPKG_DEFAULT_TRIPLET"
 			 - Variable Value: "x64-windows"
@@ -45,7 +45,7 @@ required software:
 	 7) go to environment variables
 	 8) At system variables click New
 		 1) Variable name: "QTDIR"
-		 2) Variable value: Select the path to the compiler (browse directory) "msvc2019_64" C:\dev\Qt\6.4.0\msvc2019_64
+		 2) Variable value: Select the path to the compiler (browse directory) --> C:\dev\Qt\6.4.0\msvc2019_64
 		 3) Select the Path variable, click edit and add 2 new values
 			 1) %QTDIR%\lib
 			 2) %QTDIR%\bin
