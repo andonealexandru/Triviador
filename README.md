@@ -10,8 +10,8 @@ required software:
 1) visual studio 2019
 		- go to tools --> get tools and features --> individual components or look at installation detalis
 		- make sure that the following options are selected:
-			1) MSVC v142 - VS 2019 C++ x64/x84 build tools
-			2) C++ CMake tools for Windows
+			1) **MSVC v142 - VS 2019 C++ x64/x84 build tools**
+			2) **C++ CMake tools for Windows**
 2) CMake (minimum 3.14). Downloadable [here](https://cmake.org/download/)
 3) vcpkg --> [here](https://vcpkg.io/en/getting-started.html)
 4) Qt 6.4.0 (Qt online installer) [here](https://www.qt.io/download-qt-installer?hsCtaTracking=99d9dd4f-5681-48d2-b096-470725510d34%7C074ddad0-fdef-4e53-8aa8-5e8a876d6ab4)
