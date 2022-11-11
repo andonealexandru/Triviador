@@ -19,6 +19,7 @@ User& User::operator=(const User& other)
         mId = other.mId;
         mName = other.mName;
     }
+    return *this;
 }
 
 uint8_t User::GetId()

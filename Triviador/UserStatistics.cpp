@@ -21,6 +21,7 @@ UserStatistics& UserStatistics::operator=(const UserStatistics& other)
 		mScore = other.mScore;
 		mTerritoryCount = other.mTerritoryCount;
 	}
+	return *this;
 }
 
 uint8_t UserStatistics::GetId()
