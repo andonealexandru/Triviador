@@ -21,17 +21,17 @@ required software:
 1) configure vcpkg
 	 -  in C: (or your main drive) create a directory called "dev"
 	 - Clone the repo (you can do it any way you want)
-		 - Open git bash, go to "C:\dev" and execute 
+		 - Open git bash, go to "C:/dev" and execute 
 		 - `git clone https://github.com/Microsoft/vcpkg.git`
-		 - `.\vcpkg\strap-vcpkg.bat`
-		 - `.\vpckg integrate install`
+		 - `./vcpkg/strap-vcpkg.bat`
+		 - `./vpckg integrate install`
 	 - In the search box write "Edit the system environment variables", click it -->Environment Variables
 		 - In user variables select Path and click edit --> New --> type "C:\dev\vcpkg" --> click Ok
 		 - At user variables click New
 			 - Variable Name: "VCPKG_DEFAULT_TRIPLET"
 			 - Variable Value: "x64-windows"
 			 - click Ok
-		 - Anywhere in git bash or cmd, execute: `vcpkg install sqlite-orm`
+		 - Anywhere in git bash or cmd, execute: `vcpkg install sqlite-orm` (if this does not work, you may need to open the cmd line again)
  2) Install Qt6 
 	 1) download Qt online installer
 	 2) You'll need to create an account, the gui will prompt that.
@@ -48,6 +48,7 @@ required software:
 		 3) Select the Path variable, click edit and add 2 new values
 			 1) %QTDIR%\lib
 			 2) %QTDIR%\bin
+		 4) Restart the computer
 3) Build project
 	1) Install CMake
 	2) Open cmake-gui (search it in the box)
@@ -57,4 +58,4 @@ required software:
 		1) Select "Visual Studio 16 2019" as generator
 		2) Select x64
 		3) click finish
-	4) generate
+	4) generateA
