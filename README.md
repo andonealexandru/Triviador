@@ -37,10 +37,9 @@ required software:
 	 2) You'll need to create an account, the gui will prompt that.
 	 3) Select installation folder C:\dev\Qt (or anywhere you want)
 	 4) Select custom installation
-	 5) Select  Qt 6.4.0 and deselect
-		 1) WebAssembly
-		 2) MSVC 2019 ARM64
-		 3) Android
+	 5) Collapse QT and select:
+		 1) MSVC 2019 64-bit
+		 2) MinGW 11.2.0 64-bit
 	 6) Finish the installation  (this will take a while)
 	 7) go to environment variables
 	 8) At system variables click New
