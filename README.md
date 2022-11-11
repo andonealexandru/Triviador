@@ -58,7 +58,8 @@ required software:
 		1) Select "Visual Studio 16 2019" as generator
 		2) Select x64
 		3) click finish
-	4) generate
+	4) generate --> open project
+	5) build
 
 
 
@@ -66,3 +67,5 @@ required software:
 1) same building steps 
 2) When defining QTDIR environment variable give path to mingw_64 --> C:\dev\Qt\6.4.0\mingw_64
 3) In CLION --> settings --> Build, Execution, Deployment --> CMake
+	- In CMake options add: "-DCMAKE_TOOLCHAIN_FILE=C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake
+4) Right click on the main CMakeLists.txt --> Load CMake Project
