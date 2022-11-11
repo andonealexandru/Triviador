@@ -62,7 +62,9 @@ required software:
 	5) build
 
 
-##### Alternative IDE: **CLION**
+
+
+#### Alternative IDE: **CLION**
 1) same building steps 
 2) When defining QTDIR environment variable give path to mingw_64 --> C:\dev\Qt\6.4.0\mingw_64
 3) In CLION --> settings --> Build, Execution, Deployment --> CMake
