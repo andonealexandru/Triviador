@@ -58,4 +58,4 @@ required software:
 		1) Select "Visual Studio 16 2019" as generator
 		2) Select x64
 		3) click finish
-	4) generateA
+	4) generate
