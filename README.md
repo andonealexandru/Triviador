@@ -61,6 +61,8 @@ required software:
 	4) generate --> open project
 	5) build
 
+
+
 #### Alternative IDE: **CLION**
 1) same building steps 
 2) When defining QTDIR environment variable give path to mingw_64 --> C:\dev\Qt\6.4.0\mingw_64
