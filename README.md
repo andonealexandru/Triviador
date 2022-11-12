@@ -23,12 +23,12 @@ required software:
 	 - Clone the repo (you can do it any way you want)
 		 - Open git bash, go to "C:/dev" and execute 
 		 - `git clone https://github.com/Microsoft/vcpkg.git`
-		 - `cd vcpkg`
+		 - `cd vpckg`
 		 - `./vcpkg/bootstrap-vcpkg.bat`
 		 - `./vpckg integrate install`
 	 - In the search box write "Edit the system environment variables", click it -->Environment Variables
 		 - In user variables select Path and click edit --> New --> type "C:\dev\vcpkg" --> click Ok
-		 - At user variables click New
+ 		 - At user variables click New
 			 - Variable Name: "VCPKG_DEFAULT_TRIPLET"
 			 - Variable Value: "x64-windows"
 			 - click Ok
