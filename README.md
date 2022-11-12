@@ -23,7 +23,7 @@ required software:
 	 - Clone the repo (you can do it any way you want)
 		 - Open git bash, go to "C:/dev" and execute 
 		 - `git clone https://github.com/Microsoft/vcpkg.git`
-		 - `./vcpkg/strap-vcpkg.bat`
+		 - `./vcpkg/bootstrap-vcpkg.bat`
 		 - `./vpckg integrate install`
 	 - In the search box write "Edit the system environment variables", click it -->Environment Variables
 		 - In user variables select Path and click edit --> New --> type "C:\dev\vcpkg" --> click Ok
