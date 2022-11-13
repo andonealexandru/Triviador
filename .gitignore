@@ -92,6 +92,17 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# CMake
+*.cmake
+.cmake
+.idea
+
+# build folder
+build/
 
 # Chutzpah Test files
 _Chutzpah*

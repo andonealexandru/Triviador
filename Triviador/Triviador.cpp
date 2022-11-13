@@ -1,3 +1,8 @@
+// Triviador.cpp : Defines the entry point for the application.
+
+#include "Triviador.h"
+#include <iostream>
+
 #include <iostream>
 
 int main()
