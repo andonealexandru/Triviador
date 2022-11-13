@@ -36,12 +36,12 @@ uint8_t Game::GetId()
 	return mId;
 }
 
-UserStatistics* Game::getFirstUserStatistics()
+UserStatistics* Game::GetFirstUserStatistics()
 {
 	return mUserStatistics.first;
 }
 
-UserStatistics* Game::getSecondUserStatistics()
+UserStatistics* Game::GetSecondUserStatistics()
 {
 	return mUserStatistics.second;
 }

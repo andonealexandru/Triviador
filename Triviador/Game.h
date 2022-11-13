@@ -15,8 +15,8 @@ public:
 
 	// getters
 	uint8_t GetId();
-	UserStatistics* getFirstUserStatistics();
-	UserStatistics* getSecondUserStatistics();
+	UserStatistics* GetFirstUserStatistics();
+	UserStatistics* GetSecondUserStatistics();
 	uint8_t GetLength();
 
 	// setters
