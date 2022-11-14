@@ -1,0 +1,480 @@
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('﻿Cum s-a numit, în "epoca de aur", actualul Palat al Parlamentului din Bucureşti?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele cuvinte denumeşte un crustaceu marin?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este culoarea unui guşter?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Continuaţi numele corect al poveştii scrisă de Fraţii Grimm : "Muzicanţii din...":','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este titlul corect al poeziei lui Mihai Eminescu-Împărat şi...?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce culoare au penele corbului?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce armă medievală, în formă de lance, avea pe o parte o secure, iar pe cealaltă un cârlig?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care cuvânt nu s-ar potrivi într-o descriere a artistului Man Ray?','Artă','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele instrumente te ajută la realizarea calculelor aritmetice folosind bile ce alunecă pe vergele?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine a scris poezia : "Fiind băiet, păduri cutreieram..."?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce cântăreaţă a jucat în filmul "Xanadu"?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele sporturi este foarte asemănător jocului de popice?','Sport','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În care dintre următoarele situaţii un automobilist foloseşte antigel?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numesc tomatele neajunse la maturitate, din care se fac murături?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este principala ocupaţie a lui Mickey Rourke?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce ar trebui adăugat pentru ca expresia "a dormi...." să aibă sens?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce titlu purtau suveranii Iranului?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce companie aviatică comercializează un avion numit 777?','Economie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce nume purtau în evul mediu asociaţiile de meşteşugari din aceeaşi branşă?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce rapsodie a compus George Enescu?','Muzică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum s-a numit teritoriul României de astăzi în secolul I î.Hr?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este echivalentul substantivului "şnapan"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este cel mai picant dintre ingredientele următoare:','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este antonimul cuvântului "îndestulare"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Unde se adăpostesc animalele domestice mari?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numesc vehiculele aeriene fără pilot?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Din ce ţară provine câinele Shar-Pei?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce produse se pot obţine din câlţi?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Hârtia a fost inventată de:','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce interpret este cunoscut drept "regele muzicii pop"?','Muzică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce vrei să exprimi când foloseşti cuvântul "ioc"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce oraş trebuie vizitat pentru a te putea plimba cu gondola?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce ţară a fost fondată cunoscuta firmă de automobile "Ferrari"?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce trebuie să facă un credincios, atunci când preotul îi dă o pedeapsă pentru iertarea păcatelor?','Religie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce stat european are capitala în oraşul Praga?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Practicarea jogging-ului implică una dintre următoarele activităţi:','Sport','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce mitologie întâlnim zeiţa Minerva?','Mitologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următorii fotbalişti a jucat pentru naţionala Braziliei?','Sport','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În care dintre următoarele ţări există un împărat în exerciţiul funcţiei sale?','Politică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este numele actriţei care a interpretat rolul principal în celebrul film "Sunetul muzicii"?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Una dintre cele mai importante curse cicliste internaţionale este un tur al:','Sport','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('De ce origine este cunoscutul actor Antonio Banderas?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine este autorul fabulei Boul şi viţelul?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numeşte aparatul la care evoluează un acrobat la circ?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numeşte actorul de comedie în teatrul popular?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('La ce instrument se acompania de obicei cântăreţul de rock and roll Jerry Lee Lewis?','Muzică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Pe ce continent curge fluviul Indus?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum s-a numit, în "epoca de aur", actualul Palat al Parlamentului din Bucureşti?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele instrumente este folosit în special la prelucrarea lemnului?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce scop era folosită în evul mediu archebuza?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce țară este numită "țara cantoanelor"?','Economie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Pământul mai este numit Terra sau:','Astronomie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine a scris poezia: "Fiind băiet, păduri cutreieram..."?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele vietăţi are aripile transparente?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este capitala Noii Zeelande?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce înseamnă cuvântul "iz"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Sediul căreia dintre următoarele instituţii se află în Piaţa Victoriei din Bucureşti?','Politică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Punctul în care se întâlnesc înălţimile unui triunghi se numeşte:','Fizică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele localităţi nu este declarat oraş?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce ţară s-a născut actorul John Travolta?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În care dintre următoarele oraşe se află reşedinţa oficială a preşedintelui S.U.A.?','Politică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Oraşul Caracal se găseşte în judeţul:','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele state are graniţă cu Olanda?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce animale lipsesc din expresia "a umbla după ...... verzi"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine a fost Ștefan cel Mare?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele elemente anatomice devine vizibil atunci când deschizi gura larg?','Medicină','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Religia oficială în România este:','Religie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Pentru a vizita regiunea Castilia trebuie să ajungi în:','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce secol a trăit scriitorul Vasile Alecsandri?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În capitalism, unul dintre elementele esenţiale este:','Economie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce nume poartă culegerea de texte medievale, de obicei cu un conţinut variat?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numesc premiile acordate pentru cele mai proaste filme şi prestaţii actoriceşti?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce personaj mitologic are un singur ochi?','Mitologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele substanţe este anestezică?','Medicină','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce denumire are o suprafaţă de teren cultivată cu pomi fructiferi?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În expresia "a se răspândi ca...." lipseşte un cuvânt.Care este acesta?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Capitala Republicii Moldova este oraşul:','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce nume purta în Roma antică un membru al aristocraţiei gentilice, descendent al unor vechi familii?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce culoare are reşedinţa preşedintelui S.U.A., sugerată şi de numele acesteia?','Politică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce lichid se foloseşte pentru a iriga culturile agricole?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine a înfăptuit Unirea de la 1600?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care conducător a unificat triburile preexistente şi a pus bazele statului dac?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numeşte maşina de război care se folosea în antichitate la spargerea porţilor unei cetăţi?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine a primit ca dar, din partea zeilor, o celebră cutie în care se aflau toate relele firii omeneşti?','Mitologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Unde poţi să găseşti sidef?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numeşte o religie care recunoaşte existenţa mai multor divinităţi?','Religie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine este Placido Domingo?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Scrierea frumoasă, cu funcţie artistică, se poate numi:','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numeau conducătorii Egiptului Antic?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Scriitoarea britanică Mary Shelley este cel mai bine cunoscută pentru opera sa intitulată:','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce judeţ se află Cernavodă?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele variante denumeşte un dans şi un instrument de percuţie?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Sub ce denumire e cunoscută politica de izolare a ţărilor din fostul bloc comunist, impusă de U.R.S.S.?','Politică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se semnalizează în codul Morse apelul de ajutor S.O.S.?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre animalele următoare are branhii?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('O.E.P.este o organizaţie musulmană ce militează pentru eliberarea cărui teritoriu?','Politică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce origine au avut compozitorii Verdi şi Vivaldi?','Artă','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numește sărbătoarea creștină care celebrează nașterea lui Iisus Hristos?','Religie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cu ce se poate substitui verbul "a lătra"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Miopia este un defect de:','Medicină','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Sub ce nume mai este cunoscută religia musulmană?','Religie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce nume poartă toporul mic, cu coada lungă de lemn, folosit ca armă?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care ar fi echivalentul cuvântului "pocinog"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Conform legendei, care este numele celui care a fondat Bucureștiul?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce reprezintă cuvântul "opulenţă"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine lipseşte din numele filmului : .......sună întotdeauna de două ori?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce an a început Primul Război Mondial?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce râu se regăseşte în titlul unei cărţi de Geo Bogza?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Conturul cărei ţări are formă de cizmă?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce ţară s-a născut stilul elisabetan?','Artă','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Doar unul dintre cuvintele următoare denumeşte o pasăre.Care este acesta?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Continuă proverbul : Apa trece, ........rămân.','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este titlul unui celebru balet al lui Serghei Prokofiev inspirat de o temă din literatura clasică?','Artă','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce cuplu de comici ai ecranului se ascunde sub numele de Laurel şi Hardy?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre creaturile următoare aparţine ordinului galinaceelor?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce spun italienii atunci când pronunţă belle-arte?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre variantele următoare este sinonimă cu "vraf"?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele cuvinte nu denumeşte o plantă?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce denumire poartă totalitatea organismelor vii care plutesc în apă şi constituie hrana unor animale acvatice?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ştefan Augustin Doinaş este cunoscut prin activitatea sa de:','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este cel mai apropiat oraş de Braşov?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numesc valurile rezultate în urma cutremurelor și erupțiilor vulcanice?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine este autorul ciclului Pasteluri?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Telefonul a fost inventat de:','Fizică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cum se numeste mingea de piele in forma de para ce este folosita la antrenamentul pentru box?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele creaturi are aripi?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce județ se află mânăstirea Govora?','Artă','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce este liedul?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce oraș s-a născut celebrul actor american Tony Curtis?','Film','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Oraşul Bergamo se găseşte pe teritoriul:','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele fructe nu aparţine citricelor?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce teritoriu a ocupat în 1796 Marea Britanie?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('În ce țară se află orașul Bari?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Căror vietăţi li se mai spune gângănii?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele state americane are graniţă cu Canada?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('ine a fost cel mai cunoscut compozitor român?','Muzică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Căreia dintre următoarele variante i-se potriveşte definiţia : instrument muzical de percuţie?','Muzică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Unde s-a născut stilul de mobilier numit "Directoire"?','Artă','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce figură geometrică are suma unghiurilor egală cu 180°?','Diverse','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce oase sunt utilizate, în mod special, de o dactilografă?','Medicină','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Mitoza este un proces întâlnit în:','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele armate are cu siguranţă în dotare cuirasate?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Împotriva cărei ţări a luptat România în Războiul de Independenţă?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce titlu purta şeful statului în India antică?','Istorie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele companii a colaborat cu ţara noastră pentru fabricarea autoturismului Oltcit?','Economie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce are un viezure, de la nas până la urechi, de o parte şi de alta a capului?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre păsările următoare se mai numeşte şi ghionoaie?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Prin ce simbol este reprezentat carbonul în tabelul lui Mendeleev?','Chimie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Numele căror peşti este folosit pentru a descrie înghesuiala?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce substanţă sticloasă se poate aplica pe piese de metal sau din ceramică pentru a le proteja?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Din ce se producea încălţămintea numită galenţi?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce denumire au uneltele epocii de piatră?','Vocabular','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este culoarea florilor de cireş?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este țara celor o mie de lacuri?','Geografie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Ce țară este numită, "țara cantoanelor"?','Economie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Unde strâng albinele polenul?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care dintre următoarele creaţii este opera lui Antonio Vivaldi?','Muzică','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Care este obiectul de studiu al anatomistului?','Biologie','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('Cine a scris, "O noapte furtunoasă"?','Literatură','multiple_choice','NULL');
+
+INSERT INTO Question (Question,Category,Type,Answer)
+VALUES('A ameriza înseamnă:','Diverse','multiple_choice','NULL');
+
