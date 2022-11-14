@@ -14,8 +14,8 @@ public:
 	};
 
 public:
-	Question(std::string question, std::string category, Type type, std::optional<int8_t> answer = std::none);
-	Question(uint8_t id, std::string question, std::string category, Type type, std::optional<int8_t> answer = std::none);
+	Question(std::string question, std::string category, Type type, std::optional<int8_t> answer = std::nullopt);
+	Question(uint8_t id, std::string question, std::string category, Type type, std::optional<int8_t> answer = std::nullopt);
 	Question(const Question& other);
 	Question& operator=(const Question& other);
 
@@ -24,7 +24,7 @@ public:
 	std::string GetQuestion();
 	std::string GetCategory();
 	Type GetType();
-	std::optional<int8_t> GetAnswer();
+	std::optional<int8_t> GetAnswer() { return mAnswer; }
 
 	// setters
 

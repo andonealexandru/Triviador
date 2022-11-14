@@ -1,4 +1,4 @@
-#include "Game.h"
+#include <Game.h>
 
 Game::Game()
 	: mId(0), mUserStatistics(std::make_pair(nullptr, nullptr)), mLength(0)

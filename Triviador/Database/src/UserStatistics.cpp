@@ -1,4 +1,4 @@
-#include "UserStatistics.h"
+#include <UserStatistics.h>
 
 UserStatistics::UserStatistics(User* user, uint8_t score, uint8_t territoryCount)
 	: mUser(user), mScore(score), mTerritoryCount(territoryCount)

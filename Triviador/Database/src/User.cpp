@@ -1,4 +1,4 @@
-#include "User.h"
+#include <User.h>
 
 User::User(std::string name) : mName(std::move(name))
 {}
