@@ -2,11 +2,19 @@
 #include <string>
 #include "Question.h"
 
-class QuestionChoice
+namespace DB
 {
-public:
-	uint8_t mId;
-	Question* mQuestion;
-	std::string mChoice;
-};
+    class QuestionChoice
+    {
 
+    protected:
+        uint32_t m_id;
+        Question *m_question;
+        std::string m_choice;
+        bool m_isCorect;
+
+        friend class DBAccess;
+    };
+
+
+}//namespace DB

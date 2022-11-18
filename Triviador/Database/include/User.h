@@ -1,25 +1,37 @@
 #pragma once
 #include <string>
+#include <iostream>
 
-class User
+namespace DB
 {
-public:
-	// constructors
-	User(std::string name);
-	User(uint8_t id, std::string name);
-	User(const User& other);
-	User& operator=(const User& other);
+    class User
+    {
+    public:
+        // constructors
+        User();
 
-	// getters
-	uint8_t GetId();
-	std::string GetName();
+        User(std::string name);
 
-	// setters
-	void SetId(uint8_t id);
-	void SetName(std::string name);
+        User(uint8_t id, std::string name);
 
-private:
-	uint8_t mId;
-	std::string mName;
-};
+        User(const User &other);
 
+        User &operator=(const User &other);
+
+        // getters
+        uint8_t GetId();
+
+        std::string GetName();
+
+        // setters
+        void SetId(uint8_t id);
+
+        void SetName(std::string name);
+
+    private:
+        uint8_t mId;
+        std::string mName;
+
+    friend class DBAccess;
+    };
+}//namespace DB

@@ -44,6 +44,7 @@ namespace DB
 	private:
         /// \brief Private constructor. DBAccess object gets obtained by GetInstance() call.
 		DBAccess() = default;
+
 		DBAccess(DBAccess&&) = delete;
 		DBAccess(const DBAccess&) = delete;
 		DBAccess& operator=(DBAccess&&) = delete;

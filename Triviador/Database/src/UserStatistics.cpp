@@ -1,65 +1,67 @@
 #include <UserStatistics.h>
-
-UserStatistics::UserStatistics(User* user, uint8_t score, uint8_t territoryCount)
-	: mUser(user), mScore(score), mTerritoryCount(territoryCount)
-{}
-
-UserStatistics::UserStatistics(uint8_t id, User* user, uint8_t score, uint8_t territoryCount)
-	: mId(id), mUser(user), mScore(score), mTerritoryCount(territoryCount)
-{}
-
-UserStatistics::UserStatistics(const UserStatistics& other)
-	: mId(other.mId), mUser(other.mUser), mScore(other.mScore), mTerritoryCount(other.mTerritoryCount)
-{}
-
-UserStatistics& UserStatistics::operator=(const UserStatistics& other)
+namespace DB
 {
-	if (this != &other)
-	{
-		mId = other.mId;
-		mUser = other.mUser;
-		mScore = other.mScore;
-		mTerritoryCount = other.mTerritoryCount;
-	}
-	return *this;
-}
+    UserStatistics::UserStatistics(User *user, uint8_t score, uint8_t territoryCount)
+            : mUser(user), mScore(score), mTerritoryCount(territoryCount)
+    {}
 
-uint8_t UserStatistics::GetId()
-{
-	return mId;
-}
+    UserStatistics::UserStatistics(uint8_t id, User *user, uint8_t score, uint8_t territoryCount)
+            : mId(id), mUser(user), mScore(score), mTerritoryCount(territoryCount)
+    {}
 
-User* UserStatistics::GetUser()
-{
-	return mUser;
-}
+    UserStatistics::UserStatistics(const UserStatistics &other)
+            : mId(other.mId), mUser(other.mUser), mScore(other.mScore), mTerritoryCount(other.mTerritoryCount)
+    {}
 
-uint8_t UserStatistics::GetScore()
-{
-	return mScore;
-}
+    UserStatistics &UserStatistics::operator=(const UserStatistics &other)
+    {
+        if (this != &other)
+        {
+            mId = other.mId;
+            mUser = other.mUser;
+            mScore = other.mScore;
+            mTerritoryCount = other.mTerritoryCount;
+        }
+        return *this;
+    }
 
-uint8_t UserStatistics::GetTerritoryCount()
-{
-	return mTerritoryCount;
-}
+    uint8_t UserStatistics::GetId()
+    {
+        return mId;
+    }
 
-void UserStatistics::SetId(uint8_t id)
-{
-	mId = id;
-}
+    User *UserStatistics::GetUser()
+    {
+        return mUser;
+    }
 
-void UserStatistics::SetUser(User* user)
-{
-	mUser = user;
-}
+    uint8_t UserStatistics::GetScore()
+    {
+        return mScore;
+    }
 
-void UserStatistics::SetScore(uint8_t score)
-{
-	mScore = score;
-}
+    uint8_t UserStatistics::GetTerritoryCount()
+    {
+        return mTerritoryCount;
+    }
 
-void UserStatistics::SetTerritoryCount(uint8_t territoryCount)
-{
-	mTerritoryCount = territoryCount;
-}
+    void UserStatistics::SetId(uint8_t id)
+    {
+        mId = id;
+    }
+
+    void UserStatistics::SetUser(User *user)
+    {
+        mUser = user;
+    }
+
+    void UserStatistics::SetScore(uint8_t score)
+    {
+        mScore = score;
+    }
+
+    void UserStatistics::SetTerritoryCount(uint8_t territoryCount)
+    {
+        mTerritoryCount = territoryCount;
+    }
+}//namespace DB
