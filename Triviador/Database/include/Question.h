@@ -17,13 +17,15 @@ namespace DB
 
     public:
         // constructors
-        Question() = default;
+        Question();
         Question(std::string question, std::string category, Type type, std::optional<int32_t> answer);
         Question(uint32_t id, std::string question, std::string category, Type type, std::optional<int32_t> answer);
-        Question(const Question& other) = default;
-        Question& operator=(const Question& other) = default;
-        Question(Question&& other) = default;
-        Question& operator=(Question&& other) = default;
+        Question(const Question& other);
+        Question(Question&& other);
+
+
+        Question& operator=(const Question& other);
+        Question& operator=(Question&& other);
 
         // getters
         uint32_t GetId() const;
@@ -31,6 +33,13 @@ namespace DB
         std::string GetCategory() const;
         Type GetType() const;
         std::optional<int32_t> GetAnswer() const;
+
+        //setters
+        void SetId(uint32_t id);
+        void SetQuestion(std::string question);
+        void SetCategory(std::string category);
+        void SetType(Type type);
+        void SetAnswer(std::optional<int32_t> answer);
 
     protected:
         uint32_t m_id;
