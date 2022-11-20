@@ -8,13 +8,10 @@ namespace DB
     {
     public:
         //constructors
-        QuestionChoice();
+        QuestionChoice() = default;
         QuestionChoice(uint32_t id, Question* question, std::string choice, bool isCorect);
-        QuestionChoice(const QuestionChoice& other);
-        QuestionChoice(QuestionChoice&& other);
-
+        QuestionChoice(const QuestionChoice& other) = default;
         QuestionChoice& operator=(const QuestionChoice& other);
-        QuestionChoice& operator=(QuestionChoice&& other);
 
         //getters
         uint32_t GetId() const;
@@ -23,10 +20,10 @@ namespace DB
         bool GetIsCorect() const;
 
         //setters
-        void SetId(uint32_t id);
-        void SetQuestion(Question* question);
-        void SetChoice(std::string choice);
-        void SetIsCorect(bool isCorect);
+        void SetId(const uint32_t id);
+        void SetQuestion(Question* const question);
+        void SetChoice(const std::string& choice);
+        void SetIsCorect(const bool isCorect);
 
     protected:
         uint32_t m_id;

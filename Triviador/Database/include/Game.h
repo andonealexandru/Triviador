@@ -26,7 +26,7 @@ namespace DB
         UserStatistics *GetFirstUserStatistics();
 
         UserStatistics *GetSecondUserStatistics();
-
+        std::pair<UserStatistics *, UserStatistics *> GetUserStatistics;
         uint8_t GetLength();
 
         // setters
