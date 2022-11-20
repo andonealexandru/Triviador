@@ -6,6 +6,12 @@ namespace DB
 {
     class QuestionChoice
     {
+    public:
+        //getters
+        uint32_t getId() const;
+        Question* getQuestion() const;
+        std::string getChoice() const;
+        bool getIsCorect() const;
 
     protected:
         uint32_t m_id;
