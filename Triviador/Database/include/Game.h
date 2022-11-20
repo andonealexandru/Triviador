@@ -39,8 +39,8 @@ namespace DB
         void SetLength(uint8_t length);
 
     private:
-        uint8_t mId;
-        std::pair<UserStatistics *, UserStatistics *> mUserStatistics;
-        uint8_t mLength;
+        uint8_t m_id;
+        std::pair<UserStatistics *, UserStatistics *> m_userStatistics;
+        uint8_t m_length;
     };
 }
