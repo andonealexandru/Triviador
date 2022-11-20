@@ -101,6 +101,7 @@ StyleCopReport.xml
 .cmake
 .idea
 cmake-build-debug/
+CMakeFiles
 
 # build folder
 build/
