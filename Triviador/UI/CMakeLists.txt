@@ -36,7 +36,6 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_AUTOUIC_SEARCH_PATHS} ${FORMS_DIR})
 # Add the executable
 add_executable(GUI ${SOURCES})
 
-# Add the target includes for MY_PROJECT 
 target_include_directories(GUI 
     PUBLIC
         ${INCLUDE_DIR}
