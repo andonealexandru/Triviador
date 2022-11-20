@@ -1,5 +1,0 @@
-F:/AN_2/Triviador/CMakeFiles/ALL_BUILD.dir
-F:/AN_2/Triviador/CMakeFiles/ZERO_CHECK.dir
-F:/AN_2/Triviador/Triviador/CMakeFiles/Triviador.dir
-F:/AN_2/Triviador/Triviador/UI/CMakeFiles/GUI.dir
-F:/AN_2/Triviador/Triviador/Database/CMakeFiles/Database.dir
