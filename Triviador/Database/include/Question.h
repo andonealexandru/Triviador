@@ -16,39 +16,39 @@ namespace DB
         };
 
     public:
-        Question() = default;
+        // constructors
+        Question();
+        Question(std::string question, std::string category, Type type, std::optional<int32_t> answer);
+        Question(uint32_t id, std::string question, std::string category, Type type, std::optional<int32_t> answer);
+        Question(const Question& other);
+        Question(Question&& other);
 
-        Question(std::string question, std::string category, int type, std::optional<std::string> answer);
 
-        Question(uint32_t id, std::string question, std::string category, int type, std::optional<std::string> answer);
-
-        Question(const Question &other) = default;
-
-        Question &operator=(const Question &other) = default;
-
-        Question(Question &&other) = default;
-
-        Question &operator=(Question &&other) = default;
+        Question& operator=(const Question& other);
+        Question& operator=(Question&& other);
 
         // getters
-        uint32_t GetId() const { return m_id; }
-
+        uint32_t GetId() const;
         std::string GetQuestion() const;
-
         std::string GetCategory() const;
-
         Type GetType() const;
+        std::optional<int32_t> GetAnswer() const;
 
-        std::optional<int8_t> GetAnswer() const;
+        //setters
+        void SetId(uint32_t id);
+        void SetQuestion(std::string question);
+        void SetCategory(std::string category);
+        void SetType(Type type);
+        void SetAnswer(std::optional<int32_t> answer);
 
     protected:
         uint32_t m_id;
         std::string m_question;
         std::string m_category;
-        int m_type;
-        std::optional<std::string> m_answer;
+        Type m_type;
+        std::optional<int32_t> m_answer;
 
-       friend class DBAccess;
+        friend class DBAccess;
     };
 
 }//namespace DB

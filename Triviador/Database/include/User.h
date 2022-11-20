@@ -29,8 +29,8 @@ namespace DB
         void SetName(std::string name);
 
     private:
-        uint8_t mId;
-        std::string mName;
+        uint8_t m_id;
+        std::string m_name;
 
     friend class DBAccess;
     };
