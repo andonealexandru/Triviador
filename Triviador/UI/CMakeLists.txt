@@ -1,12 +1,14 @@
 set(CMAKE_CONFIGURATION_TYPES "Release;RelWithDebInfo" CACHE STRING "" FORCE)
 
-#======================= INCLUSION OF Qt =======================#
+find_package(cpr CONFIG REQUIRED)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_PREFIX_PATH $ENV{QTDIR})
 find_package(Qt6Core REQUIRED)
 find_package(Qt6Widgets REQUIRED)
+
 
 #=================== INCLUSION OF Project Files ====================#
 set(FORMS_DIR "forms")
@@ -44,8 +46,9 @@ target_include_directories(GUI
         ${INCLUDE_DIR}
         ${SOURCE_DIR}
 )
-#target_include_directories(GUI PRIVATE )
-#target_include_directories(GUI PRIVATE ${SOURCE_DIR})
 
 #===================== LINKING LIBRARIES =======================#
-target_link_libraries(GUI Qt6::Widgets)
+target_link_libraries(GUI
+        Qt6::Widgets
+        cpr::cpr
+)
