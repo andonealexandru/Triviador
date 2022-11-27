@@ -2,7 +2,7 @@
 
 namespace DB
 {
-	std::unique_ptr<DBAccess> DBAccess::m_instance;
+	std::shared_ptr<DBAccess> DBAccess::m_instance;
 
 	DBAccess* DBAccess::GetInstance()
 	{
@@ -17,5 +17,14 @@ namespace DB
 	{
 		m_instance.reset();
 	}
+
+    DBAccess::DBAccess() : storage(Startup())
+    {
+    }
+
+    Storage DBAccess::GetStorage() const
+    {
+        return storage;
+    }
 
 }//namespace DB
