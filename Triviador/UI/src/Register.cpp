@@ -1,4 +1,4 @@
-#include "Register.h"
+#include "include/Register.h"
 #include "ui_Register.h"
 
 Register::Register(QWidget* parent) :
