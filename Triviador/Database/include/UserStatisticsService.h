@@ -27,7 +27,7 @@ namespace DB
         void SetScore(uint8_t score);
         void SetTerritoryCount(uint8_t territoryCount);
 
-    public:
+    private:
         uint8_t m_id;
         uint8_t m_userId;
         uint8_t m_score;

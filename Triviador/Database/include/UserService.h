@@ -23,7 +23,7 @@ namespace DB
         void SetId(const uint8_t id);
         void SetName(const std::string& name);
 
-    public:
+    private:
         uint8_t m_id;
         std::string m_name;
     };
