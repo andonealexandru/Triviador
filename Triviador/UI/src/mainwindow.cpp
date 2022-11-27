@@ -138,6 +138,58 @@ void MainWindow::paintEvent(QPaintEvent* pe)
     s = QString::number(100);
     p.setFont(QFont("Arial", widWidth * widHeight / 55666));
     p.drawText(r, Qt::AlignCenter, s);
+
+    px.load("F:/AN_2/Regions_pics/Corvin_green.png");
+    px = px.scaled(widWidth / 3.7, widHeight / 4.2, Qt::IgnoreAspectRatio);
+    pt.drawPixmap(widWidth / 3.26, widHeight / 2.38, px);
+    QWidget::paintEvent(pe);
+
+    r.setRect(widWidth / 2.57, widHeight / 1.99, widWidth / 21, widHeight / 11.5);
+    p.setBrush(green);
+    p.drawEllipse(r);
+    s = QString::number(100);
+    p.setFont(QFont("Arial", widWidth* widHeight / 55666));
+    p.drawText(r, Qt::AlignCenter, s);
+
+
+    px.load("F:/AN_2/Regions_pics/Petrol_green.png");
+    px = px.scaled(widWidth / 4.5, widHeight / 4.4, Qt::IgnoreAspectRatio);
+    pt.drawPixmap(widWidth / 2.565, widHeight / 1.68, px);
+    QWidget::paintEvent(pe);
+
+    r.setRect(widWidth / 2.07, widHeight / 1.5, widWidth / 21, widHeight / 11.5);
+    p.setBrush(green);
+    p.drawEllipse(r);
+    s = QString::number(100);
+    p.setFont(QFont("Arial", widWidth* widHeight / 55666));
+    p.drawText(r, Qt::AlignCenter, s);
+
+
+    px.load("F:/AN_2/Regions_pics/Raul_Olt_red.png");
+    px = px.scaled(widWidth / 5.5, widHeight / 3.25, Qt::IgnoreAspectRatio);
+    pt.drawPixmap(widWidth / 3.3, widHeight / 1.56, px);
+    QWidget::paintEvent(pe);
+
+    r.setRect(widWidth / 2.746, widHeight / 1.3, widWidth / 21, widHeight / 11.5);
+    p.setBrush(red);
+    p.drawEllipse(r);
+    s = QString::number(100);
+    p.setFont(QFont("Arial", widWidth* widHeight / 55666));
+    p.drawText(r, Qt::AlignCenter, s);
+
+
+    px.load("F:/AN_2/Regions_pics/Lacu_Sarat_blue.png");
+    px = px.scaled(widWidth / 6.4, widHeight / 5.3, Qt::IgnoreAspectRatio);
+    pt.drawPixmap(widWidth / 1.744, widHeight / 1.772, px);
+    QWidget::paintEvent(pe);
+
+    r.setRect(widWidth / 1.579, widHeight / 1.572, widWidth / 21, widHeight / 11.5);
+    p.setBrush(blue);
+    p.drawEllipse(r);
+    s = QString::number(100);
+    p.setFont(QFont("Arial", widWidth* widHeight / 55666));
+    p.drawText(r, Qt::AlignCenter, s);
+
 }
 
 MainWindow::~MainWindow()
