@@ -32,7 +32,7 @@ required software:
 			 - Variable Name: "VCPKG_DEFAULT_TRIPLET"
 			 - Variable Value: "x64-windows"
 			 - click Ok
-		 - Anywhere in git bash or cmd, execute: 
+		 - Anywhere in git bash or cmd, execute: <br>
 		 	-`vcpkg install sqlite-orm` (if this does not work, you may need to open the cmd line again)<br>
 			-`vcpkg install crow`<br>
 			-`vcpkg install cpr`
