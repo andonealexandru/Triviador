@@ -1,8 +1,6 @@
-include(C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
-
-find_package(SqliteOrm CONFIG REQUIRED)
 find_package(Crow CONFIG REQUIRED)
+find_package(SqliteOrm CONFIG REQUIRED)
 
 add_library(Database STATIC
     #*.h
@@ -32,10 +30,11 @@ add_library(Database STATIC
 )
 
 target_link_libraries(Database
-        PUBLIC
-        Crow::Crow
-        sqlite_orm::sqlite_orm
+    PUBLIC
+    Crow::Crow
+    sqlite_orm::sqlite_orm
 )
+
 
 target_include_directories(Database
     PUBLIC 
