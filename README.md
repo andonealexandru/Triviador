@@ -33,9 +33,9 @@ required software:
 			 - Variable Value: "x64-windows"
 			 - click Ok
 		 - Anywhere in git bash or cmd, execute: 
-		 	-`vcpkg install sqlite-orm` (if this does not work, you may need to open the cmd line again)
-			-'vcpkg install crow'
-			-'vcpkg install cpr'
+		 	-`vcpkg install sqlite-orm` (if this does not work, you may need to open the cmd line again)<br>
+			-`vcpkg install crow`<br>
+			-`vcpkg install cpr`
  2) Install Qt6 
 	 1) download Qt online installer
 	 2) You'll need to create an account, the gui will prompt that.
