@@ -2,74 +2,31 @@
 
 namespace DB
 {
-	QuestionChoice::QuestionChoice()
-	{
-	}
 
-	QuestionChoice::QuestionChoice(uint32_t id, Question* question, std::string choice, bool isCorect):
-		m_id{id},m_question{question},m_choice{choice},m_isCorect{isCorect}
-	{
-	}
+    QuestionChoice::QuestionChoice(const uint32_t id, uint32_t questionId, const std::string& choice, const uint8_t isCorrect) :
+             m_id{id}
+            ,m_choice{choice}
+            ,m_isCorrect{isCorrect}
+    {
+        m_questionId.reset(&questionId);
+    }
 
-	QuestionChoice::QuestionChoice(const QuestionChoice& other)
-	{
-		*this= other;
-	}
+    uint32_t QuestionChoice::GetId() const { return m_id; }
+    uint32_t QuestionChoice::GetQuestionId() const { return *m_questionId; }
+    std::string QuestionChoice::GetChoice() const { return m_choice; }
+    uint8_t QuestionChoice::GetIsCorrect() const { return m_isCorrect; }
 
-	QuestionChoice::QuestionChoice(QuestionChoice&& other)
-	{
-		*this = std::move(other);
-	}
+    void QuestionChoice::SetId(const uint32_t id) { m_id = id; }
+    void QuestionChoice::SetQuestionId(uint32_t questionId) { m_questionId.reset(&questionId); }
+    void QuestionChoice::SetChoice(const std::string& choice) { m_choice = choice; }
+    void QuestionChoice::SetIsCorrect(const uint8_t isCorrect) { m_isCorrect = isCorrect; }
 
-	QuestionChoice& QuestionChoice::operator=(const QuestionChoice& other)
-	{
-		m_id = other.m_id;
-		m_question = other.m_question;
-		m_choice = other.m_choice;
-		m_isCorect = other.m_isCorect;
-		return *this;
-	}
+    QuestionChoice::QuestionChoice(const QuestionChoice& other)
+    {
+        m_id = other.m_id;
+        m_isCorrect = other.m_isCorrect;
+        m_choice = other.m_choice;
+        m_questionId.reset(std::make_unique<uint32_t>(*other.m_questionId).get());
+    }
 
-	QuestionChoice& QuestionChoice::operator=(QuestionChoice&& other)
-	{
-		m_id = other.m_id;
-		m_question = other.m_question;
-		m_choice = other.m_choice;
-		m_isCorect = other.m_isCorect;
-		new (&other)QuestionChoice;
-		return *this;
-	}
-
-	uint32_t QuestionChoice::GetId() const
-	{
-		return m_id;
-	}
-	Question* QuestionChoice::GetQuestion() const
-	{
-		return m_question;
-	}
-	std::string QuestionChoice::GetChoice() const
-	{
-		return m_choice;
-	}
-	bool QuestionChoice::GetIsCorect() const
-	{
-		return m_isCorect;
-	}
-	void QuestionChoice::SetId(uint32_t id)
-	{
-		m_id = id;
-	}
-	void QuestionChoice::SetQuestion(Question* question)
-	{
-		m_question = question;
-	}
-	void QuestionChoice::SetChoice(std::string choice)
-	{
-		m_choice = choice;
-	}
-	void QuestionChoice::SetIsCorect(bool isCorect)
-	{
-		m_isCorect = isCorect;
-	}
 }//namespace DB

@@ -1,6 +1,7 @@
 #pragma once
+
 #include <string>
-#include "Question.h"
+#include <memory>
 
 namespace DB
 {
@@ -8,33 +9,28 @@ namespace DB
     {
     public:
         //constructors
-        QuestionChoice();
-        QuestionChoice(uint32_t id, Question* question, std::string choice, bool isCorect);
+        QuestionChoice() = default;
+        QuestionChoice(const uint32_t id, const uint32_t questionId, const std::string& choice, const uint8_t isCorrect);
         QuestionChoice(const QuestionChoice& other);
-        QuestionChoice(QuestionChoice&& other);
-
-        QuestionChoice& operator=(const QuestionChoice& other);
-        QuestionChoice& operator=(QuestionChoice&& other);
+        QuestionChoice& operator=(const QuestionChoice& other) = default;
 
         //getters
         uint32_t GetId() const;
-        Question* GetQuestion() const;
+        uint32_t GetQuestionId() const;
         std::string GetChoice() const;
-        bool GetIsCorect() const;
+        uint8_t GetIsCorrect() const;
 
         //setters
-        void SetId(uint32_t id);
-        void SetQuestion(Question* question);
-        void SetChoice(std::string choice);
-        void SetIsCorect(bool isCorect);
+        void SetId(const uint32_t id);
+        void SetQuestionId(uint32_t questionId);
+        void SetChoice(const std::string& choice);
+        void SetIsCorrect(const uint8_t isCorrect);
 
-    protected:
+    private:
         uint32_t m_id;
-        Question *m_question;
+        std::unique_ptr<uint32_t> m_questionId;
         std::string m_choice;
-        bool m_isCorect;
-
-        friend class DBAccess;
+        uint8_t m_isCorrect;
     };
 
 

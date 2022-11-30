@@ -18,7 +18,7 @@ namespace DB
 		m_instance.reset();
 	}
 
-    DBAccess::DBAccess() : storage(Startup())
+    DBAccess::DBAccess() : storage(Startup("C:/facultate/MCIA/development/Triviador/Database/Questions.db"))
     {
     }
 

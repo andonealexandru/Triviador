@@ -1,12 +1,12 @@
-// Triviador.cpp : Defines the entry point for the application.
-
 #include "Triviador.h"
 #include <iostream>
-
-#include <iostream>
-
+#include <crow.h>
+#include "DBAccess.h"
 int main()
 {
-    std::cout << "Triviador app\nHello World!\n";
+    auto storage = DB::DBAccess::GetInstance()->GetStorage();
+    std::cout << storage.count<DB::Question>();
+
     return 0;
 }
+
