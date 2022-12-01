@@ -30,3 +30,6 @@ target_include_directories(Database
     "include" 
     "src"
 )
+
+set(PATH_TO_DATABASE "${CMAKE_CURRENT_SOURCE_DIR}/Triviador.sqlite")
+add_definitions(-DDATABASE_PATH="${PATH_TO_DATABASE}")
