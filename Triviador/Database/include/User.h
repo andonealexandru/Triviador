@@ -11,13 +11,13 @@ namespace DB
         // constructors
         User() = default;
 
-        explicit User(const std::string& name);
-        User(const uint32_t id, const std::string& name);
+        User(const std::string& name, const std::string& password);
+        User(const uint32_t id, const std::string& name, const std::string& password);
         User(const User& other) = default;
         User& operator=(const User& other) = default;
+
         ~User() = default;
        
-
         // getters
         uint32_t GetId() const;
         std::string GetName() const;

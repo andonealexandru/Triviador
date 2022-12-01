@@ -2,11 +2,13 @@
 
 namespace DB
 {
-    User::User(const std::string& name) : m_name(name)
+    User::User(const std::string& name, const std::string& password) : 
+        m_name(name)
+       ,m_password(password)
     {
     }
 
-    User::User(const uint32_t id, const std::string& name) : m_id(id), m_name(name)
+    User::User(const uint32_t id, const std::string& name, const std::string& password) : m_id(id), m_name(name), m_password(password)
     {
     }
 
