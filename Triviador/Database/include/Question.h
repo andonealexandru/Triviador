@@ -15,6 +15,8 @@ namespace DB
         Question(const Question& other) = default;
         Question& operator=(const Question& other) = default;
 
+        ~Question() = default;
+     
         // getters
         uint32_t GetId() const;
         std::string GetQuestion() const;
@@ -29,13 +31,14 @@ namespace DB
         void SetType(const std::string& type);
         void SetAnswer(const int32_t answer);
 
+        bool HasAnswer() const;
+
     private:
         uint32_t m_id;
         std::string m_question;
         std::string m_category;
         std::string m_type;
-        //std::optional<int32_t> m_answer;
-        int32_t m_answer;
+        std::optional<int32_t> m_answer;
     };
 
 }//namespace DB
