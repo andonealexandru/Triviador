@@ -1,38 +1,25 @@
-
 find_package(Crow CONFIG REQUIRED)
 find_package(SqliteOrm CONFIG REQUIRED)
 
 add_library(Database STATIC
-    #*.h
-    "include/Game.h"
+    #*.h   
+    "include/User.h"  
+    "include/DBAccess.h"
     "include/Question.h"
     "include/QuestionChoice.h"
-    "include/User.h"
-    "include/UserService.h"
     "include/UserStatistics.h"
-    "include/DBAccess.h"
-    "include/QuestionService.h"
-    "include/QuestionChoiceService.h"
-    "include/UserStatisticsService.h"
-    "include/GameService.h"
     #.cpp
-    "src/Game.cpp"
+    "src/DBAccess.cpp"
     "src/Question.cpp"
     "src/QuestionChoice.cpp"
-    "src/User.cpp"
     "src/UserStatistics.cpp"
-    "src/DBAccess.cpp"
-    "src/QuestionService.cpp"
-    "src/QuestionChoiceService.cpp"
-    "src/UserStatisticsService.cpp"
-    "src/GameService.cpp"
-    "src/UserService.cpp"
+    "src/User.cpp"
 )
 
 target_link_libraries(Database
     PUBLIC
-    Crow::Crow
-    sqlite_orm::sqlite_orm
+        Crow::Crow
+        sqlite_orm::sqlite_orm
 )
 
 
@@ -43,3 +30,6 @@ target_include_directories(Database
     "include" 
     "src"
 )
+
+set(PATH_TO_DATABASE "${CMAKE_CURRENT_SOURCE_DIR}/Triviador.sqlite")
+add_definitions(-DDATABASE_PATH="${PATH_TO_DATABASE}")

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <iostream>
 
@@ -8,30 +9,29 @@ namespace DB
     {
     public:
         // constructors
-        User();
+        User() = default;
 
-        User(std::string name);
+        User(const std::string& name, const std::string& password);
+        User(const uint32_t id, const std::string& name, const std::string& password);
+        User(const User& other) = default;
+        User& operator=(const User& other) = default;
 
-        User(uint8_t id, std::string name);
-
-        User(const User &other);
-
-        User &operator=(const User &other);
-
+        ~User() = default;
+       
         // getters
-        uint8_t GetId();
-
-        std::string GetName();
+        uint32_t GetId() const;
+        std::string GetName() const;
+        std::string GetPassword() const;
 
         // setters
-        void SetId(uint8_t id);
-
-        void SetName(std::string name);
+        void SetId(const uint32_t id);
+        void SetName(const std::string& name);
+        void SetPassword(const std::string& password);
 
     private:
-        uint8_t m_id;
+        uint32_t m_id;
         std::string m_name;
-
-    friend class DBAccess;
+        std::string m_password;
     };
 }//namespace DB
+

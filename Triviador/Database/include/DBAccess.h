@@ -1,11 +1,10 @@
 #pragma once
 
 #include <memory>
-#include <QuestionService.h>
-#include <UserService.h>
-#include <QuestionChoiceService.h>
-#include <UserStatisticsService.h>
-#include <GameService.h>
+#include <Question.h>
+#include <User.h>
+#include <QuestionChoice.h>
+#include <UserStatistics.h>
 #include <sqlite_orm/sqlite_orm.h>
 using namespace sqlite_orm;
 
@@ -13,52 +12,78 @@ namespace DB
 {
     namespace
     {
-        inline auto Startup()
+        inline auto Startup(std::string path)
         {
-            return make_storage("../Questions.db",
+            return make_storage(path,
                                 make_table("Question",
-                                           make_column("ID_Question", &QuestionService::SetId, &QuestionService::GetId, primary_key()),
-                                           make_column("Question", &QuestionService::SetQuestion, &QuestionService::GetQuestion),
-                                           make_column("Category", &QuestionService::SetQuestion, &QuestionService::GetQuestion),
-                                           make_column("Type", &QuestionService::SetType, &QuestionService::GetType),
-                                           make_column("Answer", &QuestionService::SetAnswer, &QuestionService::GetAnswer)),
+                                           make_column("ID_Question", &Question::SetId, &Question::GetId, 
+                                                       primary_key(), autoincrement()),
+                                           make_column("Question", &Question::SetQuestion, &Question::GetQuestion),
+                                           make_column("Category", &Question::SetQuestion, &Question::GetQuestion),
+                                           make_column("Type", &Question::SetType, &Question::GetType),
+                                           make_column("Answer", &Question::SetAnswer, &Question::GetAnswer)),
                                 make_table("QuestionChoice",
-                                           make_column("ID_QuestionChoice", &QuestionChoiceService::SetId, &QuestionChoiceService::GetId, autoincrement(), primary_key()),
-                                           make_column("ID_Question", &QuestionChoiceService::SetQuestionId, &QuestionChoiceService::GetQuestionId,
-                                                       foreign_key(&QuestionChoiceService::SetQuestionId).references(&QuestionService::GetId)),
-                                           make_column("IsCorrect", &QuestionChoiceService::SetIsCorrect, &QuestionChoiceService::GetIsCorrect),
-                                           make_column("Choice", &QuestionChoiceService::SetChoice, &QuestionChoiceService::GetChoice)),
+                                           make_column("ID_QuestionChoice", &QuestionChoice::SetId, &QuestionChoice::GetId,
+                                                       primary_key(), autoincrement()),
+                                           make_column("ID_Question", &QuestionChoice::SetQuestionId, &QuestionChoice::GetQuestionId,
+                                                       foreign_key(&QuestionChoice::GetQuestionId).references(&Question::GetId)
+                                                                                                  .on_delete.cascade()),
+                                           make_column("Is_Correct", &QuestionChoice::SetIsCorrect, &QuestionChoice::GetIsCorrect),
+                                           make_column("Choice", &QuestionChoice::SetChoice, &QuestionChoice::GetChoice)),
                                 make_table("User",
-                                           make_column("ID_User", &UserService::SetId, &UserService::GetId, autoincrement(), primary_key()),
-                                           make_column("Username", &UserService::SetName, &UserService::GetName)),
+                                           make_column("ID_User", &User::SetId, &User::GetId,
+                                                      primary_key(), autoincrement()),
+                                           make_column("Username", &User::SetName, &User::GetName),
+                                           make_column("Password", &User::SetPassword, &User::GetPassword)),
                                 make_table("UserStatistics",
-                                           make_column("ID_UserStatistics", &UserStatisticsService::SetId, &UserStatisticsService::GetId, primary_key()),
-                                           make_column("ID_User", &UserStatisticsService::SetUser, &UserStatisticsService::GetUserId,
-                                                       foreign_key(&UserStatisticsService::SetUser).references(&UserService::GetId)),
-                                           make_column("Score", &UserStatisticsService::SetScore, &UserStatisticsService::GetScore),
-                                           make_column("Teritories", &UserStatisticsService::SetTerritoryCount, &UserStatisticsService::GetTerritoryCount)),
-                                make_table("Game",
-                                            make_column("ID_Game", &GameService::SetId, &GameService::GetId, autoincrement(), primary_key()),
-                                            make_column("ID_UserStatistics1", &GameService::SetFirstUserStatistics, &GameService::GetFirstUserStatistics,
-                                                        foreign_key(&GameService::SetFirstUserStatistics).references(&UserStatisticsService::GetId)),
-                                            make_column("ID_UserStatistics2", &GameService::SetSecondUserStatistics, &GameService::GetSecondUserStatistics,
-                                                        foreign_key(&GameService::SetFirstUserStatistics).references(&UserStatisticsService::GetId)),
-                                            make_column("GameLenght", &GameService::SetLength, &GameService::GetLength))
+                                           make_column("ID_UserStatistics", &UserStatistics::SetId, &UserStatistics::GetId,
+                                                       primary_key(), autoincrement()),
+                                           make_column("ID_User", &UserStatistics::SetUser, &UserStatistics::GetUserId,
+                                                       foreign_key(&UserStatistics::GetUserId).references(&User::GetId)
+                                                                                              .on_delete.cascade()),
+                                           make_column("Game_Count", &UserStatistics::SetGameCount, &UserStatistics::GetGameCount),
+                                           make_column("Won_Games", &UserStatistics::SetWonGames, &UserStatistics::GetWonGames))
             );
         }
-        using Storage = decltype(Startup());
+        using Storage = decltype(Startup(""));
     }
+
 	class DBAccess
 	{
 	public:
 		static DBAccess* GetInstance();
 
 		static void DestroyInstance();
-		~DBAccess() = default;
+
+        /// \brief Inserts an element into a table and returns the inserted id
+        template <typename T>
+        uint32_t Insert(const T& object);
+
+        /// \brief Returns all elements from a table
+        template <typename T>
+        std::vector<T> GetAll();
+
+        /// \brief Returns the element with the specific id from a table
+        template <typename T>
+        T Get(const uint32_t id);
+
+        /// \brief Returns the number of elements inside a table
+        template <typename T>
+        uint32_t Count();
+
+        /// /brief Replaces an existing element, ids must match
+        template <typename T>
+        void Replace(const T& object);
+
+        /// /brief Removes an existing element from a table
+        template <typename T>
+        void Remove(const uint32_t id);
+
 
         Storage GetStorage() const;
 	private:
 		DBAccess();
+
 		DBAccess(DBAccess&&) = delete;
 		DBAccess(const DBAccess&) = delete;
 		DBAccess& operator=(DBAccess&&) = delete;
@@ -67,5 +92,111 @@ namespace DB
 		static std::shared_ptr<DBAccess> m_instance;
         Storage storage;
 	};
+
+    template<typename T>
+    inline uint32_t DBAccess::Insert(const T& object)
+    {
+        try
+        {
+            return storage.insert<T>(object);
+        }
+        catch (std::system_error e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return
+    }
+
+    template<typename T>
+    inline std::vector<T> DBAccess::GetAll()
+    {
+        try
+        {
+            return storage.get_all<T>();
+        }
+        catch (std::system_error e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
+    }
+
+    template<typename T>
+    inline T DBAccess::Get(const uint32_t id)
+    {
+        try
+        {
+            return storage.get<T>(id);
+        }
+        catch (std::system_error e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return T();
+    }
+
+    template<typename T>
+    inline uint32_t DBAccess::Count()
+    {
+        try
+        {
+           return storage.count<T>();
+        }
+        catch (std::system_error e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unkown exception" << '\n';
+        }
+        return 0;
+    }
+
+    template<typename T>
+    inline void DBAccess::Replace(const T& object)
+    {
+        try
+        {
+            storage.replace(object);
+        }
+        catch (std::system_error e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+    }
+
+    template<typename T>
+    inline void DBAccess::Remove(const uint32_t id)
+    {
+        try
+        {
+            storage.remove<T>(id);
+        }
+        catch (std::system_error e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+    }
 
 }//namespace DB

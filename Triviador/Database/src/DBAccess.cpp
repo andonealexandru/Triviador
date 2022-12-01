@@ -18,7 +18,7 @@ namespace DB
 		m_instance.reset();
 	}
 
-    DBAccess::DBAccess() : storage(Startup())
+    DBAccess::DBAccess() : storage(Startup(DATABASE_PATH))
     {
     }
 

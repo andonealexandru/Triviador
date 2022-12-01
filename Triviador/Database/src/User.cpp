@@ -1,46 +1,23 @@
-#include <User.h>
+#include "User.h"
 
 namespace DB
 {
-    User::User(std::string name) : m_name(std::move(name))
-    {}
-
-    User::User(uint8_t id, std::string name) : m_id(id), m_name(std::move(name))
-    {}
-
-    User::User(const User &other)
+    User::User(const std::string& name, const std::string& password) : 
+        m_name(name)
+       ,m_password(password)
     {
-        m_id = other.m_id;
-        m_name = other.m_name;
     }
 
-    User &User::operator=(const User &other)
+    User::User(const uint32_t id, const std::string& name, const std::string& password) : m_id(id), m_name(name), m_password(password)
     {
-        if (this != &other)
-        {
-            m_id = other.m_id;
-            m_name = other.m_name;
-        }
-        return *this;
     }
 
-    uint8_t User::GetId()
-    {
-        return m_id;
-    }
+    uint32_t User::GetId() const { return m_id; }
+    std::string User::GetName() const { return m_name; }
+    std::string User::GetPassword() const { return m_password; }
 
-    std::string User::GetName()
-    {
-        return m_name;
-    }
+    void User::SetId(const uint32_t id) { m_id = id; }
+    void User::SetName(const std::string& name) { m_name = name; }
+    void User::SetPassword(const std::string& password) { m_password = password; }
 
-    void User::SetId(uint8_t id)
-    {
-        m_id = id;
-    }
-
-    void User::SetName(std::string name)
-    {
-        m_name = std::move(name);
-    }
 }//namespace DB
