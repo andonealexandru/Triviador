@@ -1,101 +1,49 @@
-#include <Question.h>
+#include "Question.h"
 
 namespace DB
 {
-    Question::Question()
+    Question::Question(const std::string& question, const std::string& category, const std::string& type,
+                                     const int32_t answer)
+        :
+         m_question{ question }
+        ,m_category{ category }
+        ,m_type{ type }
+        ,m_answer{ answer }
     {
     }
 
-    Question::Question(std::string question, std::string category, Type type, std::optional<int32_t> answer) :
-        m_question{ question }, m_category{ category }, m_type{ type }, m_answer{ answer }
+    Question::Question(const uint32_t id, const std::string& question, const std::string& category, const std::string& type,
+                                     const int32_t answer)
+        :
+         m_id{ id }
+        ,m_question{ question }
+        ,m_category{ category }
+        ,m_type{ type }
+        ,m_answer{ answer }
     {
     }
 
-    Question::Question(uint32_t id, std::string question, std::string category, Question::Type type,
-        std::optional<int32_t> answer) :
-        m_id{ id }, m_question{ question }, m_category{ category }, m_type{ type }, m_answer{ answer }
-    {
+    uint32_t Question::GetId() const { return m_id; }
+    std::string Question::GetQuestion() const { return m_question; }
+    std::string Question::GetCategory() const { return m_category; }
+    std::string Question::GetType() const { return m_type; }
+    int32_t Question::GetAnswer() const 
+    { 
+        if (HasAnswer())
+        {
+            return m_answer.value();
+        }
     }
 
-    Question::Question(const Question& other)
-    {
-        *this = other;
-    }
+    void Question::SetId(const uint32_t id) { m_id = id; }
+    void Question::SetQuestion(const std::string& question) { m_question = question; }
+    void Question::SetCategory(const std::string& category) { m_category = category; }
+    void Question::SetType(const std::string& type) { m_type = type; }
+    void Question::SetAnswer(const int32_t answer) { m_answer = answer; }
 
-    Question::Question(Question&& other)
+    bool Question::HasAnswer() const
     {
-        *this = std::move(other);
-    }
-
-    Question& Question::operator=(const Question& other)
-    {
-        m_id = other.m_id;
-        m_question = other.m_question;
-        m_category = other.m_category;
-        m_type = other.m_type;
-        m_answer = other.m_answer;
-        return *this;
-    }
-
-    Question& Question::operator=(Question&& other)
-    {
-        m_id = other.m_id;
-        m_question = other.m_question;
-        m_category = other.m_category;
-        m_type = other.m_type;
-        m_answer = other.m_answer;
-        new (&other)Question;
-        return *this;
-    }
-
-    uint32_t Question::GetId() const
-    {
-        return m_id;
-    }
-
-    std::string Question::GetQuestion() const
-    {
-        return m_question;
-    }
-
-    std::string Question::GetCategory() const
-    {
-        return m_category;
-    }
-
-    Question::Type Question::GetType() const
-    {
-        return m_type;
-    }
-
-    std::optional<int32_t> Question::GetAnswer() const
-    {
-        return m_answer;
-    }
-
-    void Question::SetId(uint32_t id)
-    {
-        m_id = id;
-    }
-
-    void Question::SetQuestion(std::string question)
-    {
-        m_question = question;
-    }
-
-    void Question::SetCategory(std::string category)
-    {
-        m_category = category;
-    }
-
-    void Question::SetType(Type type)
-    {
-        m_type = type;
-    }
-
-    void Question::SetAnswer(std::optional<int32_t> answer)
-    {
-        m_answer = answer;
+        return m_answer.has_value();
     }
 
 }//namespace DB

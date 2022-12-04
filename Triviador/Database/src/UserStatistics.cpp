@@ -1,67 +1,31 @@
 #include <UserStatistics.h>
+
 namespace DB
 {
-    UserStatistics::UserStatistics(User *user, uint8_t score, uint8_t territoryCount)
-            : m_user(user), m_score(score), m_territoryCount(territoryCount)
-    {}
-
-    UserStatistics::UserStatistics(uint8_t id, User *user, uint8_t score, uint8_t territoryCount)
-            : m_id(id), m_user(user), m_score(score), m_territoryCount(territoryCount)
-    {}
-
-    UserStatistics::UserStatistics(const UserStatistics &other)
-            : m_id(other.m_id), m_user(other.m_user), m_score(other.m_score), m_territoryCount(other.m_territoryCount)
-    {}
-
-    UserStatistics &UserStatistics::operator=(const UserStatistics &other)
+    UserStatistics::UserStatistics(const uint32_t userId, const uint32_t gameCount, const uint32_t wonGames)
+            : m_userId(userId), m_gameCount(gameCount), m_wonGames(wonGames)
     {
-        if (this != &other)
-        {
-            m_id = other.m_id;
-            m_user = other.m_user;
-            m_score = other.m_score;
-            m_territoryCount = other.m_territoryCount;
-        }
-        return *this;
     }
 
-    uint8_t UserStatistics::GetId()
+    UserStatistics::UserStatistics(const uint32_t id, const uint32_t userId, const uint32_t gameCount, const uint32_t wonGames)
+            : m_id(id), m_userId(userId), m_gameCount(gameCount), m_wonGames(wonGames)
     {
-        return m_id;
     }
 
-    User *UserStatistics::GetUser()
-    {
-        return m_user;
-    }
+    uint32_t UserStatistics::GetId() const{ return m_id; }
+    uint32_t UserStatistics::GetUserId() const { return m_userId; }
+    uint32_t UserStatistics::GetGameCount() const { return  m_gameCount; }
+    uint32_t UserStatistics::GetWonGames() const { return m_wonGames; }
 
-    uint8_t UserStatistics::GetScore()
-    {
-        return m_score;
-    }
+    void UserStatistics::SetId(const uint32_t id) { m_id = id; }
+    void UserStatistics::SetUser(const uint32_t userId) { m_userId = userId; }
+    void UserStatistics::SetGameCount(const uint32_t gameCount) { m_gameCount = gameCount; }
+    void UserStatistics::SetWonGames(const uint32_t wonGames) { m_wonGames = wonGames; }
 
-    uint8_t UserStatistics::GetTerritoryCount()
+    void UserStatistics::AddGame() { ++m_gameCount; }
+    void UserStatistics::AddWin()
     {
-        return m_territoryCount;
-    }
-
-    void UserStatistics::SetId(uint8_t id)
-    {
-        m_id = id;
-    }
-
-    void UserStatistics::SetUser(User *user)
-    {
-        m_user = user;
-    }
-
-    void UserStatistics::SetScore(uint8_t score)
-    {
-        m_score = score;
-    }
-
-    void UserStatistics::SetTerritoryCount(uint8_t territoryCount)
-    {
-        m_territoryCount = territoryCount;
+        ++m_gameCount;
+        ++m_wonGames;
     }
 }//namespace DB
