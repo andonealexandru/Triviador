@@ -5,8 +5,10 @@
 
 add_subdirectory("UI")
 add_subdirectory("Database")
+add_subdirectory("Server")
 
 target_link_libraries(Triviador
 	PRIVATE
 		Database
+		Server
 )
