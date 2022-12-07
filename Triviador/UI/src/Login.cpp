@@ -1,20 +1,19 @@
-#include "include/Login.h"
-#include "./ui_Login.h"
-namespace Ui {
-    Login::Login(QWidget* parent) :
-        QDialog(parent),
-        ui(new Ui::Login)
-    {
-        ui->setupUi(this);
-    }
+#include "login.h"
+#include "ui_Login.h"
 
-    Login::~Login()
-    {
-        delete ui;
-    }
+Login::Login(QWidget* parent) :
+    QDialog(parent),
+    ui(new Ui::Login)
+{
+    ui->setupUi(this);
+}
 
-    void Login::on_pushButton_clicked()
-    {
-        emit pushButtonPressed();
-    }
+Login::~Login()
+{
+    delete ui;
+}
+
+void Login::on_pushButton_clicked()
+{
+    emit pushButtonPressed();
 }
