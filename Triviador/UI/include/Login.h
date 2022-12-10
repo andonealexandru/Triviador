@@ -1,28 +1,22 @@
-#ifndef LOGIN_H
-#define LOGIN_H
+#pragma once
 
-#include <QDialog>
+#include <QMainWindow>
+#include "ui_Login.h"
 
-namespace Ui {
-    class Login;
-}
-
-class Login : public QDialog
+class Login : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit Login(QWidget* parent = nullptr);
-    ~Login();
+	Login(QWidget *parent = nullptr);
+	~Login();
 
 signals:
-    void pushButtonPressed();
+	void pushButtonPressed();
 
 private slots:
-    void on_pushButton_clicked();
+	void on_pushButton_clicked();
 
 private:
-    Ui::Login* ui;
+	Ui::LoginClass ui;
 };
-
-#endif // LOGIN_H

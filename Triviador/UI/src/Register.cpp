@@ -1,19 +1,15 @@
 #include "Register.h"
-#include "ui_Register.h"
 
-Register::Register(QWidget* parent) :
-    QDialog(parent),
-    ui(new Ui::Register)
+Register::Register(QWidget *parent)
+	: QMainWindow(parent)
 {
-    ui->setupUi(this);
+	ui.setupUi(this);
 }
 
 Register::~Register()
-{
-    delete ui;
-}
+{}
 
 void Register::on_pushButton_clicked()
 {
-    emit pushButtonPressed();
+	emit pushButtonPressed();
 }

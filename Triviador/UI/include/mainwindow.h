@@ -28,7 +28,6 @@ private slots:
 
 private:
     Ui::MainWindow* ui;
-    //You want to keep a pointer to a new Website window
     Register* registerWindow;
     Login* loginWindow;
 };
