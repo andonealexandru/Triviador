@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <unordered_map>
 #include "Player.h"
 
 namespace Server
@@ -13,11 +13,11 @@ namespace Server
         ~Lobby() = default;
 
         // getters
-        const std::vector<Server::Player>& GetPlayers() const;
+        const std::unordered_map<int, Server::Player>& GetPlayers() const;
 
         void AddPlayer(const Server::Player& player);
 
     private:
-        std::vector<Server::Player> m_players;
+        std::unordered_map<int, Server::Player> m_players;
     };
 }

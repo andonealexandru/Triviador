@@ -108,7 +108,7 @@ namespace DB
         {
             std::cout << "unknown exception" << '\n';
         }
-        return
+        return uint32_t();
     }
 
     template<typename T>

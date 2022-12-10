@@ -1,11 +1,11 @@
 #include "Lobby.h"
 
-const std::vector<Server::Player>& Server::Lobby::GetPlayers() const
+const std::unordered_map<int, Server::Player>& Server::Lobby::GetPlayers() const
 {
     return m_players;
 }
 
 void Server::Lobby::AddPlayer(const Server::Player& player)
 {
-    m_players.push_back(player);
+    m_players.insert({ player.GetId(), player });
 }
