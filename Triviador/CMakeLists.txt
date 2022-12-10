@@ -1,4 +1,6 @@
-﻿add_executable (Triviador
+﻿find_package(Crow CONFIG REQUIRED)
+
+add_executable (Triviador
 	"Triviador.h"
 	"Triviador.cpp"
 )

@@ -1,5 +1,4 @@
 find_package(Crow CONFIG REQUIRED)
-find_package(SqliteOrm CONFIG REQUIRED)
 
 add_library(Server STATIC
     #*.h
@@ -13,9 +12,9 @@ add_library(Server STATIC
 )
 
 target_link_libraries(Server
-    PUBLIC
+    PRIVATE
+        Database
         Crow::Crow
-        sqlite_orm::sqlite_orm
 )
 
 target_include_directories(Server
