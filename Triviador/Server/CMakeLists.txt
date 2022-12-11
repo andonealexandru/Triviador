@@ -5,10 +5,14 @@ add_library(Server STATIC
     "include/Backend.h"
     "include/Lobby.h"
     "include/Player.h"
+    "include/Question.h"
+    "include/QuestionChoice.h"
     #.cpp
     "src/Backend.cpp"
     "src/Lobby.cpp"
     "src/Player.cpp"
+    "src/Question.cpp"
+    "src/QuestionChoice.cpp"
 )
 
 target_link_libraries(Server

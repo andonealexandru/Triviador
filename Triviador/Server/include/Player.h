@@ -9,7 +9,10 @@ namespace Server {
     {
     public:
         // constructors
+        Player() = default;
         Player(int id, const std::string& name, crow::websocket::connection* connection);
+        Player(const Player& other) = default;
+        Player& operator=(const Player& other) = default;
 
         ~Player() = default;
 
