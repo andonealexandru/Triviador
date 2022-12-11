@@ -1,28 +1,22 @@
-#ifndef REGISTER_H
-#define REGISTER_H
+#pragma once
 
-#include <QDialog>
+#include <QMainWindow>
+#include "ui_Register.h"
 
-namespace Ui {
-    class Register;
-}
-
-class Register : public QDialog
+class Register : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit Register(QWidget* parent = 0);
-    ~Register();
+	Register(QWidget *parent = nullptr);
+	~Register();
 
 signals:
-    void pushButtonPressed();
+	void pushButtonPressed();
 
 private slots:
-    void on_pushButton_clicked();
+	void on_pushButton_clicked();
 
 private:
-    Ui::Register* ui;
+	Ui::RegisterClass ui;
 };
-
-#endif // REGISTER_H

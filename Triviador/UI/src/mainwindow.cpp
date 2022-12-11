@@ -9,9 +9,6 @@ MainWindow::MainWindow(QWidget* parent) :
     //ui = new Ui::MainWindow();
     ui->setupUi(this);
     ui->startButton->setVisible(false);
-    //this->centralWidget()->setStyleSheet("./background.jpg");
-    //setLayout(Qt::Horizontal);
-    setStyleSheet("Qlabel{border-image:url (background.jpg);}");
 }
 
 MainWindow::~MainWindow()
@@ -37,19 +34,20 @@ void MainWindow::changePageAfterRegister()
 
 void MainWindow::on_openButton_clicked()
 {
+    loginWindow = new Login();
+    QObject::connect(loginWindow, SIGNAL(pushButtonPressed()), this, SLOT(changePageAfterRegister()));
+    //functie care face legatura cu baza de date
+    loginWindow->show();
+}
+
+void MainWindow::on_openButton_2_clicked()
+{
     registerWindow = new Register();
     QObject::connect(registerWindow, SIGNAL(pushButtonPressed()), this, SLOT(changePageAfterLogin()));
     //functie care face legatura cu baza de date
 
     registerWindow->show();
-}
-
-void MainWindow::on_openButton_2_clicked()
-{
-    loginWindow = new Login();
-    QObject::connect(loginWindow, SIGNAL(pushButtonPressed()), this, SLOT(changePageAfterRegister()));
-    //functie care face legatura cu baza de date
-    loginWindow->show();
+    
 }
 
 

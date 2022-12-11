@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-//#include "login.h"
-//#include "register.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char* argv[])
