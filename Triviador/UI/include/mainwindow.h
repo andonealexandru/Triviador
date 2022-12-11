@@ -2,20 +2,34 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ui_mainwindow.h"
+#include "Register.h"
+#include "Login.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+namespace Ui {
+    class MainWindow;
+}
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
+public slots:
+    void changePageAfterLogin();
+    void changePageAfterRegister();
+
+private slots:
+    void on_openButton_clicked();
+    void on_openButton_2_clicked();
+
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
+    Register* registerWindow;
+    Login* loginWindow;
 };
+
 #endif // MAINWINDOW_H
