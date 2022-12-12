@@ -1,4 +1,5 @@
 #include "Backend.h"
+#include "DBAccess.h"
 #include "Lobby.h"
 #include "Player.h"
 #include "Question.h"
@@ -9,7 +10,8 @@
 
 Server::Backend::Backend()
 {
-	crow::SimpleApp app;
+//    auto storage = DB::DBAccess::GetInstance()->GetStorage();
+    crow::SimpleApp app;
 	std::unordered_set<crow::websocket::connection*> connections;
 	std::unordered_map<int, Player> players;
 	Server::Lobby lobby;

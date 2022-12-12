@@ -1,22 +1,24 @@
 #pragma once
 
 #include <memory>
-#include <Question.h>
-#include <User.h>
-#include <QuestionChoice.h>
-#include <UserStatistics.h>
+#include "User.h"
+#include "QuestionChoice.h"
+#include "UserStatistics.h"
 #include <sqlite_orm/sqlite_orm.h>
-using namespace sqlite_orm;
+#include "Question.h"
+
 
 namespace DB
 {
+    using namespace sqlite_orm;
+
     namespace
     {
-        inline auto Startup(std::string path)
+        inline auto Startup(const std::string& path)
         {
             return make_storage(path,
                                 make_table("Question",
-                                           make_column("ID_Question", &Question::SetId, &Question::GetId, 
+                                           make_column("ID_Question", &Question::SetId, &Question::GetId,
                                                        primary_key(), autoincrement()),
                                            make_column("Question", &Question::SetQuestion, &Question::GetQuestion),
                                            make_column("Category", &Question::SetQuestion, &Question::GetQuestion),
