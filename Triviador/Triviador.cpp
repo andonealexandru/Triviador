@@ -1,9 +1,7 @@
 #include "Triviador.h"
-#include "Backend.h"
-
+#include <iostream>
 int main()
 {
-    Server::Backend backend;
     return 0;
 }
 

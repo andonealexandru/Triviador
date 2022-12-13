@@ -12,7 +12,7 @@ namespace DB
 {
     namespace
     {
-        inline auto Startup(std::string path)
+        inline auto Startup(const std::string& path)
         {
             return make_storage(path,
                                 make_table("Question",
@@ -71,16 +71,16 @@ namespace DB
         template <typename T>
         uint32_t Count();
 
-        /// /brief Replaces an existing element, ids must match
+        /// \brief Replaces an existing element, ids must match
         template <typename T>
         void Replace(const T& object);
 
-        /// /brief Removes an existing element from a table
+        /// \brief Removes an existing element from a table
         template <typename T>
         void Remove(const uint32_t id);
 
-
         Storage GetStorage() const;
+
 	private:
 		DBAccess();
 
@@ -100,7 +100,7 @@ namespace DB
         {
             return storage.insert<T>(object);
         }
-        catch (std::system_error e)
+        catch (std::system_error& e)
         {
             std::cout << e.what() << '\n';
         }
@@ -118,7 +118,7 @@ namespace DB
         {
             return storage.get_all<T>();
         }
-        catch (std::system_error e)
+        catch (std::system_error& e)
         {
             std::cout << e.what() << '\n';
         }
@@ -136,7 +136,7 @@ namespace DB
         {
             return storage.get<T>(id);
         }
-        catch (std::system_error e)
+        catch (std::system_error& e)
         {
             std::cout << e.what() << '\n';
         }
@@ -154,7 +154,7 @@ namespace DB
         {
            return storage.count<T>();
         }
-        catch (std::system_error e)
+        catch (std::system_error& e)
         {
             std::cout << e.what() << '\n';
         }
@@ -172,13 +172,13 @@ namespace DB
         {
             storage.replace(object);
         }
-        catch (std::system_error e)
+        catch (std::system_error& e)
         {
             std::cout << e.what() << '\n';
         }
         catch (...)
         {
-            std::cout << "unknown exception" << '\n';
+            std::cout << "DBAccess::Replace fail" << '\n';
         }
     }
 
@@ -189,7 +189,7 @@ namespace DB
         {
             storage.remove<T>(id);
         }
-        catch (std::system_error e)
+        catch (std::system_error& e)
         {
             std::cout << e.what() << '\n';
         }

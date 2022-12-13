@@ -41,7 +41,7 @@ namespace DB
     void Question::SetType(const std::string& type) { m_type = type; }
     void Question::SetAnswer(const int32_t answer) { m_answer = answer; }
 
-    bool Question::HasAnswer() const
+    constexpr bool Question::HasAnswer() const
     {
         return m_answer.has_value();
     }

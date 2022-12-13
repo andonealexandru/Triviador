@@ -1,4 +1,3 @@
-
 find_package(cpr CONFIG REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -7,7 +6,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_PREFIX_PATH $ENV{QTDIR})
 find_package(Qt6Core REQUIRED)
 find_package(Qt6Widgets REQUIRED)
-
 
 #=================== INCLUSION OF Project Files ====================#
 set(FORMS_DIR "forms")
@@ -24,8 +22,6 @@ file(GLOB_RECURSE SOURCES
     "${INCLUDE_DIR}/*.h"
     "${SOURCE_DIR}/*.cpp"
 )
-
-
 
 # Add the forms directory to the AUTOUIC search paths
 set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_AUTOUIC_SEARCH_PATHS} ${FORMS_DIR})

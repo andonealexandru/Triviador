@@ -31,7 +31,7 @@ namespace DB
         void SetType(const std::string& type);
         void SetAnswer(const int32_t answer);
 
-        bool HasAnswer() const;
+        constexpr bool HasAnswer() const;
 
     private:
         uint32_t m_id;
