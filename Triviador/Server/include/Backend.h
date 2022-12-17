@@ -25,7 +25,7 @@ namespace Server
         // getters
         const std::unordered_map<int, Server::Player>& GetPlayers() const;
 
-        void AddPlayer(const Server::Player& player);
+        void AddPlayer(int id, const Server::Player& player);
 
 	private:
 		Backend(Backend&&) = delete;

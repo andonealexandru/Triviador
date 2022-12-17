@@ -4,6 +4,7 @@
 #include "DBAccess.h"
 
 #include <iostream>
+#include <string>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -23,8 +24,7 @@ Server::Backend::Backend()
 	CROW_ROUTE(app, "/lobby/players")([&]() {
 		std::vector<crow::json::wvalue> res_json;
 
-		const auto& players = m_players;
-		for (const auto& player : players) {
+		for (const auto& player : m_players) {
 			res_json.push_back(crow::json::wvalue{
 				{"id", player.second.GetId()},
 				{"name", player.second.GetName()}
@@ -37,6 +37,38 @@ Server::Backend::Backend()
         };
 	});
 
+    CROW_ROUTE(app, "/lobby/join")
+        .methods("POST"_method)
+        ([&](const crow::request& req) {
+            auto body = crow::json::load(req.body);
+            auto header = req.get_header_value("ID");
+            if (!body)
+                return crow::response(400);
+
+            // check if user exists
+            int id = std::stoi(header);
+            auto player = m_players.find(id);
+            if (player != m_players.end())
+                return crow::response(400);
+
+            Player newPlayer(body["id"].i(), body["name"].s());
+            AddPlayer(id, newPlayer);
+            return crow::response(200);
+    });
+
+    CROW_ROUTE(app, "/lobby/leave")
+        .methods("POST"_method)
+        ([&](const crow::request& req) {
+            auto header = req.get_header_value("ID");
+            int id = std::stoi(header);
+
+            auto player = m_players.find(id);
+            if (player == m_players.end())
+                return crow::response(400);
+
+            m_players.erase(player);
+            return crow::response(200);
+    });
 
 //    CROW_ROUTE(app, "/game/start")([&](const crow::request& request) {
 //        // TODO: get NUMERIC question from database
@@ -90,6 +122,6 @@ const std::unordered_map<int, Server::Player> &Server::Backend::GetPlayers() con
     return m_players;
 }
 
-void Server::Backend::AddPlayer(const Server::Player &player) {
-    m_players.insert({ player.GetId(), player });
+void Server::Backend::AddPlayer(int id, const Server::Player &player) {
+    m_players.insert({ id, player });
 }
