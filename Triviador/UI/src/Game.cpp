@@ -3,7 +3,7 @@
 void Game::ReadMap()
 {
     std::ifstream f;
-    f.open("map.txt");
+    f.open("harta.txt");
     m_type = 4; //TODO: change when map is ready
     for (int i = 0;i <= m_type;i++)
     {
@@ -14,19 +14,21 @@ void Game::ReadMap()
     }
 
     std::vector<std::vector<int>> mat;
+
+    // Interpret and populate the region.
     if (f.is_open())
     {
         int n;
         Tile t;
-        for (int i = 0;i < HEIGHT;i++)
+        for (int i = 0; i < HEIGHT; i++)
         {
             mat.push_back({});
-            for (int j = 0;j < WIDTH;j++)
+            for (int j = 0; j < WIDTH; j++)
             {
                 f >> n;
                 mat[i].push_back(n);
-                
-                for(int temp=0;temp<m_map.size();temp++)
+
+                for (int temp = 0; temp < m_map.size(); temp++)
                     if (n == m_map[temp]->GetNumber())
                     {
                         t.SetTile(std::make_pair(i, j), m_map[temp]);
@@ -34,10 +36,10 @@ void Game::ReadMap()
                     }
                 if (j != 0 && mat[i][j] != mat[i][j - 1])
                 {
-                    for (int temp = 0;temp < m_map.size();temp++)
+                    for (int temp = 0; temp < m_map.size(); temp++)
                         if (mat[i][j] == m_map[temp]->GetNumber())
                         {
-                            for(int tem=0;tem<m_map.size();tem++)
+                            for (int tem = 0; tem < m_map.size(); tem++)
                                 if (mat[i][j - 1] == m_map[tem]->GetNumber())
                                 {
                                     m_map[tem]->AddNeighbour(m_map[temp]);
@@ -45,13 +47,13 @@ void Game::ReadMap()
                                 }
                         }
                 }
-                if (i != 0 && mat[i][j] != mat[i-1][j])
+                if (i != 0 && mat[i][j] != mat[i - 1][j])
                 {
-                    for (int temp = 0;temp < m_map.size();temp++)
+                    for (int temp = 0; temp < m_map.size(); temp++)
                         if (mat[i][j] == m_map[temp]->GetNumber())
                         {
-                            for (int tem = 0;tem < m_map.size();tem++)
-                                if (mat[i-1][j] == m_map[tem]->GetNumber())
+                            for (int tem = 0; tem < m_map.size(); tem++)
+                                if (mat[i - 1][j] == m_map[tem]->GetNumber())
                                 {
                                     m_map[tem]->AddNeighbour(m_map[temp]);
                                     m_map[temp]->AddNeighbour(m_map[tem]);
@@ -59,9 +61,9 @@ void Game::ReadMap()
                         }
                 }
             }
-    }
+        }
 
-        for (int i = 1;i <=m_type;i++)
+        for (int i = 1; i <= m_type; i++)
         {
             int a, b;
             f >> a >> b;
@@ -91,4 +93,19 @@ void Game::PrintTiles() const
         for (int j = 0;j < m_tiles[i].size();j++)
             std::cout << m_tiles[i][j].GetCoordinate().first << " " << m_tiles[i][j].GetCoordinate().second << std::endl;
     }
+}
+
+uint8_t Game::getType()
+{
+    return m_type;
+}
+
+std::vector<std::shared_ptr<Region>> Game::getMap()
+{
+    return m_map;
+}
+
+std::vector<std::vector<Tile>> Game::getTiles()
+{
+    return m_tiles;
 }

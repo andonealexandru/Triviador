@@ -7,6 +7,7 @@ public:
 	Tile();
 	void SetTile(const std::pair<int, int>& coordinates,const std::shared_ptr<Region>& region);
 	std::pair<int, int> GetCoordinate() const;
+	std::shared_ptr<Region> getParentRegion();
 
 protected:
 	std::pair<int, int> m_coordinates;
