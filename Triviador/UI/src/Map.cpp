@@ -71,37 +71,64 @@ Map::~Map()
 
 void Map::paintEvent(QPaintEvent* event)
 {
-	
-	std::vector<QColor> colors = {QColor(255, 255, 255), QColor(255, 0, 0), QColor(0, 255, 0), QColor(0, 0, 255), QColor(255, 255, 0)};
-	/*painter.setPen(colors[2]);
-	painter.drawPoint(50, 50);*/
 
-	Game uselessGameInstance = Game();
-	
-	uselessGameInstance.ReadMap();
-	uselessGameInstance.PrintMap();
-	uselessGameInstance.PrintTiles();
-	auto regions = uselessGameInstance.getMap(); // A list of pointers to regions.
-	auto pixelsSets = uselessGameInstance.getTiles(); // A list of pixel sets coresponding to each region.
+	printf("Function called!\n");
+	QPainter painter(this);
+	painter.setPen(/*QColor(0, 0, 0)*/Qt::black);
 
-	// Iterate through the whole list of sets.
-	for (int i = 0; i < pixelsSets.size(); i++)
+	auto nLongitudinalSectors = 50;
+	auto nTransveralSectors = 50;
+	auto width = this->size().width();
+	auto height = this->size().height();
+	auto sectorWidth = width / nLongitudinalSectors;
+	auto sectorHeight = height / nTransveralSectors;
+
+	for (int i = 0; i < nTransveralSectors - 1; i++)
 	{
-		auto setOfPixels = pixelsSets[i];
-
-		// Iterate through each pixel and draw it to the screen.
-		for (int j = 0; j < setOfPixels.size(); j++)
-		{
-			auto parentRegion = setOfPixels[j].getParentRegion();
-			auto coords = setOfPixels[j].GetCoordinate();
-			printf("Painting pixel at %d %d, of color %d\n", coords.first, coords.second, parentRegion->GetColor());
-			auto color = colors[parentRegion->GetColor()];
-
-			fflush(stdout);
-			painter.setPen(color);
-			painter.drawPoint(coords.first, coords.second);
-		}
+		auto y = 0 + (i + 1) * sectorHeight;
+		painter.drawLine(0, y, width, y);
 	}
+
+	for (int i = 0; i < nLongitudinalSectors - 1; i++)
+	{
+		auto x = 0 + (i + 1) * sectorWidth;
+		painter.drawLine(x, 0, x, height);
+	}
+
+	QPixmap pixmap(sectorWidth, sectorHeight);
+	pixmap.fill(Qt::yellow);
+	painter.drawPixmap(0, 0, pixmap);
+	
+	//std::vector<QColor> colors = {QColor(255, 255, 255), QColor(255, 0, 0), QColor(0, 255, 0), QColor(0, 0, 255), QColor(255, 255, 0)};
+	///*painter.setPen(colors[2]);
+	//painter.drawPoint(50, 50);*/
+
+	//Game uselessGameInstance = Game();
+	//
+	//uselessGameInstance.ReadMap();
+	//uselessGameInstance.PrintMap();
+	//uselessGameInstance.PrintTiles();
+	//auto regions = uselessGameInstance.getMap(); // A list of pointers to regions.
+	//auto pixelsSets = uselessGameInstance.getTiles(); // A list of pixel sets coresponding to each region.
+
+	//// Iterate through the whole list of sets.
+	//for (int i = 0; i < pixelsSets.size(); i++)
+	//{
+	//	auto setOfPixels = pixelsSets[i];
+
+	//	// Iterate through each pixel and draw it to the screen.
+	//	for (int j = 0; j < setOfPixels.size(); j++)
+	//	{
+	//		auto parentRegion = setOfPixels[j].getParentRegion();
+	//		auto coords = setOfPixels[j].GetCoordinate();
+	//		printf("Painting pixel at %d %d, of color %d\n", coords.first, coords.second, parentRegion->GetColor());
+	//		auto color = colors[parentRegion->GetColor()];
+
+	//		fflush(stdout);
+	//		painter.setPen(color);
+	//		painter.drawPoint(coords.first, coords.second);
+	//	}
+	//}
 }
 
 
