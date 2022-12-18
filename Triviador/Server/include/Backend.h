@@ -17,9 +17,10 @@ namespace Server
             InGame,
             WaitingForPlayers,
             FirstQuestion,
-            BaceChoice,
+            BaseChoice,
             SecondQuestion,
             RegionChoice,
+            WaitingForAnswers,
         };
 	public:
 

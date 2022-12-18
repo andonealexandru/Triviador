@@ -96,9 +96,10 @@ Server::Backend::Backend()
 
             //TODO: add check if exists
 
-            playerVector.push_back(m_players.at(id));
+            playerVector.push_back(m_players.at(id)); // make set
             if (playerVector.size() == m_players.size()) {
                 m_status = Status::FirstQuestion;
+                playerVector.empty();
                 SetNewCurrentQuestion();
             }
             return crow::response(200);
@@ -107,14 +108,35 @@ Server::Backend::Backend()
     CROW_ROUTE(app, "/game/question/numeric")([&](const crow::request& req) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
-
+        //TODO:
 //        if (m_status != Status::FirstQuestion && m_status != Status::SecondQuestion)
 //            return crow::response(400);
 
+        playerVector.push_back(m_players.at(id));
+        if (playerVector.size() == m_players.size()) {
+            m_status = Status::WaitingForAnswers;
+            playerVector.empty();
+            SetNewCurrentQuestion();
+        }
         return crow::json::wvalue{
                 { "status", ToString(m_status) },
                 { "question", m_currentQuestion.GetQuestion() }
         };
+    });
+
+    CROW_ROUTE(app, "/game/answer")
+        .methods("POST"_method)
+        ([&](const crow::request& req) {
+            auto header = req.get_header_value("ID");
+            int id = std::stoi(header);
+
+            playerVector.push_back(m_players.at(id)); // make set and add pair (ID, answer)
+            if (playerVector.size() == m_players.size()) {
+                m_status = Status::BaseChoice;
+                playerVector.empty();
+                SetNewCurrentQuestion();
+            }
+            return crow::response(200);
     });
 
 //    CROW_ROUTE(app, "/game/start")([&](const crow::request& request) {
@@ -156,13 +178,14 @@ Server::Backend::Backend()
 const std::string Server::Backend::ToString(Server::Backend::Status s) {
     switch (s) {
         case Server::Backend::Status::InLobby: return "InLobby";
-        case Server::Backend::Status::BaceChoice: return "BaceChoice";
+        case Server::Backend::Status::BaseChoice: return "BaseChoice";
         case Server::Backend::Status::FirstQuestion: return "FirstQuestion";
         case Server::Backend::Status::InGame: return "InGame";
         case Server::Backend::Status::RegionChoice: return "RegionChoice";
         case Server::Backend::Status::SecondQuestion: return "SecondQuestion";
         case Server::Backend::Status::PlayersModified: return "PlayersModified";
         case Server::Backend::Status::WaitingForPlayers: return "WaitingForPlayers";
+        case Server::Backend::Status::WaitingForAnswers: return "WaitingForAnswers";
         default: return "Unknown";
     }
 }
