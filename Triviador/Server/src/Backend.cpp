@@ -17,9 +17,15 @@ Server::Backend::Backend()
 
 	CROW_ROUTE(app, "/lobby")([&]() {
 		//wsc.send_binary("HI");
-		return crow::json::wvalue{
-            { "status", ToString(m_status) }
-        };
+        if (m_status == Status::InLobby ||
+            m_status == Status::PlayersModified
+            )
+            return crow::json::wvalue{
+                { "status", ToString(m_status) }
+            };
+        else return crow::json::wvalue{
+                    { "status", ToString(Status::InGame) }
+            };
 	});
 
 	CROW_ROUTE(app, "/lobby/players")([&]() {
@@ -78,22 +84,39 @@ Server::Backend::Backend()
         };
     });
 
-    CROW_ROUTE(app, "/game/start")([&](const crow::request& req) {
+    CROW_ROUTE(app, "/game/start")
+        .methods("POST"_method)
+        ([&](const crow::request& req) {
+            auto header = req.get_header_value("ID");
+            int id = std::stoi(header);
+            m_status = Status::WaitingForPlayers;
+            // add player to player list
+            // when all players are in WaitingForPlayers
+            // Status becomes InGame
+
+            //TODO: add check if exists
+
+            playerVector.push_back(m_players.at(id));
+            if (playerVector.size() == m_players.size()) {
+                m_status = Status::FirstQuestion;
+                SetNewCurrentQuestion();
+            }
+            return crow::response(200);
+    });
+
+    CROW_ROUTE(app, "/game/question/numeric")([&](const crow::request& req) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
-        m_status = Status::WaitingForPlayers;
-        // add player to player list
-        // when all players are in WaitingForPlayers
-        // Status becomes InGame
 
-        //TODO: add check if exists
+//        if (m_status != Status::FirstQuestion && m_status != Status::SecondQuestion)
+//            return crow::response(400);
 
-        playerVector.push_back(m_players.at(id));
-        if (playerVector.size() == m_players.size())
-            m_status = Status::FirstQuestion;
-        return crow::response(200);
+        return crow::json::wvalue{
+                { "status", ToString(m_status) },
+                { "question", m_currentQuestion.GetQuestion() }
+        };
     });
-    
+
 //    CROW_ROUTE(app, "/game/start")([&](const crow::request& request) {
 //        // TODO: get NUMERIC question from database
 //        Server::Question question("Give a close number to 10", false);
@@ -150,4 +173,17 @@ const std::unordered_map<int, Server::Player> &Server::Backend::GetPlayers() con
 
 void Server::Backend::AddPlayer(int id, const Server::Player &player) {
     m_players.insert({ id, player });
+}
+
+const Server::Question &Server::Backend::GetCurrentQuestion() const {
+    return m_currentQuestion;
+}
+
+void Server::Backend::SetNewCurrentQuestion() {
+    //TODO: retrieve question from database
+    Question currentQuestion("Say a number", false);
+    QuestionChoice<std::variant<int, std::string>> choice(10, true);
+    currentQuestion.AddChoice(choice);
+
+    m_currentQuestion = currentQuestion;
 }

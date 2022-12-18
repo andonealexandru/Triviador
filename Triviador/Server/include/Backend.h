@@ -3,6 +3,7 @@
 #include "crow.h"
 
 #include "Player.h"
+#include "Question.h"
 
 namespace Server
 {
@@ -26,10 +27,12 @@ namespace Server
 
         // getters
         const std::unordered_map<int, Server::Player>& GetPlayers() const;
+        const Question &GetCurrentQuestion() const;
 
         void AddPlayer(int id, const Server::Player& player);
+        void SetNewCurrentQuestion();
 
-	private:
+    private:
 		Backend(Backend&&) = delete;
 		Backend(const Backend&) = delete;
 		Backend& operator=(Backend&&) = delete;
@@ -39,5 +42,6 @@ namespace Server
 
         Status m_status;
         std::unordered_map<int, Server::Player> m_players;
+        Server::Question m_currentQuestion;
 	};
 }
