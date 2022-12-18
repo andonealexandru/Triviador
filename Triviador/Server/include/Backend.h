@@ -12,11 +12,13 @@ namespace Server
     public:
         enum Status {
             InLobby,
+            PlayersModified,
             InGame,
+            WaitingForPlayers,
             FirstQuestion,
             BaceChoice,
             SecondQuestion,
-            RegionChoice
+            RegionChoice,
         };
 	public:
 
