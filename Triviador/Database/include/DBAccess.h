@@ -1,15 +1,16 @@
 #pragma once
 
 #include <memory>
-#include <Question.h>
-#include <User.h>
-#include <QuestionChoice.h>
-#include <UserStatistics.h>
+#include "Question.h"
+#include "User.h"
+#include "QuestionChoice.h"
+#include "UserStatistics.h"
 #include <sqlite_orm/sqlite_orm.h>
-using namespace sqlite_orm;
 
 namespace DB
 {
+    using namespace sqlite_orm;
+
     namespace
     {
         inline auto Startup(const std::string& path)

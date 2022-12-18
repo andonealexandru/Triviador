@@ -3,13 +3,11 @@ find_package(Crow CONFIG REQUIRED)
 add_library(Server STATIC
     #*.h
     "include/Backend.h"
-    "include/Lobby.h"
     "include/Player.h"
     "include/Question.h"
     "include/QuestionChoice.h"
     #.cpp
     "src/Backend.cpp"
-    "src/Lobby.cpp"
     "src/Player.cpp"
     "src/Question.cpp"
     "src/QuestionChoice.cpp"
