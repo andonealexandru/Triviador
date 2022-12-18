@@ -68,6 +68,21 @@ void Map::paintEvent(QPaintEvent* event)
 
 	for (int j = x - 1;j <= x + 1;j++)
 		painter.drawPixmap(j * sectorWidth, (y - 6) * sectorHeight, pixmap);
+
+	//turn stanga
+	pixmap.fill(back);
+	for (int i = y - 3;i < y + 3;i++)
+		for (int j = x - 3;j < x - 1;j++)
+			painter.drawPixmap(j * sectorWidth, i * sectorHeight, pixmap);
+
+	painter.drawPixmap((y - 3) * sectorWidth, (x - 4) * sectorHeight, pixmap);
+	painter.drawPixmap((y - 4) * sectorWidth, (x - 4) * sectorHeight, pixmap);
+	painter.drawPixmap((y - 4) * sectorWidth, (x - 3) * sectorHeight, pixmap);
+
+	pixmap.fill(window);
+	for (int i = -2;i < 1;i++)
+		painter.drawPixmap((y - 2) * sectorWidth, (x + i) * sectorHeight, pixmap);
+
 }
 
 
