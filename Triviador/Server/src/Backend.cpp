@@ -19,19 +19,39 @@ Server::Backend::Backend()
 
     CROW_ROUTE(app, "/users/register")
         .methods("POST"_method)
-        ([&](const crow::request & req) {
+        ([&](const crow::request& req) {
             auto body = crow::json::load(req.body);
             if (!body)
                 return crow::response(400);
 
             auto users = storage->GetUserByUsername<DB::User>(body["name"].s());
             if (!users.empty())
-                return crow::response(409);
+                return crow::response(409); // user already exists
 
             DB::User new_user(body["name"].s(), body["password"].s());
             storage->Insert(new_user);
 
-            return crow::response(200);
+            return crow::response(201); // created
+        });
+
+    CROW_ROUTE(app, "/users/login")
+        .methods("POST"_method)
+        ([&](const crow::request& req) {
+            auto body = crow::json::load(req.body);
+            if (!body)
+                return crow::response(400);
+
+            auto users = storage->GetUserByUsername<DB::User>(body["name"].s());
+            if (users.empty())
+                return crow::response(409); // user doesn't exist
+
+            if (users.front().GetPassword() != body["password"].s())
+                return crow::response(401); // wrong password
+
+            return crow::response(
+                    200,
+                    crow::json::wvalue{{ "ID", users.front().GetId() }}
+                );
         });
 
 	CROW_ROUTE(app, "/lobby")([&]() {
