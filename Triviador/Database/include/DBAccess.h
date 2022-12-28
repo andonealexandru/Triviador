@@ -68,6 +68,10 @@ namespace DB
         template <typename T>
         T Get(const uint32_t id);
 
+        /// \brief Returns the users with the specific username from a table
+        template <typename T>
+        std::vector<T> GetUserByUsername(const std::string& username);
+
         /// \brief Returns the number of elements inside a table
         template <typename T>
         uint32_t Count();
@@ -146,6 +150,24 @@ namespace DB
             std::cout << "unknown exception" << '\n';
         }
         return T();
+    }
+
+    template<typename T>
+    inline std::vector<T> DBAccess::GetUserByUsername(const std::string& username)
+    {
+        try
+        {
+            return storage.get_all<T>(where(c(&User::GetName) == username));
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
     }
 
     template<typename T>

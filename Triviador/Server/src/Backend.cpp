@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Question.h"
 #include "DBAccess.h"
+#include "User.h"
 
 #include <iostream>
 #include <string>
@@ -14,6 +15,24 @@ Server::Backend::Backend()
 {
 	crow::SimpleApp app;
     std::vector<Player> playerVector;
+    auto storage = DB::DBAccess::GetInstance();
+
+    CROW_ROUTE(app, "/users/register")
+        .methods("POST"_method)
+        ([&](const crow::request & req) {
+            auto body = crow::json::load(req.body);
+            if (!body)
+                return crow::response(400);
+
+            auto users = storage->GetUserByUsername<DB::User>(body["name"].s());
+            if (!users.empty())
+                return crow::response(409);
+
+            DB::User new_user(body["name"].s(), body["password"].s());
+            storage->Insert(new_user);
+
+            return crow::response(200);
+        });
 
 	CROW_ROUTE(app, "/lobby")([&]() {
 		//wsc.send_binary("HI");
