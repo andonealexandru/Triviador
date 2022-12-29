@@ -54,16 +54,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="openButton_2">
+      <widget class="QPushButton" name="openButton">
        <property name="text">
-        <string>Autentifică-te</string>
+        <string>Crează cont nou</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="openButton">
+      <widget class="QPushButton" name="openButton_2">
        <property name="text">
-        <string>Crează cont nou</string>
+        <string>Autentifică-te</string>
        </property>
       </widget>
      </item>

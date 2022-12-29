@@ -54,7 +54,7 @@
         </size>
        </property>
        <property name="text">
-        <string>AUTENTIFICĂ-TE</string>
+        <string>CREAZĂ-ȚI UN CONT NOU</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -96,7 +96,7 @@
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>Autentifică-te</string>
+        <string>Crează contul!</string>
        </property>
       </widget>
      </item>
