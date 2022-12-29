@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "Login.h"
 #include "Register.h"
+#include <QPainter>
 
 MainWindow::MainWindow(QWidget* parent) :
     QMainWindow(parent),
@@ -9,6 +10,17 @@ MainWindow::MainWindow(QWidget* parent) :
     //ui = new Ui::MainWindow();
     ui->setupUi(this);
     ui->startButton->setVisible(false);
+}
+
+void MainWindow::paintEvent(QPaintEvent* pe)
+{
+    QPixmap px;
+    px.load("F:/AN_2/loginpic.jpg");
+    QPainter paint(this);
+    int widWidth = this->ui->centralwidget->width();
+    int widHeight = this->ui->centralwidget->height();
+    px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
+    paint.drawPixmap(0, 0, px);
 }
 
 MainWindow::~MainWindow()
@@ -21,7 +33,7 @@ void MainWindow::changePageAfterLogin()
     ui->openButton->deleteLater();
     ui->openButton_2->deleteLater();
     ui->startButton->setVisible(true);
-    delete registerWindow;
+    delete loginWindow;
 }
 
 void MainWindow::changePageAfterRegister()
@@ -29,25 +41,33 @@ void MainWindow::changePageAfterRegister()
     ui->openButton->deleteLater();
     ui->openButton_2->deleteLater();
     ui->startButton->setVisible(true);
+    delete registerWindow;
+}
+
+void MainWindow::changePageAfterExitRegister()
+{
+    delete registerWindow;
+}
+
+void MainWindow::changePageAfterExitLogin()
+{
     delete loginWindow;
 }
 
+
 void MainWindow::on_openButton_clicked()
 {
-    loginWindow = new Login();
-    QObject::connect(loginWindow, SIGNAL(pushButtonPressed()), this, SLOT(changePageAfterRegister()));
-    //functie care face legatura cu baza de date
-    loginWindow->show();
+    registerWindow = new Register();
+    QObject::connect(registerWindow, SIGNAL(pushButtonPressed()), this, SLOT(changePageAfterRegister()));
+    QObject::connect(registerWindow, SIGNAL(pushButtonExitPressed()), this, SLOT(changePageAfterExitRegister()));
+    registerWindow->show();
 }
 
 void MainWindow::on_openButton_2_clicked()
 {
-    registerWindow = new Register();
-    QObject::connect(registerWindow, SIGNAL(pushButtonPressed()), this, SLOT(changePageAfterLogin()));
-    //functie care face legatura cu baza de date
-
-    registerWindow->show();
-    
+    loginWindow = new Login();
+    QObject::connect(loginWindow, SIGNAL(pushButtonPressed()), this, SLOT(changePageAfterLogin()));
+    QObject::connect(loginWindow, SIGNAL(pushButtonExitPressed()), this, SLOT(changePageAfterExitLogin()));
+    loginWindow->show();
 }
-
 
