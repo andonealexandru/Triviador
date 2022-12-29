@@ -16,11 +16,13 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget* parent = 0);
+    void paintEvent(QPaintEvent* pe = nullptr) override;
     ~MainWindow();
 
 public slots:
     void changePageAfterLogin();
     void changePageAfterRegister();
+    void changePageAfterExitRegister();
 
 private slots:
     void on_openButton_clicked();
