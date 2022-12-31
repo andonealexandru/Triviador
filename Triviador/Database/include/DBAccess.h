@@ -68,6 +68,7 @@ namespace DB
         template <typename T>
         T Get(const uint32_t id);
 
+        /// \brief Returns the users with the specific username from a table
         template <typename T>
         std::vector<T> GetUserByUsername(const std::string& username);
 
