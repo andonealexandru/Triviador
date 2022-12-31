@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget* parent) :
 void MainWindow::paintEvent(QPaintEvent* pe)
 {
     QPixmap px;
-    px.load("F:/AN_2/loginpic.jpg");
+    std::string imagePath = std::string(RESOURCE_DIR) + "/triviador.jpg";
+    px.load(imagePath.data());
     QPainter paint(this);
     int widWidth = this->ui->centralwidget->width();
     int widHeight = this->ui->centralwidget->height();

@@ -16,7 +16,8 @@ Register::Register(QWidget *parent)
 void Register::paintEvent(QPaintEvent* pe)
 {
     QPixmap px;
-    px.load(R"(C:\Users\mimu274175\Downloads\triviadorReg.jpg)");
+    std::string imagePath = std::string(RESOURCE_DIR) + "/triviador.jpg";
+    px.load(imagePath.data());
     QPainter paint(this);
     int widWidth = this->ui.centralWidget->width();
     int widHeight = this->ui.centralWidget->height();

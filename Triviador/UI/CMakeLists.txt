@@ -45,3 +45,5 @@ target_link_libraries(GUI
         cpr::cpr
         nlohmann_json::nlohmann_json
 )
+
+add_definitions(-DRESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/Resources")
