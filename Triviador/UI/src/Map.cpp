@@ -2,14 +2,12 @@
 #include <QPainter>
 #include <QColor>
 #include "Tile.h"
-#include <stdio.h>
-#include <QQueue>
-
 
 Map::Map(QWidget* parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+	g.ReadMap();
 }
 
 Map::~Map()
@@ -17,85 +15,56 @@ Map::~Map()
 
 void Map::paintEvent(QPaintEvent* event)
 {
-
-	printf("Function called!\n");
 	QPainter painter(this);
 	painter.setPen(Qt::black);
 
-	auto nLongitudinalSectors = 100;
-	auto nTransveralSectors = 100;
-	auto width = this->size().width();
-	auto height = this->size().height();
-	auto sectorWidth = width / nLongitudinalSectors;
-	auto sectorHeight = height / nTransveralSectors;
+	int nLongitudinalSectors = 100;
+	int nTransveralSectors = 100;
+	float width = this->size().width();
+	float height = this->size().height();
+	float sectorWidth = width / nLongitudinalSectors;
+	float sectorHeight = height / nTransveralSectors;
 
-	for (int i = 0; i < nTransveralSectors - 1; i++)
-	{
-		auto y = 0 + (i + 1) * sectorHeight;
-		painter.drawLine(0, y, width, y);
-	}
+	QPixmap pixmap(sectorWidth+1, sectorHeight+1);
+	pixmap.fill(Qt::black);
 
-	for (int i = 0; i < nLongitudinalSectors - 1; i++)
-	{
-		auto x = 0 + (i + 1) * sectorWidth;
-		painter.drawLine(x, 0, x, height);
-	}
+	for (std::vector<Tile> t : g.getTiles())
+		for (Tile tt : t)
+			if (tt.IsBorder())
+			{
+				QPointF punct(tt.GetCoordinate().first * sectorWidth, tt.GetCoordinate().second * sectorHeight);
+				painter.drawPixmap(punct, pixmap);
+			}
 
-	QPixmap pixmap(sectorWidth, sectorHeight);
-	pixmap.fill(Qt::yellow);
-	painter.drawPixmap(0, 0, pixmap);
-
-	int x = 37;
-	int y = 37;
-
-	//turn centru
-	QColor gray(87, 96, 100), window(38, 175, 230), back(134, 132, 130);
-	pixmap.fill(gray);
-	for (int i = y - 3;i <= y + 3;i++)
-		for (int j = x - 1;j <= x + 1;j++)
-			painter.drawPixmap(j * sectorWidth, i * sectorHeight, pixmap);
-
-	pixmap.fill(window);
-	for (int i = -2;i < 2;i++)
-		painter.drawPixmap(y * sectorWidth, (x + i) * sectorHeight, pixmap);
-
-	pixmap.fill(gray);
-	for (int i = 4;i <= 5;i++)
-	{
-		for (int j = x - 2;j <= x + 2;j++)
-			painter.drawPixmap(j * sectorWidth, (y - i) * sectorHeight, pixmap);
-	}
-
-	for (int j = x - 1;j <= x + 1;j++)
-		painter.drawPixmap(j * sectorWidth, (y - 6) * sectorHeight, pixmap);
-
-	//turn stanga
-	pixmap.fill(back);
-	for (int i = y - 3;i < y + 3;i++)
-		for (int j = x - 3;j < x - 1;j++)
-			painter.drawPixmap(j * sectorWidth, i * sectorHeight, pixmap);
-
-	painter.drawPixmap((y - 3) * sectorWidth, (x - 4) * sectorHeight, pixmap);
-	painter.drawPixmap((y - 4) * sectorWidth, (x - 4) * sectorHeight, pixmap);
-	painter.drawPixmap((y - 4) * sectorWidth, (x - 3) * sectorHeight, pixmap);
-
-	pixmap.fill(window);
-	for (int i = -2;i < 1;i++)
-		painter.drawPixmap((y - 2) * sectorWidth, (x + i) * sectorHeight, pixmap);
-
-	//turn dreapta
-	pixmap.fill(back);
-	for (int i = y - 3;i < y + 3;i++)
-		for (int j = x + 2;j < x + 4;j++)
-			painter.drawPixmap(j * sectorWidth, i * sectorHeight, pixmap);
-
-	painter.drawPixmap((y + 3) * sectorWidth, (x - 4) * sectorHeight, pixmap);
-	painter.drawPixmap((y + 4) * sectorWidth, (x - 4) * sectorHeight, pixmap);
-	painter.drawPixmap((y + 4) * sectorWidth, (x - 3) * sectorHeight, pixmap);
-
-	pixmap.fill(window);
-	for (int i = -2;i < 1;i++)
-		painter.drawPixmap((y + 2) * sectorWidth, (x + i) * sectorHeight, pixmap);
+	pixmap.fill(Qt::blue);
+	for (std::vector<Tile> t : g.getTiles())
+		for (Tile tt : t)
+			if (tt.getParentRegion()->GetNumber()==1&&!tt.IsBorder())
+				painter.drawPixmap(tt.GetCoordinate().first * sectorWidth, tt.GetCoordinate().second * sectorHeight, pixmap);
 }
 
-
+void Map::mouseReleaseEvent(QMouseEvent* ev)
+{
+	QPoint point = ev->pos();
+	int x = point.x();
+	int y = point.y();
+	int ok = 0;
+	auto width = this->size().width();
+	auto height = this->size().height();
+	auto sectorWidth = width / 100;
+	auto sectorHeight = height / 100;
+	x = x/ sectorWidth;
+	y = y/sectorHeight;
+	for (std::vector<Tile> t : g.getTiles())
+	{
+		for (Tile tt : t)
+			if (tt.GetCoordinate().first== x  && tt.GetCoordinate().second == y)
+			{
+				std::cout << "Ai dat click pe regiunea " << tt.getParentRegion()->GetNumber()<<std::endl;
+				ok = 1;
+				break;
+			}
+		if (ok == 1)
+			break;
+	}
+}

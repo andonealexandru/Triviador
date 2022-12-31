@@ -34,7 +34,7 @@ namespace DB
                                 make_table("User",
                                            make_column("ID_User", &User::SetId, &User::GetId,
                                                       primary_key(), autoincrement()),
-                                           make_column("Username", &User::SetName, &User::GetName),
+                                           make_column("Name", &User::SetName, &User::GetName),
                                            make_column("Password", &User::SetPassword, &User::GetPassword)),
                                 make_table("UserStatistics",
                                            make_column("ID_UserStatistics", &UserStatistics::SetId, &UserStatistics::GetId,

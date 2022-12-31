@@ -1,4 +1,5 @@
 find_package(cpr CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -42,4 +43,7 @@ target_include_directories(GUI
 target_link_libraries(GUI
         Qt6::Widgets
         cpr::cpr
+        nlohmann_json::nlohmann_json
 )
+
+add_definitions(-DRESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/Resources")
