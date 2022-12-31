@@ -34,7 +34,7 @@ namespace DB
                                 make_table("User",
                                            make_column("ID_User", &User::SetId, &User::GetId,
                                                       primary_key(), autoincrement()),
-                                           make_column("Username", &User::SetName, &User::GetName),
+                                           make_column("Name", &User::SetName, &User::GetName),
                                            make_column("Password", &User::SetPassword, &User::GetPassword)),
                                 make_table("UserStatistics",
                                            make_column("ID_UserStatistics", &UserStatistics::SetId, &UserStatistics::GetId,
@@ -67,6 +67,9 @@ namespace DB
         /// \brief Returns the element with the specific id from a table
         template <typename T>
         T Get(const uint32_t id);
+
+        template <typename T>
+        std::vector<T> GetUserByUsername(const std::string& username);
 
         /// \brief Returns the number of elements inside a table
         template <typename T>
@@ -146,6 +149,24 @@ namespace DB
             std::cout << "unknown exception" << '\n';
         }
         return T();
+    }
+
+    template<typename T>
+    inline std::vector<T> DBAccess::GetUserByUsername(const std::string& username)
+    {
+        try
+        {
+            return storage.get_all<T>(where(c(&User::GetName) == username));
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
     }
 
     template<typename T>

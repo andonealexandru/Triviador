@@ -58,8 +58,6 @@ void Game::ReadMap()
                                     }
                                 }
                         }
-                    
-
                 }
                 if (i != 0 && mat[i][j] != mat[i - 1][j])
                 {
