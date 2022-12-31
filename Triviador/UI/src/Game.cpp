@@ -3,11 +3,11 @@
 void Game::ReadMap()
 {
     std::ifstream f;
-    f.open("harta.txt");
+    f.open("F:/AN_2/harta.txt");
     m_type = 4; //TODO: change when map is ready
     for (int i = 0;i <= m_type;i++)
     {
-        auto x = std::make_shared<Region>(0,1,i);
+        auto x = std::make_shared<Region>(0,0,i); 
         std::vector<Tile> auxTile = {};
         m_tiles.push_back(auxTile);
         m_map.push_back(x);
@@ -19,7 +19,6 @@ void Game::ReadMap()
     if (f.is_open())
     {
         int n;
-        Tile t;
         for (int i = 0; i < HEIGHT; i++)
         {
             mat.push_back({});
@@ -31,7 +30,12 @@ void Game::ReadMap()
                 for (int temp = 0; temp < m_map.size(); temp++)
                     if (n == m_map[temp]->GetNumber())
                     {
+                        Tile t;
                         t.SetTile(std::make_pair(i, j), m_map[temp]);
+                        if (i == 0 || i == HEIGHT-1)
+                            t.SetBorder();
+                        if (j == 0 || j == WIDTH - 1)
+                            t.SetBorder();
                         m_tiles[n].push_back(t);
                     }
                 if (j != 0 && mat[i][j] != mat[i][j - 1])
@@ -44,6 +48,14 @@ void Game::ReadMap()
                                 {
                                     m_map[tem]->AddNeighbour(m_map[temp]);
                                     m_map[temp]->AddNeighbour(m_map[tem]);
+
+                                    for (Tile& x : m_tiles[mat[i][j]])
+                                    {
+                                        if (x.GetCoordinate().first == i && x.GetCoordinate().second == j)
+                                            x.SetBorder();
+                                        if (x.GetCoordinate().first == i && x.GetCoordinate().second == j - 1)
+                                            x.SetBorder();
+                                    }
                                 }
                         }
                 }
@@ -57,6 +69,13 @@ void Game::ReadMap()
                                 {
                                     m_map[tem]->AddNeighbour(m_map[temp]);
                                     m_map[temp]->AddNeighbour(m_map[tem]);
+                                    for (Tile& x : m_tiles[mat[i][j]])
+                                    {
+                                        if (x.GetCoordinate().first == i && x.GetCoordinate().second == j)
+                                            x.SetBorder();
+                                        if (x.GetCoordinate().first == i-1 && x.GetCoordinate().second == j)
+                                            x.SetBorder();
+                                    }
                                 }
                         }
                 }
