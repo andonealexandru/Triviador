@@ -33,10 +33,10 @@ namespace Server
         void StartGame(crow::SimpleApp &app);
 
         // getters
-        const std::unordered_set<int>& GetPlayers() const;
+        const std::unordered_map<int, Status>& GetPlayers() const;
         const Question &GetCurrentQuestion() const;
 
-        void AddPlayer(int id);
+        void AddPlayer(int id, Status status);
         void SetNewCurrentQuestion();
 
     private:
@@ -48,7 +48,7 @@ namespace Server
         inline const std::string ToString(Status s);
 
         Status m_status;
-        std::unordered_set<int> m_players;
+        std::unordered_map<int, Status> m_players;
         Server::Question m_currentQuestion;
 
 	};
