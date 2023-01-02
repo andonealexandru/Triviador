@@ -60,7 +60,6 @@ void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
 
     // TODO: add /users/get
 }
-std::unordered_map<int, bool> updated_players;
 
 void Server::Backend::StartLobby(crow::SimpleApp &app) {
     /**
@@ -74,7 +73,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
 
         if (m_status == Status::InLobby)
             return crow::json::wvalue{
-                {"status", updated_players.find(id)->second ? ToString(m_status) : ToString(Status::PlayersModified)}
+                {"status", m_players.find(id) == m_players.end() ? ToString(m_status) : ToString(m_players.find(id)->second)}
         };
         return crow::json::wvalue{{ "status", ToString(Status::InGame) }};
     });
@@ -83,16 +82,16 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/lobby/players")([&](const crow::request& req) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
-        auto player = updated_players.find(id);
-//        if (player != updated_players.end())
-//            player->second = true;
+        auto player = m_players.find(id);
+        if (player != m_players.end())
+            player->second = Status::InLobby;
 
         std::vector<crow::json::wvalue> res_json;
 
-        for (const auto& current_id : m_players) {
+        for (const auto& player : m_players) {
             res_json.push_back(crow::json::wvalue{
-                    {"id", current_id},
-                    {"name", storage->Get<DB::User>(current_id).GetName()}
+                    {"id", player.first},
+                    {"name", storage->Get<DB::User>(player.first).GetName()}
             });
         }
 
@@ -117,8 +116,8 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
                             return crow::response(400);
 
                         // add user in lobby
-                        AddPlayer(id);
-                        updated_players.insert({id, false});
+                        AddPlayer(id, Status::InLobby);
+                        //updated_players.insert({id, false});
                         return crow::response(200);
                     });
 
@@ -136,7 +135,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
 
                         // erase user from lobby
                         m_players.erase(player);
-                        updated_players.erase(id);
+                        //updated_players.erase(id);
                         return crow::response(200);
                     });
 }
@@ -234,12 +233,12 @@ const std::string Server::Backend::ToString(Server::Backend::Status s) {
     }
 }
 
-const std::unordered_set<int> &Server::Backend::GetPlayers() const {
+const std::unordered_map<int, Server::Backend::Status> &Server::Backend::GetPlayers() const {
     return m_players;
 }
 
-void Server::Backend::AddPlayer(int id) {
-    m_players.insert(id);
+void Server::Backend::AddPlayer(int id, Server::Backend::Status status) {
+    m_players.insert({id, status});
 }
 
 const Server::Question &Server::Backend::GetCurrentQuestion() const {
@@ -254,3 +253,4 @@ void Server::Backend::SetNewCurrentQuestion() {
 
     m_currentQuestion = currentQuestion;
 }
+
