@@ -25,6 +25,9 @@ namespace Server
 	public:
 
 		Backend();
+        void StartLoginRegister(crow::SimpleApp &app);
+        void StartLobby(crow::SimpleApp &app);
+        void StartGame(crow::SimpleApp &app);
 
         // getters
         const std::unordered_map<int, Server::Player>& GetPlayers() const;
@@ -44,5 +47,6 @@ namespace Server
         Status m_status;
         std::unordered_map<int, Server::Player> m_players;
         Server::Question m_currentQuestion;
+
 	};
 }
