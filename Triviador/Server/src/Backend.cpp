@@ -15,62 +15,84 @@ void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/users/register")
             .methods("POST"_method)
                     ([&](const crow::request& req) {
+                        // check for body
                         auto body = crow::json::load(req.body);
                         if (!body)
                             return crow::response(400);
 
+                        // check for user in DB
                         auto users = storage->GetUserByUsername<DB::User>(body["name"].s());
                         if (!users.empty())
-                            return crow::response(409); // user already exists
+                            return crow::response(409);
 
+                        // create user
                         DB::User new_user(body["name"].s(), body["password"].s());
-                        storage->Insert(new_user);
+                        auto id = storage->Insert(new_user);
 
-                        return crow::response(201); // created
+                        return crow::response(
+                                201,
+                                crow::json::wvalue{{ "ID", id }}
+                                ); // created
                     });
 
     CROW_ROUTE(app, "/users/login")
             .methods("POST"_method)
                     ([&](const crow::request& req) {
+                        // check for body
                         auto body = crow::json::load(req.body);
                         if (!body)
                             return crow::response(400);
 
+                        // check for user in DB
                         auto users = storage->GetUserByUsername<DB::User>(body["name"].s());
                         if (users.empty())
-                            return crow::response(409); // user doesn't exist
+                            return crow::response(409);
 
+                        // check password
                         if (users.front().GetPassword() != body["password"].s())
-                            return crow::response(401); // wrong password
+                            return crow::response(401);
 
                         return crow::response(
                                 200,
                                 crow::json::wvalue{{ "ID", users.front().GetId() }}
                         );
                     });
+
+    // TODO: add /users/get
 }
+std::unordered_map<int, bool> updated_players;
 
 void Server::Backend::StartLobby(crow::SimpleApp &app) {
-    CROW_ROUTE(app, "/lobby")([&]() {
-        //wsc.send_binary("HI");
-        if (m_status == Status::InLobby ||
-            m_status == Status::PlayersModified
-                )
+    /**
+     * InLobby - nothing needs to be done
+     * PlayersModified - should call /lobby/players to update player list
+     * InGame - game started, should join game
+     */
+    CROW_ROUTE(app, "/lobby")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        if (m_status == Status::InLobby)
             return crow::json::wvalue{
-                    { "status", ToString(m_status) }
-            };
-        else return crow::json::wvalue{
-                    { "status", ToString(Status::InGame) }
-            };
+                {"status", updated_players.find(id)->second ? ToString(m_status) : ToString(Status::PlayersModified)}
+        };
+        return crow::json::wvalue{{ "status", ToString(Status::InGame) }};
     });
 
-    CROW_ROUTE(app, "/lobby/players")([&]() {
+    /// get list of all players in lobby
+    CROW_ROUTE(app, "/lobby/players")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+        auto player = updated_players.find(id);
+//        if (player != updated_players.end())
+//            player->second = true;
+
         std::vector<crow::json::wvalue> res_json;
 
-        for (const auto& player : m_players) {
+        for (const auto& current_id : m_players) {
             res_json.push_back(crow::json::wvalue{
-                    {"id", player.second.GetId()},
-                    {"name", player.second.GetName()}
+                    {"id", current_id},
+                    {"name", storage->Get<DB::User>(current_id).GetName()}
             });
         }
 
@@ -80,43 +102,47 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
         };
     });
 
+    /// join lobby
     CROW_ROUTE(app, "/lobby/join")
             .methods("POST"_method)
                     ([&](const crow::request& req) {
-                        auto body = crow::json::load(req.body);
                         auto header = req.get_header_value("ID");
-                        if (!body)
-                            return crow::response(400);
 
-                        // check if user exists
+                        // TODO:check if user exists in DB
+
+                        // check if user already in lobby
                         int id = std::stoi(header);
                         auto player = m_players.find(id);
                         if (player != m_players.end())
                             return crow::response(400);
 
-                        Player newPlayer(body["id"].i(), body["name"].s());
-                        AddPlayer(id, newPlayer);
+                        // add user in lobby
+                        AddPlayer(id);
+                        updated_players.insert({id, false});
                         return crow::response(200);
                     });
 
+    /// leave lobby
     CROW_ROUTE(app, "/lobby/leave")
             .methods("POST"_method)
                     ([&](const crow::request& req) {
                         auto header = req.get_header_value("ID");
                         int id = std::stoi(header);
 
-                        //TODO: put this in a function
+                        // check if user in lobby
                         auto player = m_players.find(id);
                         if (player == m_players.end())
                             return crow::response(400);
 
+                        // erase user from lobby
                         m_players.erase(player);
+                        updated_players.erase(id);
                         return crow::response(200);
                     });
 }
 
 void Server::Backend::StartGame(crow::SimpleApp &app) {
-    std::vector<Player> playerVector;
+    /*std::vector<DB::User> playerVector;
     CROW_ROUTE(app, "/game")([&](const crow::request& req) {
         return crow::json::wvalue{
                 { "status", ToString(m_status) }
@@ -177,6 +203,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                         }
                         return crow::response(200);
                     });
+                    */
 }
 
 Server::Backend::Backend()
@@ -187,7 +214,7 @@ Server::Backend::Backend()
 
     StartLoginRegister(app);
     StartLobby(app);
-    StartGame(app);
+    //StartGame(app);
 	
 	app.port(18080).multithreaded().run();
 }
@@ -207,12 +234,12 @@ const std::string Server::Backend::ToString(Server::Backend::Status s) {
     }
 }
 
-const std::unordered_map<int, Server::Player> &Server::Backend::GetPlayers() const {
+const std::unordered_set<int> &Server::Backend::GetPlayers() const {
     return m_players;
 }
 
-void Server::Backend::AddPlayer(int id, const Server::Player &player) {
-    m_players.insert({ id, player });
+void Server::Backend::AddPlayer(int id) {
+    m_players.insert(id);
 }
 
 const Server::Question &Server::Backend::GetCurrentQuestion() const {
