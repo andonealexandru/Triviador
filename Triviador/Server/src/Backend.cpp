@@ -117,7 +117,9 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
 
                         // add user in lobby
                         AddPlayer(id, Status::InLobby);
-                        //updated_players.insert({id, false});
+                        // change all other users to playersModified
+                        for (auto & player : m_players)
+                            player.second = Status::PlayersModified;
                         return crow::response(200);
                     });
 
@@ -135,10 +137,12 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
 
                         // erase user from lobby
                         m_players.erase(player);
-                        //updated_players.erase(id);
+                        // change all other users to playersModified
+                        for (auto & player : m_players)
+                            player.second = Status::PlayersModified;
                         return crow::response(200);
                     });
-}
+}   
 
 void Server::Backend::StartGame(crow::SimpleApp &app) {
     /*std::vector<DB::User> playerVector;
