@@ -9,6 +9,7 @@ using json = nlohmann::json;
 
 Login::Login(QWidget* parent)
     : QMainWindow(parent)
+    , user(nullptr)
 {
     ui.setupUi(this);
 }
@@ -26,7 +27,9 @@ void Login::paintEvent(QPaintEvent* pe)
 }
 
 Login::~Login()
-{}
+{
+    delete user;
+}
 
 void Login::on_pushButtonExit_clicked()
 {
@@ -39,14 +42,14 @@ void Login::on_pushButton_clicked()
     QString username = ui.lineEdit_username->text();
     QString password = ui.lineEdit_password->text();
 
-    json user =
+    json userJson =
     {
         {"name", username.toStdString()},
         {"password", password.toStdString()},
     };
 
     cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/login"},
-                                       cpr::Body{to_string(user)});
+                                       cpr::Body{to_string(userJson)});
 
     switch(response.status_code)
     {
@@ -66,5 +69,13 @@ void Login::on_pushButton_clicked()
             break;
     }
 
+    int id = json::parse(response.text)["ID"].get<int>();
+    user = new DB::User(id, username.toStdString(), password.toStdString());
+
     emit pushButtonPressed();
+}
+
+DB::User Login::GetUser() const
+{
+    return *user;
 }
