@@ -9,7 +9,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-auto storage = DB::DBAccess::GetInstance();
+auto storage = DB::DBAccess::GetInstance(); // TODO: get rid of this
 
 void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/users/register")
@@ -145,68 +145,79 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
 }   
 
 void Server::Backend::StartGame(crow::SimpleApp &app) {
-    /*std::vector<DB::User> playerVector;
     CROW_ROUTE(app, "/game")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
         return crow::json::wvalue{
-                { "status", ToString(m_status) }
+                {"status",
+                 m_players.find(id) == m_players.end() ? ToString(m_status) : ToString(m_players.find(id)->second)}
         };
     });
 
     CROW_ROUTE(app, "/game/start")
             .methods("POST"_method)
                     ([&](const crow::request& req) {
-                        auto header = req.get_header_value("ID");
-                        int id = std::stoi(header);
-                        m_status = Status::WaitingForPlayers;
-                        // add player to player list
-                        // when all players are in WaitingForPlayers
-                        // Status becomes InGame
+                        m_status = Status::StartNewGame;
 
-                        //TODO: add check if exists
+                        for (auto & player : m_players)
+                            player.second = Status::StartNewGame;
 
-                        playerVector.push_back(m_players.at(id)); // make set
-                        if (playerVector.size() == m_players.size()) {
-                            m_status = Status::FirstQuestion;
-                            playerVector.empty();
-                            SetNewCurrentQuestion();
-                        }
+                        GenerateNewMap(); // TODO
+
                         return crow::response(200);
                     });
 
-    CROW_ROUTE(app, "/game/question/numeric")([&](const crow::request& req) {
+    CROW_ROUTE(app, "/game/map/first")([&](const crow::request& req) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
-        //TODO:
-//        if (m_status != Status::FirstQuestion && m_status != Status::SecondQuestion)
-//            return crow::response(400);
 
-        playerVector.push_back(m_players.at(id));
-        if (playerVector.size() == m_players.size()) {
-            m_status = Status::WaitingForAnswers;
-            playerVector.empty();
-            SetNewCurrentQuestion();
+        auto currentPlayer = m_players.find(id);
+        if (currentPlayer != m_players.end())
+            currentPlayer->second = Status::InGame;
+
+        bool allGotMap = true;
+        for (const auto& player : m_players)
+            if (player.second != InGame)
+                allGotMap = false;
+
+        if (allGotMap) {
+            for (auto &player: m_players)
+                player.second = Status::FirstQuestion;
+            SetNewCurrentQuestion(true);
         }
+
+
+        return m_Map.GetJsonMap();
+    });
+
+    CROW_ROUTE(app, "/game/firstQuestion")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+
+
         return crow::json::wvalue{
                 { "status", ToString(m_status) },
                 { "question", m_currentQuestion.GetQuestion() }
         };
     });
+//
+//    CROW_ROUTE(app, "/game/answer")
+//            .methods("POST"_method)
+//                    ([&](const crow::request& req) {
+//                        auto header = req.get_header_value("ID");
+//                        int id = std::stoi(header);
+//
+//                        playerVector.push_back(m_players.at(id)); // make set and add pair (ID, answer)
+//                        if (playerVector.size() == m_players.size()) {
+//                            m_status = Status::BaseChoice;
+//                            playerVector.empty();
+//                            SetNewCurrentQuestion();
+//                        }
+//                        return crow::response(200);
+//                    });
 
-    CROW_ROUTE(app, "/game/answer")
-            .methods("POST"_method)
-                    ([&](const crow::request& req) {
-                        auto header = req.get_header_value("ID");
-                        int id = std::stoi(header);
-
-                        playerVector.push_back(m_players.at(id)); // make set and add pair (ID, answer)
-                        if (playerVector.size() == m_players.size()) {
-                            m_status = Status::BaseChoice;
-                            playerVector.empty();
-                            SetNewCurrentQuestion();
-                        }
-                        return crow::response(200);
-                    });
-                    */
 }
 
 Server::Backend::Backend()
@@ -217,7 +228,7 @@ Server::Backend::Backend()
 
     StartLoginRegister(app);
     StartLobby(app);
-    //StartGame(app);
+    StartGame(app);
 	
 	app.port(18080).multithreaded().run();
 }
@@ -231,8 +242,9 @@ const std::string Server::Backend::ToString(Server::Backend::Status s) {
         case Server::Backend::Status::RegionChoice: return "RegionChoice";
         case Server::Backend::Status::SecondQuestion: return "SecondQuestion";
         case Server::Backend::Status::PlayersModified: return "PlayersModified";
-        case Server::Backend::Status::WaitingForPlayers: return "WaitingForPlayers";
+        case Server::Backend::Status::StartNewGame: return "StartNewGame";
         case Server::Backend::Status::WaitingForAnswers: return "WaitingForAnswers";
+        case Server::Backend::Status::MapChanged: return "MapChanged";
         default: return "Unknown";
     }
 }
@@ -245,16 +257,20 @@ void Server::Backend::AddPlayer(int id, Server::Backend::Status status) {
     m_players.insert({id, status});
 }
 
-const Server::Question &Server::Backend::GetCurrentQuestion() const {
+const DB::Question &Server::Backend::GetCurrentQuestion() const {
     return m_currentQuestion;
 }
 
-void Server::Backend::SetNewCurrentQuestion() {
-    //TODO: retrieve question from database
-    Question currentQuestion("Say a number", false);
-    QuestionChoice<std::variant<int, std::string>> choice(10, true);
-    currentQuestion.AddChoice(choice);
+void Server::Backend::SetNewCurrentQuestion(bool numeric) {
+    if (numeric) {
+        auto questions = storage->GetNumericQuestions<DB::Question>();
+        m_currentQuestion = questions.front();
+    }
+}
 
-    m_currentQuestion = currentQuestion;
+void Server::Backend::GenerateNewMap() {
+    int playersNumber = m_players.size();
+
+    // TODO: initialize map?
 }
 

@@ -20,7 +20,7 @@ namespace DB
                                            make_column("ID_Question", &Question::SetId, &Question::GetId, 
                                                        primary_key(), autoincrement()),
                                            make_column("Question", &Question::SetQuestion, &Question::GetQuestion),
-                                           make_column("Category", &Question::SetQuestion, &Question::GetQuestion),
+                                           make_column("Category", &Question::SetCategory, &Question::GetCategory),
                                            make_column("Type", &Question::SetType, &Question::GetType),
                                            make_column("Answer", &Question::SetAnswer, &Question::GetAnswer)),
                                 make_table("QuestionChoice",
@@ -71,6 +71,10 @@ namespace DB
         /// \brief Returns the users with the specific username from a table
         template <typename T>
         std::vector<T> GetUserByUsername(const std::string& username);
+
+        /// \brief Returns the numeric questions from table
+        template <typename T>
+        std::vector<T> GetNumericQuestions();
 
         /// \brief Returns the number of elements inside a table
         template <typename T>
@@ -220,6 +224,23 @@ namespace DB
         {
             std::cout << "unknown exception" << '\n';
         }
+    }
+
+    template<typename T>
+    std::vector<T> DBAccess::GetNumericQuestions() {
+        try
+        {
+            return storage.get_all<T>(where(c(&Question::GetType) == "single_choice"));
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
     }
 
 }//namespace DB
