@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_set>
+
+#include <User.h>
 #include "crow.h"
 
 #include "Player.h"
@@ -25,12 +28,15 @@ namespace Server
 	public:
 
 		Backend();
+        void StartLoginRegister(crow::SimpleApp &app);
+        void StartLobby(crow::SimpleApp &app);
+        void StartGame(crow::SimpleApp &app);
 
         // getters
-        const std::unordered_map<int, Server::Player>& GetPlayers() const;
+        const std::unordered_map<int, Status>& GetPlayers() const;
         const Question &GetCurrentQuestion() const;
 
-        void AddPlayer(int id, const Server::Player& player);
+        void AddPlayer(int id, Status status);
         void SetNewCurrentQuestion();
 
     private:
@@ -42,7 +48,8 @@ namespace Server
         inline const std::string ToString(Status s);
 
         Status m_status;
-        std::unordered_map<int, Server::Player> m_players;
+        std::unordered_map<int, Status> m_players;
         Server::Question m_currentQuestion;
+
 	};
 }
