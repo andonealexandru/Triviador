@@ -1,10 +1,37 @@
 #include "MCQuestion.h"
+#include "QString"
+#include "QGraphicsOpacityEffect"
+#include <QPropertyAnimation>
+#include <QTimer>
 
-MCQuestion::MCQuestion(QWidget *parent)
-	: QMainWindow(parent)
+#include <iostream>
+
+MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::string>answers, bool ho1, bool ho2, bool ho3, QWidget* parent)
+	: m_correctAnswer(correctAnswer),
+	  m_question(question),
+	  m_answers(answers),
+	  m_ho1(ho1),
+	  m_ho2(ho2),
+	  m_ho3(ho3),
+	  QMainWindow(parent)
+
 {
 	ui.setupUi(this);
+	m_foundCorrectAnswer = false;
+	
 }
+
+void MCQuestion::setQuestion()
+{
+	ui.question->setText(QString::fromStdString(m_question));
+	ui.a1->setText(QString::fromStdString(m_answers[0]));
+	ui.a2->setText(QString::fromStdString(m_answers[1]));
+	ui.a3->setText(QString::fromStdString(m_answers[2]));
+	ui.a4->setText(QString::fromStdString(m_answers[3]));
+}
+
 
 MCQuestion::~MCQuestion()
 {}
+
+
