@@ -18,7 +18,10 @@ MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::
 {
 	ui.setupUi(this);
 	m_foundCorrectAnswer = false;
-	
+	m_foundCorrectAnswer = false;
+
+	connect(ui.a1, SIGNAL(clicked()), this, SLOT(a1Clicked()));
+	connect(ui.a2, SIGNAL(clicked()), this, SLOT(a2Clicked()));
 }
 
 void MCQuestion::setQuestion()
@@ -45,6 +48,28 @@ void MCQuestion::paintEvent(QPaintEvent* pe)
 	ui.a3->setStyleSheet("background:#E1C16E;");
 	ui.a4->setStyleSheet("background:#E1C16E;");
 
+}
+
+void MCQuestion::a1Clicked()
+{
+	ui.a2->setDisabled(true);
+	ui.a3->setDisabled(true);
+	ui.a4->setDisabled(true);
+
+	if (m_correctAnswer == 1)
+		m_foundCorrectAnswer = true;
+	std::cout << m_foundCorrectAnswer;
+}
+
+void MCQuestion::a2Clicked()
+{
+	ui.a1->setDisabled(true);
+	ui.a3->setDisabled(true);
+	ui.a4->setDisabled(true);
+
+	if (m_correctAnswer == 2)
+		m_foundCorrectAnswer = true;
+	std::cout << m_foundCorrectAnswer;
 }
 
 

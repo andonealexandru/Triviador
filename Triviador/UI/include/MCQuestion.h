@@ -16,6 +16,9 @@ public:
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	~MCQuestion();
 
+private slots:
+	void a1Clicked();
+	void a2Clicked();
 
 private:
 	Ui::MCQuestionClass ui;
