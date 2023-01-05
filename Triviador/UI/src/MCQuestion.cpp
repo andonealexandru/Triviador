@@ -30,6 +30,23 @@ void MCQuestion::setQuestion()
 	ui.a4->setText(QString::fromStdString(m_answers[3]));
 }
 
+void MCQuestion::paintEvent(QPaintEvent* pe)
+{
+	QPixmap px;
+	std::string imagePath = std::string(RESOURCE_DIR) + "/triviador.jpg";
+	px.load(imagePath.data());
+	QPainter paint(this);
+	int widWidth = this->ui.centralWidget->width();
+	int widHeight = this->ui.centralWidget->height();
+	px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
+	paint.drawPixmap(0, 0, px);
+	ui.a1->setStyleSheet("background:#E1C16E;");
+	ui.a2->setStyleSheet("background:#E1C16E;");
+	ui.a3->setStyleSheet("background:#E1C16E;");
+	ui.a4->setStyleSheet("background:#E1C16E;");
+
+}
+
 
 MCQuestion::~MCQuestion()
 {}

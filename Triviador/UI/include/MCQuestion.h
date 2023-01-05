@@ -13,6 +13,7 @@ class MCQuestion : public QMainWindow
 public:
 	MCQuestion(int correctAnswer,std::string question, std::vector<std::string>answers,bool ho1,bool ho2, bool ho3, QWidget* parent = nullptr);
 	void setQuestion();
+	void paintEvent(QPaintEvent* pe = nullptr) override;
 	~MCQuestion();
 
 
