@@ -25,6 +25,11 @@ MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::
 	connect(ui.a3, SIGNAL(clicked()), this, SLOT(a3Clicked()));
 	connect(ui.a4, SIGNAL(clicked()), this, SLOT(a4Clicked()));
 	
+	connect(ui.ho1, SIGNAL(clicked()), this, SLOT(ho1Clicked()));
+
+	if (!ho1)ui.ho1->setVisible(false);
+	if (!ho2)ui.ho2->setVisible(false);
+	if (!ho3)ui.ho3->setVisible(false);
 
 }
 
@@ -99,9 +104,12 @@ void MCQuestion::a4Clicked()
 	std::cout << m_foundCorrectAnswer;
 }
 
+void MCQuestion::ho1Clicked()
+{
+	ui.a1->setVisible(false);
+	ui.a4->setVisible(false);
+}
 
 
 MCQuestion::~MCQuestion()
 {}
-
-
