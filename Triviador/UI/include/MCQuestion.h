@@ -18,7 +18,9 @@ public:
 
 private slots:
 	void a1Clicked();
-	void a2Clicked();
+	void a2Clicked(); 
+	void a3Clicked();
+	void a4Clicked();
 
 private:
 	Ui::MCQuestionClass ui;

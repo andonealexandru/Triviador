@@ -22,6 +22,10 @@ MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::
 
 	connect(ui.a1, SIGNAL(clicked()), this, SLOT(a1Clicked()));
 	connect(ui.a2, SIGNAL(clicked()), this, SLOT(a2Clicked()));
+	connect(ui.a3, SIGNAL(clicked()), this, SLOT(a3Clicked()));
+	connect(ui.a4, SIGNAL(clicked()), this, SLOT(a4Clicked()));
+	
+
 }
 
 void MCQuestion::setQuestion()
@@ -71,6 +75,30 @@ void MCQuestion::a2Clicked()
 		m_foundCorrectAnswer = true;
 	std::cout << m_foundCorrectAnswer;
 }
+
+void MCQuestion::a3Clicked()
+{
+	ui.a1->setDisabled(true);
+	ui.a2->setDisabled(true);
+	ui.a4->setDisabled(true);
+
+	if (m_correctAnswer == 3)
+		m_foundCorrectAnswer = true;
+	std::cout << m_foundCorrectAnswer;
+}
+
+void MCQuestion::a4Clicked()
+{
+	ui.a1->setDisabled(true);
+	ui.a2->setDisabled(true);
+	ui.a3->setDisabled(true);
+	ui.question->adjustSize();
+
+	if (m_correctAnswer == 4)
+		m_foundCorrectAnswer = true;
+	std::cout << m_foundCorrectAnswer;
+}
+
 
 
 MCQuestion::~MCQuestion()
