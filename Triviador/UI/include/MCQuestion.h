@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QMainWindow>
 #include "ui_MCQuestion.h"
 #include "QPainter"
@@ -14,6 +13,7 @@ public:
 	MCQuestion(int correctAnswer,std::string question, std::vector<std::string>answers,bool ho1,bool ho2, bool ho3, QWidget* parent = nullptr);
 	void setQuestion();
 	void paintEvent(QPaintEvent* pe = nullptr) override;
+	int timer();
 	~MCQuestion();
 
 private slots:
