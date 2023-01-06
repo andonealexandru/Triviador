@@ -3,7 +3,6 @@
 #include "QGraphicsOpacityEffect"
 #include <QPropertyAnimation>
 #include <QTimer>
-
 #include <iostream>
 
 MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::string>answers, bool ho1, bool ho2, bool ho3, QWidget* parent)
@@ -18,19 +17,19 @@ MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::
 {
 	ui.setupUi(this);
 	m_foundCorrectAnswer = false;
-	m_foundCorrectAnswer = false;
 
 	connect(ui.a1, SIGNAL(clicked()), this, SLOT(a1Clicked()));
 	connect(ui.a2, SIGNAL(clicked()), this, SLOT(a2Clicked()));
 	connect(ui.a3, SIGNAL(clicked()), this, SLOT(a3Clicked()));
 	connect(ui.a4, SIGNAL(clicked()), this, SLOT(a4Clicked()));
-	
+
 	connect(ui.ho1, SIGNAL(clicked()), this, SLOT(ho1Clicked()));
 
 	if (!ho1)ui.ho1->setVisible(false);
 	if (!ho2)ui.ho2->setVisible(false);
 	if (!ho3)ui.ho3->setVisible(false);
 
+	timer();
 }
 
 void MCQuestion::setQuestion()
@@ -45,7 +44,7 @@ void MCQuestion::setQuestion()
 void MCQuestion::paintEvent(QPaintEvent* pe)
 {
 	QPixmap px;
-	std::string imagePath = std::string(RESOURCE_DIR) + "/triviador.jpg";
+	std::string imagePath = std::string(RESOURCE_DIR) + "/npQuestionpic.jpg";
 	px.load(imagePath.data());
 	QPainter paint(this);
 	int widWidth = this->ui.centralWidget->width();
@@ -57,6 +56,18 @@ void MCQuestion::paintEvent(QPaintEvent* pe)
 	ui.a3->setStyleSheet("background:#E1C16E;");
 	ui.a4->setStyleSheet("background:#E1C16E;");
 
+}
+
+int MCQuestion::timer()
+{
+	static int t = 30;
+	if (t < 0)
+		return t;
+	QTimer::singleShot(1 * 1000, this, &MCQuestion::timer);
+	QString str = QString::number(t);
+	ui.mcquestion->setText(str);
+	ui.mcquestion->setFont(QFont("Arial", 40));
+	t--;
 }
 
 void MCQuestion::a1Clicked()
