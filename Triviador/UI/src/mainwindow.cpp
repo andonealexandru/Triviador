@@ -1,15 +1,26 @@
 #include "mainwindow.h"
 #include "Login.h"
 #include "Register.h"
+#include "Profile.h"
 #include <QPainter>
+#include <QMessageBox>
+#include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
 
-MainWindow::MainWindow(QWidget* parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+
+using json = nlohmann::json;
+
+MainWindow::MainWindow(QWidget* parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+    , loginWindow(nullptr)
+    , registerWindow(nullptr)
+    , lobbyWindow(nullptr)
 {
     //ui = new Ui::MainWindow();
     ui->setupUi(this);
     ui->startButton->setVisible(false);
+    ui->profileButton->setVisible(true);
 }
 
 void MainWindow::paintEvent(QPaintEvent* pe)
@@ -22,6 +33,10 @@ void MainWindow::paintEvent(QPaintEvent* pe)
     int widHeight = this->ui->centralwidget->height();
     px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
     paint.drawPixmap(0, 0, px);
+    ui->startButton->setStyleSheet("background:#E1C16E;");
+    ui->openButton->setStyleSheet("background:#E1C16E;");
+    ui->openButton_2->setStyleSheet("background:#E1C16E;");
+    ui->profileButton->setStyleSheet("background:#E1C16E;");
 }
 
 MainWindow::~MainWindow()
@@ -33,6 +48,7 @@ void MainWindow::changePageAfterLogin()
 {
     ui->openButton->deleteLater();
     ui->openButton_2->deleteLater();
+    user = loginWindow->GetUser();
     ui->startButton->setVisible(true);
     delete loginWindow;
 }
@@ -41,9 +57,17 @@ void MainWindow::changePageAfterRegister()
 {
     ui->openButton->deleteLater();
     ui->openButton_2->deleteLater();
+    user = registerWindow->GetUser();
     ui->startButton->setVisible(true);
     delete registerWindow;
 }
+
+void MainWindow::changePageAfterLobby()
+{
+    delete lobbyWindow;
+    // TODO: the game window should start
+}
+
 
 void MainWindow::changePageAfterExitRegister()
 {
@@ -53,6 +77,16 @@ void MainWindow::changePageAfterExitRegister()
 void MainWindow::changePageAfterExitLogin()
 {
     delete loginWindow;
+}
+
+void MainWindow::changePageAfterExitLobby()
+{
+    delete lobbyWindow;
+}
+
+void MainWindow::changePageAfterExitProfile()
+{
+    delete profileWindow;
 }
 
 
@@ -71,4 +105,42 @@ void MainWindow::on_openButton_2_clicked()
     QObject::connect(loginWindow, SIGNAL(pushButtonExitPressed()), this, SLOT(changePageAfterExitLogin()));
     loginWindow->show();
 }
+
+void MainWindow::on_profileButton_clicked()
+{
+    profileWindow = new Profile();
+    QObject::connect(profileWindow, SIGNAL(pushButtonExitPressed()), this, SLOT(changePageAfterExitProfile()));
+    profileWindow->show();
+}
+
+void MainWindow::on_startButton_clicked()
+{
+    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/lobby/join"},
+                                       cpr::Body(to_string(json())),
+                                       cpr::Header{{"ID", std::to_string(user.GetId())}});
+
+    switch(response.status_code)
+    {
+        case 400:
+            QMessageBox::warning(this, " ", "Eroare de server.");
+            break;
+        case 409:
+            QMessageBox::warning(this, " ", "Utilizatorul exista deja.");
+            break;
+        case 201:
+            QMessageBox::information(this, " ", "Utilizatorul a fost creat.");
+            break;
+        default:
+            break;
+    }
+
+    lobbyWindow = new Lobby(user);
+    QObject::connect(lobbyWindow, SIGNAL(startButtonPressed()), this, SLOT(changePageAfterLobby()));
+    QObject::connect(lobbyWindow, SIGNAL(exitButtonPressed()), this, SLOT(changePageAfterExitLobby()));
+    lobbyWindow->show();
+    this->hide();
+}
+
+
+
 
