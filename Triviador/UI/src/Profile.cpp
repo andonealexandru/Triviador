@@ -1,4 +1,8 @@
 #include "Profile.h"
+#include <QLabel>
+#include <QPixmap>
+#include <QVBoxLayout>
+#include <QWidget>
 
 Profile::Profile(QWidget *parent)
 	: QMainWindow(parent)
@@ -17,6 +21,7 @@ void Profile::paintEvent(QPaintEvent* pe)
 	int widHeight = this->ui.centralWidget->height();
 	px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
 	paint.drawPixmap(0, 0, px);
+
 }
 
 void Profile::on_pushButtonExit_clicked()

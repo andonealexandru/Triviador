@@ -6,21 +6,26 @@
 #include <QtWidgets/QApplication>
 #include <fstream>
 #include <Qstring>
+#include"Register.h"
 
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
+
     MainWindow w;
     Map map;
    // NumericQuestion nq;
     Profile profile;
-    //profile.show();
     MCQuestion mcq(2, "intrebare", { "r1","r2","r3","r4" },1,0,1);
     mcq.setQuestion();
-    w.show();
+    //w.show();
     //map.show();
     //nq.show();
     //mcq.show();
+    //profile.show();
+   Register r;
+    r.show();
+   
 
     return a.exec();
 }
