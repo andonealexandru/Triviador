@@ -28,7 +28,7 @@ file(GLOB_RECURSE SOURCES
 set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_AUTOUIC_SEARCH_PATHS} ${FORMS_DIR})
 
 # Add the executable
-add_executable(GUI ${SOURCES})
+add_executable(GUI ${SOURCES} src/lobby.cpp include/lobby.h forms/lobby.ui)
 
 target_include_directories(GUI 
     PUBLIC
@@ -42,6 +42,7 @@ target_include_directories(GUI
 #===================== LINKING LIBRARIES =======================#
 target_link_libraries(GUI
         Qt6::Widgets
+        Database
         cpr::cpr
         nlohmann_json::nlohmann_json
 )

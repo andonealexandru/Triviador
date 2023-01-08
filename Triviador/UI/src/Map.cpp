@@ -1,14 +1,18 @@
 #include "Map.h"
 #include <QPainter>
 #include <QColor>
+#include <QLabel>
 #include "Tile.h"
+#include <QBrush>
 
 Map::Map(QWidget* parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
 	g.ReadMap();
+	
 }
+
 
 Map::~Map()
 {}
@@ -41,7 +45,26 @@ void Map::paintEvent(QPaintEvent* event)
 		for (Tile tt : t)
 			if (tt.getParentRegion()->GetNumber()==1&&!tt.IsBorder())
 				painter.drawPixmap(tt.GetCoordinate().first * sectorWidth, tt.GetCoordinate().second * sectorHeight, pixmap);
+
+	//paint score
+
+	QPainter painter1(this);
+
+	QFont font("Arial", 48, QFont::Bold);
+	painter1.setFont(font);
+	QPen pen(Qt::black,2);
+	QBrush brush(Qt::blue);
+	painter1.setPen(pen);
+	painter1.setBrush(brush);
+	
+	QRect rect(50, 50, 100, 100);
+	painter1.drawEllipse(rect);
+	QString s = QString::number(300);
+	
+	painter1.drawText(rect, Qt::AlignCenter, s);
+
 }
+
 
 void Map::mouseReleaseEvent(QMouseEvent* ev)
 {

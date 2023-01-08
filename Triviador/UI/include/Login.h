@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include "ui_Login.h"
+#include <User.h>
 
 class Login : public QMainWindow
 {
@@ -11,6 +12,8 @@ public:
 	Login(QWidget* parent = nullptr);
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	~Login();
+
+    DB::User GetUser() const;
 
 signals:
 	void pushButtonPressed();
@@ -23,5 +26,6 @@ private slots:
 
 
 private:
+    DB::User* user;
 	Ui::LoginClass ui;
 };

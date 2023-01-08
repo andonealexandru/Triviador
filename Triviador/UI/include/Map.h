@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+
 class Map : public QMainWindow
 {
 	Q_OBJECT
@@ -19,5 +20,6 @@ public:
 
 private:
 	Ui::MapClass ui;
+	
 };
 
