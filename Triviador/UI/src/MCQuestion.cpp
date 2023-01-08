@@ -30,6 +30,7 @@ MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::
 	if (!ho3)ui.ho3->setVisible(false);
 
 	timer();
+	setQuestion();
 }
 
 void MCQuestion::setQuestion()
@@ -55,6 +56,9 @@ void MCQuestion::paintEvent(QPaintEvent* pe)
 	ui.a2->setStyleSheet("background:#E1C16E;");
 	ui.a3->setStyleSheet("background:#E1C16E;");
 	ui.a4->setStyleSheet("background:#E1C16E;");
+	ui.ho1->setStyleSheet("background:#E1C16E;");
+	ui.ho2->setStyleSheet("background:#E1C16E;");
+	ui.ho3->setStyleSheet("background:#E1C16E;");
 
 }
 
@@ -62,7 +66,10 @@ int MCQuestion::timer()
 {
 	static int t = 30;
 	if (t < 0)
+	{
+		close();
 		return t;
+	}
 	QTimer::singleShot(1 * 1000, this, &MCQuestion::timer);
 	QString str = QString::number(t);
 	ui.mcquestion->setText(str);

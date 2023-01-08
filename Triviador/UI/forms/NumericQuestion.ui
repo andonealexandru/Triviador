@@ -53,6 +53,7 @@
        <widget class="QLabel" name="nqclock">
         <property name="font">
          <font>
+          <family>MV Boli</family>
           <pointsize>11</pointsize>
          </font>
         </property>
@@ -91,7 +92,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>35</height>
+          <height>29</height>
          </size>
         </property>
        </spacer>
@@ -106,7 +107,8 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>14</pointsize>
+          <family>MV Boli</family>
+          <pointsize>24</pointsize>
          </font>
         </property>
         <property name="text">
@@ -152,25 +154,15 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <spacer name="horizontalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QPushButton" name="ho1">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>50/50</string>
@@ -178,66 +170,30 @@
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QPushButton" name="ho2">
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Alegere raspuns</string>
           </property>
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QPushButton" name="ho3">
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Sugerare răspuns</string>
           </property>
          </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Minimum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </item>

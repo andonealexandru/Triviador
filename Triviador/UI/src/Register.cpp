@@ -23,6 +23,8 @@ void Register::paintEvent(QPaintEvent* pe)
     int widWidth = this->ui.centralWidget->width();
     int widHeight = this->ui.centralWidget->height();
     px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
+    ui.pushButton->setStyleSheet("background:#E1C16E;");
+    ui.pushButtonExit->setStyleSheet("background:#E1C16E;");
     paint.drawPixmap(0, 0, px);
 }
 

@@ -23,6 +23,12 @@
         <height>16777215</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <family>Palatino Linotype</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
       <property name="text">
        <string>Înapoi</string>
       </property>
@@ -40,7 +46,8 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>22</pointsize>
+          <family>MV Boli</family>
+          <pointsize>24</pointsize>
          </font>
         </property>
         <property name="text">
@@ -58,6 +65,12 @@
           <width>16777215</width>
           <height>20</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>MV Boli</family>
+          <pointsize>14</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>CREAZĂ-ȚI UN CONT NOU</string>
@@ -99,6 +112,12 @@
          <widget class="QLabel" name="label">
           <property name="enabled">
            <bool>true</bool>
+          </property>
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>Nume de utilizator:</string>
@@ -142,6 +161,12 @@
          <widget class="QLabel" name="label_2">
           <property name="enabled">
            <bool>true</bool>
+          </property>
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>Parola:</string>
@@ -196,6 +221,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton">
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Crează contul!</string>
           </property>

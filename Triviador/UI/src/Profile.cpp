@@ -21,6 +21,7 @@ void Profile::paintEvent(QPaintEvent* pe)
 	int widHeight = this->ui.centralWidget->height();
 	px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
 	paint.drawPixmap(0, 0, px);
+	ui.pushButtonExit->setStyleSheet("background:#E1C16E;");
 
 }
 

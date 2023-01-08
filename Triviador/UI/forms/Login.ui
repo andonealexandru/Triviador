@@ -25,6 +25,12 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <family>Palatino Linotype</family>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Înapoi</string>
         </property>
@@ -40,7 +46,8 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>22</pointsize>
+          <family>MV Boli</family>
+          <pointsize>24</pointsize>
          </font>
         </property>
         <property name="text">
@@ -58,6 +65,12 @@
           <width>16777215</width>
           <height>20</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>MV Boli</family>
+          <pointsize>14</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>AUTENTIFICĂ-TE</string>
@@ -102,6 +115,12 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="font">
+             <font>
+              <family>Palatino Linotype</family>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Nume de utilizator:</string>
             </property>
@@ -144,6 +163,12 @@
            <widget class="QLabel" name="label_2">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="font">
+             <font>
+              <family>Palatino Linotype</family>
+              <pointsize>16</pointsize>
+             </font>
             </property>
             <property name="text">
              <string>Parola:</string>
@@ -188,6 +213,12 @@
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="1">
           <widget class="QPushButton" name="pushButton">
+           <property name="font">
+            <font>
+             <family>Palatino Linotype</family>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Autentifică-te!</string>
            </property>

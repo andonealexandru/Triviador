@@ -27,8 +27,9 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
-          <bold>true</bold>
+          <family>MV Boli</family>
+          <pointsize>24</pointsize>
+          <bold>false</bold>
          </font>
         </property>
         <property name="text">
@@ -56,6 +57,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="startButton">
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Start</string>
           </property>
@@ -93,6 +100,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="openButton">
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Crează cont nou</string>
           </property>
@@ -130,6 +143,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="openButton_2">
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Autentifică-te</string>
           </property>
@@ -167,6 +186,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="profileButton">
+          <property name="font">
+           <font>
+            <family>Palatino Linotype</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Profile</string>
           </property>
