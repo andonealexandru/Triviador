@@ -5,6 +5,7 @@
 #include "ui_mainwindow.h"
 #include "Register.h"
 #include "Login.h"
+#include "Profile.h"
 #include <lobby.h>
 
 namespace Ui {
@@ -27,11 +28,13 @@ public slots:
     void changePageAfterExitRegister();
     void changePageAfterExitLogin();
     void changePageAfterExitLobby();
+    void changePageAfterExitProfile();
 
 private slots:
     void on_openButton_clicked();
     void on_openButton_2_clicked();
     void on_startButton_clicked();
+    void on_profileButton_clicked();
 
 private:
     Ui::MainWindow* ui;
@@ -39,6 +42,7 @@ private:
     Register* registerWindow;
     Login* loginWindow;
     Lobby* lobbyWindow;
+    Profile* profileWindow;
 };
 
 #endif // MAINWINDOW_H
