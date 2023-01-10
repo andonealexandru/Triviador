@@ -143,9 +143,5 @@ void Map::NextQuestion(const Map::QuestionType type, const std::string& question
          //   m_nQuestion = new NumericQuestion(question);
          //   m_nQuestion->show();
             break;
-        case QuestionType::SINGLE_CHOICE:
-        //    m_nQuestion = new NumericQuestion(question);
-         //   m_nQuestion->show();
-            break;
     }
 }
