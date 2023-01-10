@@ -4,6 +4,7 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include <Validator.h>
 
 using json = nlohmann::json;
 
@@ -42,6 +43,19 @@ void Register::on_pushButton_clicked()
 {
     QString username = ui.lineEdit_username->text();
     QString password = ui.lineEdit_password->text();
+
+    Validator validator;
+    if(!validator.ValidateUsername(username.toStdString()))
+    {
+        QMessageBox::warning(this, " ", "Numele de utilizator nu corespunde cerintelor.\nNumele trebuie sa inceapa cu cel putin 3 litere.");
+        return;
+    }
+    if(!validator.ValidatePassword(password.toStdString()))
+    {
+        QMessageBox::warning(this, " ", "Parola nu corespunde cerintelor.\nParola trebuie sa aiba cel putin 6 caractere, dintre care un cel putin un numar");
+        return;
+    }
+
 
     json userJson =
     {
