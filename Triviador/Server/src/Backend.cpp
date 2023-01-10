@@ -82,9 +82,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/lobby/players")([&](const crow::request& req) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
-        auto player = m_players.find(id);
-        if (player != m_players.end())
-            player->second = Status::InLobby;
+        ChangePlayerStatus(id, Status::InLobby);
 
         std::vector<crow::json::wvalue> res_json;
 
@@ -106,11 +104,11 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
             .methods("POST"_method)
                     ([&](const crow::request& req) {
                         auto header = req.get_header_value("ID");
+                        int id = std::stoi(header);
 
                         // TODO:check if user exists in DB
 
                         // check if user already in lobby
-                        int id = std::stoi(header);
                         auto player = m_players.find(id);
                         if (player != m_players.end())
                             return crow::response(400);
@@ -118,8 +116,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
                         // add user in lobby
                         AddPlayer(id, Status::InLobby);
                         // change all other users to playersModified
-                        for (auto & player : m_players)
-                            player.second = Status::PlayersModified;
+                        ChangeAllPlayersStatus(Status::PlayersModified);
                         return crow::response(200);
                     });
 
@@ -138,8 +135,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
                         // erase user from lobby
                         m_players.erase(player);
                         // change all other users to playersModified
-                        for (auto & player : m_players)
-                            player.second = Status::PlayersModified;
+                        ChangeAllPlayersStatus(Status::PlayersModified);
                         return crow::response(200);
                     });
 }   
@@ -159,9 +155,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             .methods("POST"_method)
                     ([&](const crow::request& req) {
                         m_status = Status::StartNewGame;
-
-                        for (auto & player : m_players)
-                            player.second = Status::StartNewGame;
+                        ChangeAllPlayersStatus(Status::StartNewGame);
 
                         GenerateNewMap(); // TODO
 
@@ -172,9 +166,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
 
-        auto currentPlayer = m_players.find(id);
-        if (currentPlayer != m_players.end())
-            currentPlayer->second = Status::InGame;
+        ChangePlayerStatus(id, Status::InGame);
 
         bool allGotMap = true;
         for (const auto& player : m_players)
@@ -182,11 +174,9 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 allGotMap = false;
 
         if (allGotMap) {
-            for (auto &player: m_players)
-                player.second = Status::FirstQuestion;
+            ChangeAllPlayersStatus(Status::FirstQuestion);
             SetNewCurrentQuestion(true);
         }
-
 
         return m_Map.GetJsonMap();
     });
@@ -195,28 +185,36 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
 
-
+        ChangePlayerStatus(id, Status::Answer);
 
         return crow::json::wvalue{
                 { "status", ToString(m_status) },
-                { "question", m_currentQuestion.GetQuestion() }
+                { "question", m_currentQuestion.GetQuestion() },
+                { "type", m_currentQuestion.GetType() }
         };
     });
-//
-//    CROW_ROUTE(app, "/game/answer")
-//            .methods("POST"_method)
-//                    ([&](const crow::request& req) {
-//                        auto header = req.get_header_value("ID");
-//                        int id = std::stoi(header);
-//
-//                        playerVector.push_back(m_players.at(id)); // make set and add pair (ID, answer)
-//                        if (playerVector.size() == m_players.size()) {
-//                            m_status = Status::BaseChoice;
-//                            playerVector.empty();
-//                            SetNewCurrentQuestion();
-//                        }
-//                        return crow::response(200);
-//                    });
+
+    CROW_ROUTE(app, "/game/answer").methods("POST"_method)([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        auto body = crow::json::load(req.body);
+        if (!body)
+            return crow::response(400);
+
+        ChangePlayerStatus(id, Status::WaitingForAnswers);
+
+        if (body["answer"].s() != "NoAnswer")
+            AddPlayerAnswer(id, body["answer"].i(), body["timeRemaining"].i());
+        else AddPlayerAnswer(id, -1, 0);
+
+        if (m_playerAnswers.size() == m_players.size()) {
+            GeneratePlayerRanking();
+            ChangeAllPlayersStatus(Status::AllPlayersAnswered);
+        }
+
+        return crow::response(200);
+    });
 
 }
 
@@ -245,6 +243,8 @@ const std::string Server::Backend::ToString(Server::Backend::Status s) {
         case Server::Backend::Status::StartNewGame: return "StartNewGame";
         case Server::Backend::Status::WaitingForAnswers: return "WaitingForAnswers";
         case Server::Backend::Status::MapChanged: return "MapChanged";
+        case Server::Backend::Status::Answer: return "Answer";
+        case Server::Backend::Status::AllPlayersAnswered: return "AllPlayersAnswered";
         default: return "Unknown";
     }
 }
@@ -274,3 +274,51 @@ void Server::Backend::GenerateNewMap() {
     // TODO: initialize map?
 }
 
+void Server::Backend::ErasePlayerAnswers() {
+    m_playerAnswers.clear();
+}
+
+void Server::Backend::AddPlayerAnswer(int id, int answer, int timeRemaining) {
+    m_playerAnswers.insert_or_assign(id, std::make_pair(answer, timeRemaining));
+}
+
+int Server::Backend::ChangePlayerStatus(int playerId, Server::Backend::Status status) {
+    auto currentPlayer = m_players.find(playerId);
+    if (currentPlayer != m_players.end()) {
+        currentPlayer->second = status;
+        return 0;
+    }
+    return -1;
+}
+
+int Server::Backend::ChangeAllPlayersStatus(Server::Backend::Status status) {
+    for (auto & player : m_players)
+        player.second = status;
+    return 0;
+}
+
+void Server::Backend::GeneratePlayerRanking() {
+    // get correct answer
+    int correctAnswer = m_currentQuestion.GetAnswer();
+    std::vector<std::pair<int, int>> differences;
+    for (const auto& answer : m_playerAnswers) {
+        m_playerRanking.push_back(answer.first); // player id
+        if (answer.second.first == -1) // did not answer
+            differences.push_back(std::make_pair(INT_MAX, answer.second.second)); // biggest difference
+        else differences.push_back(std::make_pair(abs(answer.second.first - correctAnswer),
+                                                  answer.second.second)); // answer - correctAnswer, time remaining
+    }
+    // sort
+    for (int i = 0; i < differences.size() - 1; ++i) {
+        for (int j = i+1; j < differences.size(); ++j) {
+            if (differences[i].first < differences[j].first) {
+                std::swap(differences[i], differences[j]);
+                std::swap(m_playerRanking[i], m_playerRanking[j]);
+            }
+            else if (differences[i].first == differences[j].first && differences[i].second < differences[j].second) {
+                std::swap(differences[i], differences[j]);
+                std::swap(m_playerRanking[i], m_playerRanking[j]);
+            }
+        }
+    }
+}

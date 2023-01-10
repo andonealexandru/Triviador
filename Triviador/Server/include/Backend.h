@@ -25,6 +25,8 @@ namespace Server
             RegionChoice,
             WaitingForAnswers,
             MapChanged,
+            Answer,
+            AllPlayersAnswered,
         };
 	public:
 
@@ -40,6 +42,11 @@ namespace Server
         void AddPlayer(int id, Status status);
         void GenerateNewMap();
         void SetNewCurrentQuestion(bool numeric = false);
+        void AddPlayerAnswer(int id, int answer, int timeRemaining);
+        void ErasePlayerAnswers();
+        int ChangePlayerStatus(int playerId, Status status);
+        int ChangeAllPlayersStatus(Status status);
+        void GeneratePlayerRanking();
 
     private:
 		Backend(Backend&&) = delete;
@@ -52,6 +59,8 @@ namespace Server
         Status m_status;
         std::unordered_map<int, Status> m_players;
         DB::Question m_currentQuestion;
+        std::unordered_map<int, std::pair<int, int>> m_playerAnswers;
+        std::vector<int> m_playerRanking;
         Server::Map m_Map;
 	};
 }
