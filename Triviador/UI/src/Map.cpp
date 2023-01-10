@@ -4,18 +4,29 @@
 #include <QLabel>
 #include "Tile.h"
 #include <QBrush>
+#include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
 
-Map::Map(QWidget* parent)
-	: QMainWindow(parent)
+using json = nlohmann::json;
+
+Map::Map(DB::User* user, QWidget* parent)
+	: QMainWindow{parent}
+    , m_user{user}
+    , m_timer{new QTimer{this}}
 {
 	ui.setupUi(this);
 	g.ReadMap();
-	
+    connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Map::OnGoing));
+    m_timer->start(5000);
+
 }
 
 
 Map::~Map()
-{}
+{
+    delete m_user;
+    delete m_timer;
+}
 
 void Map::paintEvent(QPaintEvent* event)
 {
@@ -90,4 +101,51 @@ void Map::mouseReleaseEvent(QMouseEvent* ev)
 		if (ok == 1)
 			break;
 	}
+}
+
+void Map::OnGoing()
+{
+    cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/game"},
+                                      cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+
+    auto status = json::parse(response.text)["status"].get<std::string>();
+    if(status == "InGame")
+    {
+        return;
+    }
+    else if(status == "StartNewGame")
+    {
+        cpr::Response mapResponse = cpr::Get(cpr::Url{"localhost:18080/game/map/first"},
+                                          cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+
+        auto map = json::parse(mapResponse.text)[""];
+        g.ReadMap();
+    }
+    else if(status == "FirstQuestion")
+    {
+
+        cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/game/firstQuestion"},
+                                          cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+        auto question = json::parse(response.text)["question"].get<std::string>();
+        NextQuestion(QuestionType::NUMERIC, question);
+    }
+}
+
+void Map::NextQuestion(const Map::QuestionType type, const std::string& question)
+{
+    switch(type)
+    {
+        case QuestionType::MULTIPLE_CHOICE:
+          //  m_Question = new MCQuestion(question);
+          //  m_nQuestion->show();
+            break;
+        case QuestionType::NUMERIC:
+         //   m_nQuestion = new NumericQuestion(question);
+         //   m_nQuestion->show();
+            break;
+        case QuestionType::SINGLE_CHOICE:
+        //    m_nQuestion = new NumericQuestion(question);
+         //   m_nQuestion->show();
+            break;
+    }
 }
