@@ -7,6 +7,7 @@
 #include "Login.h"
 #include "Profile.h"
 #include <lobby.h>
+#include <Map.h>
 
 namespace Ui {
     class MainWindow;
@@ -43,6 +44,7 @@ private:
     Login* loginWindow;
     Lobby* lobbyWindow;
     Profile* profileWindow;
+    Map* gameWindow;
 };
 
 #endif // MAINWINDOW_H
