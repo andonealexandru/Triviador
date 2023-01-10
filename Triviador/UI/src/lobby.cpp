@@ -11,14 +11,15 @@ Lobby::Lobby(DB::User user, QWidget *parent)
     : QMainWindow{ parent }
     , ui{ new Ui::Lobby }
     , m_user{ user }
-    , timer{ new QTimer{this} }
+    , m_timer{ new QTimer{this} }
     , m_players{}
 {
     ui->setupUi(this);
     UpdateUsers();
     ShowUsers();
-    connect(timer, &QTimer::timeout, this, QOverload<>::of(&Lobby::Active));
-    timer->start(5000);
+    connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Lobby::Active));
+    m_timer->start(5000);
+    ui->startButton->setEnabled(false);
 }
 
 
@@ -37,19 +38,22 @@ void Lobby::paintEvent(QPaintEvent* pe)
 Lobby::~Lobby()
 {
     delete ui;
-    delete timer;
+    delete m_timer;
 }
 
 void Lobby::on_startButton_clicked()
 {
-    emit startButtonPressed();
+    if(m_players.size() >= 2)
+    {
+        cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/start"});
+        emit startButtonPressed();
+    }
 }
 
 void Lobby::on_exitButton_clicked()
 {
-    cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/lobby/leave"},
+    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/lobby/leave"},
                                       cpr::Header{{"ID", std::to_string(m_user.GetId())}});
-
     emit exitButtonPressed();
 }
 
@@ -67,6 +71,8 @@ void Lobby::UpdateUsers()
         auto name = player["name"].get<std::string>();
         m_players.emplace_back(DB::User(id, name, ""));
     }
+    if(m_players.size() >= 2)
+        ui->startButton->setEnabled(true);
 }
 
 void Lobby::ShowUsers() const
@@ -95,6 +101,6 @@ void Lobby::Active()
     }
     else if(status == "InGame")
     {
-        // TODO ..
+        emit startButtonPressed();
     }
 }
