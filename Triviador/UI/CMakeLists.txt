@@ -45,6 +45,7 @@ target_link_libraries(GUI
         Database
         cpr::cpr
         nlohmann_json::nlohmann_json
+        Validator
 )
 
 add_definitions(-DRESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/Resources")
