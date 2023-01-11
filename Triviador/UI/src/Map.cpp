@@ -10,15 +10,17 @@
 using json = nlohmann::json;
 
 Map::Map(DB::User* user, QWidget* parent)
-	: QMainWindow{parent}
-    , m_user{user}
-    , m_timer{new QTimer{this}}
+	: QMainWindow{ parent }
+    , m_user{ user }
+    , m_timer{ new QTimer{this} }
+    , m_question{ nullptr }
+    , m_nQuestion{ nullptr }
+    , m_duelResult{ nullptr }
 {
 	ui.setupUi(this);
 	g.ReadMap();
     connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Map::OnGoing));
     m_timer->start(5000);
-
 }
 
 
@@ -132,6 +134,19 @@ void Map::mouseReleaseEvent(QMouseEvent* ev)
 	}
 }
 
+void Map::NumericAnswerSent()
+{
+    SendAnswer(m_nQuestion->GetAnswer(), m_nQuestion->GetRemainingTime());
+    delete m_nQuestion;
+}
+
+void Map::AnswerSent()
+{
+    SendAnswer(m_question->GetSelection(), m_question->GetRemainingTime());
+    delete m_question;
+}
+
+
 void Map::OnGoing()
 {
     cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/game"},
@@ -147,30 +162,94 @@ void Map::OnGoing()
         cpr::Response mapResponse = cpr::Get(cpr::Url{"localhost:18080/game/map/first"},
                                           cpr::Header{{"ID", std::to_string(m_user->GetId())}});
 
-        auto map = json::parse(mapResponse.text)[""];
-        g.ReadMap();
+        auto mapId = json::parse(mapResponse.text)["mapId"].get<int>();
+        g.ReadMap(mapId);
     }
     else if(status == "FirstQuestion")
     {
-
         cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/game/firstQuestion"},
                                           cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+
         auto question = json::parse(response.text)["question"].get<std::string>();
         NextQuestion(QuestionType::NUMERIC, question);
     }
+    else if(status == "WaitingForAnswers")
+    {
+        return;
+    }
+    else if(status == "AllPlayersAnswered")
+    {
+        cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/game/allAnswers"},
+                                          cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+        auto answers = json::parse(response.text)["answers"].get<std::vector<json>>();
+
+        std::vector<std::tuple<int, std::string, int>> players;
+        for(const auto& answer : answers)
+        {
+            auto timeRemaining = json::parse(to_string(answer))["timeRemaining"].get<int>();
+            auto name = json::parse(to_string(answer))["name"].get<std::string>();
+            auto playerAnswer = json::parse(to_string(answer))["answer"].get<int>();
+            players.emplace_back(std::make_tuple(timeRemaining, name, playerAnswer));
+        }
+        ShowResults(players);
+    }
+    else if(status == "RegionQuestion")
+    {
+       // TODO
+    }
 }
 
-void Map::NextQuestion(const Map::QuestionType type, const std::string& question)
+void Map::NextQuestion(const Map::QuestionType type, const std::string& question, const std::vector<std::pair<uint32_t, std::string>>* answers)
 {
     switch(type)
     {
         case QuestionType::MULTIPLE_CHOICE:
-          //  m_Question = new MCQuestion(question);
-          //  m_nQuestion->show();
+            m_question = new MCQuestion(question, *answers);
+            QObject::connect(m_question, SIGNAL(clicked()), this, SLOT(AnswerSent()));
+            m_nQuestion->show();
             break;
         case QuestionType::NUMERIC:
-         //   m_nQuestion = new NumericQuestion(question);
-         //   m_nQuestion->show();
+            m_nQuestion = new NumericQuestion(question);
+            QObject::connect(m_nQuestion, SIGNAL(sendButtonPressed()), this, SLOT(NumericAnswerSent()));
+            m_nQuestion->show();
             break;
     }
 }
+
+void Map::SendAnswer(const std::variant<int, std::string>& answer, int remainingTime) const
+{
+    std::visit([&](auto& arg)
+    {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::string>)
+        {
+            json body =
+            {
+                {"answer", arg},
+                {"timeRemaining", std::to_string(remainingTime)},
+            };
+            cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/answer"},
+                                               cpr::Body{to_string(body)},
+                                               cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+        }
+        else
+        {
+            json body =
+            {
+                {"answer", arg},
+                {"timeRemaining", std::to_string(remainingTime)},
+            };
+            cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/answer"},
+                                               cpr::Body{to_string(body)},
+                                               cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+        }
+    }, answer);
+}
+
+void Map::ShowResults(const std::vector<std::tuple<int, std::string, int>>& players)
+{
+    m_duelResult = new DuelResult{ players };
+    m_duelResult->show();
+    QTimer::singleShot(5000, this, [&](){ delete m_duelResult; });
+}
+

@@ -9,14 +9,14 @@
 #include <User.h>
 #include <MCQuestion.h>
 #include <NumericQuestion.h>
-
+#include <DuelResult.h>
 
 class Map : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	Map(DB::User* = nullptr,QWidget *parent = nullptr);
+	Map(DB::User* = nullptr, QWidget *parent = nullptr);
 	~Map();
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void mouseReleaseEvent(QMouseEvent* ev);
@@ -30,7 +30,13 @@ private:
     };
 
     void OnGoing();
-    void NextQuestion(const QuestionType type, const std::string& question);
+    void NextQuestion(const QuestionType type, const std::string& question, const std::vector<std::pair<uint32_t, std::string>>* answers = nullptr);
+    void SendAnswer(const std::variant<int, std::string>& answer, int remainingTime) const;
+    void ShowResults(const std::vector<std::tuple<int, std::string, int>>& players);
+
+public slots:
+    void NumericAnswerSent();
+    void AnswerSent();
 
 private:
 	Ui::MapClass ui;
@@ -38,5 +44,6 @@ private:
     QTimer* m_timer;
     MCQuestion* m_question;
     NumericQuestion* m_nQuestion;
+    DuelResult* m_duelResult;
 };
 
