@@ -3,8 +3,10 @@
 void Game::ReadMap()
 {
     std::ifstream f;
-    f.open("F:/AN_2/harta.txt");
-    m_type = 4; //TODO: change when map is ready
+    std::string mapPath = std::string(RESOURCE_DIR) + "/3.txt";
+
+    f.open(mapPath.data());
+    m_type = 24; //TODO: change when map is ready
     for (int i = 0;i <= m_type;i++)
     {
         auto x = std::make_shared<Region>(0,0,i); 
@@ -117,6 +119,11 @@ void Game::PrintTiles() const
 uint8_t Game::getType()
 {
     return m_type;
+}
+
+void Game::setType(uint8_t type)
+{
+    m_type = type;
 }
 
 std::vector<std::shared_ptr<Region>> Game::getMap()

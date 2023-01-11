@@ -15,13 +15,14 @@ int main(int argc, char* argv[])
     QApplication a(argc, argv);
     MainWindow w;
     Map map;
-    NumericQuestion nq(3, "intrebare", 1, 1, 1);
+    //NumericQuestion nq(3, "intrebare", 1, 1, 1);
     MCQuestion mcq(2, "intrebare", { "r1","r2","r3","r4" }, 1, 0, 1);
    
     //DuelResult dr({ "Iulian","Eduard","Mihai" });
     //dr.show();
     //w.show();
-    mcq.show();
+    //mcq.show();
+    map.show();
 
     return a.exec();
 }
