@@ -8,13 +8,14 @@
 class Game
 {
 public:
-    static const int HEIGHT = 100;
-    static const int WIDTH = 100;
+    static const int HEIGHT = 112;
+    static const int WIDTH = 300;
 
     void ReadMap();
     void PrintMap() const;   
     void PrintTiles() const;
     uint8_t getType();
+    void setType(uint8_t type);
     std::vector<std::shared_ptr<Region>>getMap();
     std::vector<std::vector<Tile>> getTiles();
 
