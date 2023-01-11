@@ -1,6 +1,7 @@
 #ifndef TRIVIADOR_MAP_H
 #define TRIVIADOR_MAP_H
 
+#include <memory>
 #include <array>
 #include <crow.h>
 
@@ -11,14 +12,14 @@ namespace Server {
     public:
         Map() = default;
 
-        std::vector<Region>& GetRegions();
+        const std::vector<std::shared_ptr<Region>>& GetRegions() const;
 
         int GetId();
         void GenerateThreePlayerMap();
 
     private:
         int m_Id;
-        std::vector<Region> m_Regions;
+        std::vector<std::shared_ptr<Region>> m_Regions;
     };
 }
 

@@ -9,7 +9,7 @@ namespace Server {
     public:
         // constructors
         Region();
-        Region(int id);
+        explicit Region(int id);
 
         ~Region() = default;
 
@@ -24,12 +24,12 @@ namespace Server {
         bool IsBase() const;
 
         // others
-        void AddAdjacentRegion(std::shared_ptr<Region> region);
+        void AddAdjacentRegion(const std::weak_ptr<Region> &region);
 
     private:
         int m_Id;
         int m_UserId;
-        std::vector<std::shared_ptr<Region>> m_AdjacentRegions;
+        std::vector<std::weak_ptr<Region>> m_AdjacentRegions;
         bool m_isBase;
     };
 }
