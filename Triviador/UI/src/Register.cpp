@@ -9,6 +9,7 @@ using json = nlohmann::json;
 
 Register::Register(QWidget *parent)
 	: QMainWindow(parent)
+    , user(nullptr)
 {
 	ui.setupUi(this);
 }
@@ -22,11 +23,15 @@ void Register::paintEvent(QPaintEvent* pe)
     int widWidth = this->ui.centralWidget->width();
     int widHeight = this->ui.centralWidget->height();
     px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
+    ui.pushButton->setStyleSheet("background:#E1C16E;");
+    ui.pushButtonExit->setStyleSheet("background:#E1C16E;");
     paint.drawPixmap(0, 0, px);
 }
 
 Register::~Register()
-{}
+{
+    delete user;
+}
 
 void Register::on_pushButtonExit_clicked()
 {
@@ -38,14 +43,14 @@ void Register::on_pushButton_clicked()
     QString username = ui.lineEdit_username->text();
     QString password = ui.lineEdit_password->text();
 
-    json user =
+    json userJson =
     {
         {"name", username.toStdString()},
         {"password", password.toStdString()},
     };
 
     cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/register"},
-                                    cpr::Body{to_string(user)});
+                                    cpr::Body{to_string(userJson)});
 
     switch(response.status_code)
     {
@@ -62,5 +67,13 @@ void Register::on_pushButton_clicked()
             break;
     }
 
+    int id = json::parse(response.text)["ID"].get<int>();
+    user = new DB::User(id, username.toStdString(), password.toStdString());
+
 	emit pushButtonPressed();
+}
+
+DB::User Register::GetUser() const
+{
+    return *user;
 }
