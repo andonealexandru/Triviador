@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>748</width>
-    <height>473</height>
+    <height>511</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -154,7 +154,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="ho1">
+         <widget class="QPushButton" name="sendButton">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -165,7 +165,7 @@
            </font>
           </property>
           <property name="text">
-           <string>50/50</string>
+           <string>Trimiter răspuns</string>
           </property>
          </widget>
         </item>
@@ -178,7 +178,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Alegere raspuns</string>
+           <string>Alegere răspuns</string>
           </property>
          </widget>
         </item>

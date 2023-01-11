@@ -8,14 +8,13 @@
 #include <Qstring>
 #include "SugestionAnswer.h"
 #include "..\include\NumericQuestion.h"
+#include <Validator.h>
 
-NumericQuestion::NumericQuestion(int correctAnswer, std::string question, bool ho1, bool ho2, bool ho3, QWidget *parent)
-	: m_correctAnswer(correctAnswer),
-    m_question(question),
-    m_ho1(ho1),
-    m_ho2(ho2),
-    m_ho3(ho3),
-    QMainWindow(parent)
+NumericQuestion::NumericQuestion(const std::string& question, QWidget *parent)
+	: m_question(question)
+    , m_answer(-1)
+    , m_t(30)
+    , QMainWindow(parent)
 {
 	ui.setupUi(this);
 	ui.nqquestion->setText(QString::fromStdString(m_question));
@@ -26,10 +25,15 @@ NumericQuestion::NumericQuestion(int correctAnswer, std::string question, bool h
     connect(ui.ho2, SIGNAL(clicked()), this, SLOT(ho2Clicked()));
 
 
-    if (!ho1)ui.ho1->setVisible(false);
-    if (!ho2)ui.ho2->setVisible(false);
-    if (!ho3)ui.ho3->setVisible(false);
+    ui.sendButton->setVisible(true);
+    ui.sendButton->setEnabled(true);
+    ui.ho2->setVisible(true);
+    ui.ho3->setVisible(true);
 }
+
+NumericQuestion::~NumericQuestion()
+{}
+
 
 int NumericQuestion::timer()
 {
@@ -45,9 +49,9 @@ int NumericQuestion::timer()
     m_t--;
 }
 
-void NumericQuestion::setSugestionAnswer(std::string question, std::vector<std::string> answers,int t)
+void NumericQuestion::setSugestionAnswer(const std::string& question, const std::vector<std::string>& answers)
 {
-    m_sa = new SugestionAnswer(question, answers,m_t);
+    m_sa = new SugestionAnswer(question, answers, m_t);
 }
 
 void NumericQuestion::paintEvent(QPaintEvent* pe)
@@ -60,7 +64,7 @@ void NumericQuestion::paintEvent(QPaintEvent* pe)
     int widHeight = this->ui.centralWidget->height();
     px = px.scaled(widWidth, widHeight, Qt::IgnoreAspectRatio);
     paint.drawPixmap(0, 0, px);
-    ui.ho1->setStyleSheet("background:#E1C16E;");
+    ui.sendButton->setStyleSheet("background:#E1C16E;");
     ui.ho2->setStyleSheet("background:#E1C16E;"); 
     ui.ho3->setStyleSheet("background:#E1C16E;");
 }
@@ -74,7 +78,7 @@ void NumericQuestion::ho3Clicked()
 
 void NumericQuestion::ho2Clicked()
 {
-    setSugestionAnswer("intrebare", { "a","b","c","d" },m_t);
+    setSugestionAnswer("intrebare", { "a","b","c","d" });
 
     QObject::connect(m_sa, SIGNAL(a1Pressed()), this, SLOT(changePageAfterA1()));
     QObject::connect(m_sa, SIGNAL(a2Pressed()), this, SLOT(changePageAfterA2()));
@@ -108,9 +112,24 @@ void NumericQuestion::changePageAfterA3()
 void NumericQuestion::changePageAfterA4()
 {
     ui.nqanswer->setText(QString::fromStdString(m_sa->GetAnswers()[3]));
-        delete m_sa;
-
+    delete m_sa;
 }
 
-NumericQuestion::~NumericQuestion()
-{}
+void NumericQuestion::on_sendButton_clicked()
+{
+    m_answer = ui.nqanswer->text().toInt();
+    emit sendButtonPressed();
+}
+
+int NumericQuestion::GetAnswer() const
+{
+    return m_answer;
+}
+
+int NumericQuestion::GetRemainingTime() const
+{
+    return m_t;
+}
+
+
+
