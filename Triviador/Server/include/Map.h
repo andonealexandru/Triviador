@@ -4,16 +4,21 @@
 #include <array>
 #include <crow.h>
 
+#include "Region.h"
+
 namespace Server {
     class Map {
     public:
-        Map();
-        Map(int playersNumber);
+        Map() = default;
 
-        crow::json::wvalue GetJsonMap();
+        std::vector<Region>& GetRegions();
+
+        int GetId();
+        void GenerateThreePlayerMap();
 
     private:
-        std::array<std::array<int, 6>, 6> m_Map;
+        int m_Id;
+        std::vector<Region> m_Regions;
     };
 }
 

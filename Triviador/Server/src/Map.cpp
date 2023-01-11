@@ -2,35 +2,110 @@
 
 #include <vector>
 
-Server::Map::Map(int playersNumber) {
-    //TODO: change based on player number
-
-    m_Map[0] = {1, 1, 2, 2, 3, 4};
-    m_Map[1] = {1, 2, 2, 3, 3, 4};
-    m_Map[2] = {1, 1, 5, 3, 4, 4};
-    m_Map[3] = {5, 5, 5, 6, 6, 7};
-    m_Map[4] = {8, 8, 6, 6, 7, 7};
-    m_Map[5] = {8, 8, 8, 7, 7, 7};
-
+int Server::Map::GetId() {
+    return m_Id;
 }
 
-crow::json::wvalue Server::Map::GetJsonMap() {
-    std::vector<crow::json::wvalue> res;
+void Server::Map::GenerateThreePlayerMap() {
+    m_Id = 2;
+    m_Regions.resize(15);
 
-    for (const auto& line : m_Map) {
-        std::vector<crow::json::wvalue> temp;
-        for (const auto& item : line)
-            temp.push_back(crow::json::wvalue{ item });
-        res.push_back(crow::json::wvalue{ temp });
-    }
-    return crow::json::wvalue{ res };
+    for (int i = 0; i < 15; i++)
+        m_Regions[i].SetId(i+1);
+
+    // 1st region
+    m_Regions[0].AddAdjacentRegion(std::make_shared<Region>(m_Regions[8]));
+    m_Regions[0].AddAdjacentRegion(std::make_shared<Region>(m_Regions[12]));
+    m_Regions[0].AddAdjacentRegion(std::make_shared<Region>(m_Regions[14]));
+    m_Regions[0].AddAdjacentRegion(std::make_shared<Region>(m_Regions[6]));
+    m_Regions[0].AddAdjacentRegion(std::make_shared<Region>(m_Regions[10]));
+    m_Regions[0].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+
+    // 2nd region
+    m_Regions[1].AddAdjacentRegion(std::make_shared<Region>(m_Regions[2]));
+    m_Regions[1].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+    m_Regions[1].AddAdjacentRegion(std::make_shared<Region>(m_Regions[3]));
+
+    // 3rd region
+    m_Regions[2].AddAdjacentRegion(std::make_shared<Region>(m_Regions[1]));
+    m_Regions[2].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+    m_Regions[2].AddAdjacentRegion(std::make_shared<Region>(m_Regions[10]));
+    m_Regions[2].AddAdjacentRegion(std::make_shared<Region>(m_Regions[9]));
+
+    // 4th region
+    m_Regions[3].AddAdjacentRegion(std::make_shared<Region>(m_Regions[1]));
+    m_Regions[3].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+    m_Regions[3].AddAdjacentRegion(std::make_shared<Region>(m_Regions[5]));
+
+    // 5th region
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[1]));
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[3]));
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[5]));
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[7]));
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[8]));
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[0]));
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[10]));
+    m_Regions[4].AddAdjacentRegion(std::make_shared<Region>(m_Regions[2]));
+
+    // 6th region
+    m_Regions[5].AddAdjacentRegion(std::make_shared<Region>(m_Regions[3]));
+    m_Regions[5].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+    m_Regions[5].AddAdjacentRegion(std::make_shared<Region>(m_Regions[7]));
+
+    // 7th region
+    m_Regions[6].AddAdjacentRegion(std::make_shared<Region>(m_Regions[10]));
+    m_Regions[6].AddAdjacentRegion(std::make_shared<Region>(m_Regions[11]));
+    m_Regions[6].AddAdjacentRegion(std::make_shared<Region>(m_Regions[13]));
+    m_Regions[6].AddAdjacentRegion(std::make_shared<Region>(m_Regions[14]));
+    m_Regions[6].AddAdjacentRegion(std::make_shared<Region>(m_Regions[0]));
+
+    // 8th region
+    m_Regions[7].AddAdjacentRegion(std::make_shared<Region>(m_Regions[5]));
+    m_Regions[7].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+    m_Regions[7].AddAdjacentRegion(std::make_shared<Region>(m_Regions[8]));
+
+    // 9th region
+    m_Regions[8].AddAdjacentRegion(std::make_shared<Region>(m_Regions[7]));
+    m_Regions[8].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+    m_Regions[8].AddAdjacentRegion(std::make_shared<Region>(m_Regions[0]));
+    m_Regions[8].AddAdjacentRegion(std::make_shared<Region>(m_Regions[12]));
+
+    // 10th region
+    m_Regions[9].AddAdjacentRegion(std::make_shared<Region>(m_Regions[2]));
+    m_Regions[9].AddAdjacentRegion(std::make_shared<Region>(m_Regions[10]));
+    m_Regions[9].AddAdjacentRegion(std::make_shared<Region>(m_Regions[11]));
+
+    // 11th region
+    m_Regions[10].AddAdjacentRegion(std::make_shared<Region>(m_Regions[9]));
+    m_Regions[10].AddAdjacentRegion(std::make_shared<Region>(m_Regions[2]));
+    m_Regions[10].AddAdjacentRegion(std::make_shared<Region>(m_Regions[4]));
+    m_Regions[10].AddAdjacentRegion(std::make_shared<Region>(m_Regions[0]));
+    m_Regions[10].AddAdjacentRegion(std::make_shared<Region>(m_Regions[6]));
+    m_Regions[10].AddAdjacentRegion(std::make_shared<Region>(m_Regions[11]));
+
+    // 12th region
+    m_Regions[11].AddAdjacentRegion(std::make_shared<Region>(m_Regions[9]));
+    m_Regions[11].AddAdjacentRegion(std::make_shared<Region>(m_Regions[10]));
+    m_Regions[11].AddAdjacentRegion(std::make_shared<Region>(m_Regions[6]));
+    m_Regions[11].AddAdjacentRegion(std::make_shared<Region>(m_Regions[13]));
+
+    // 13th region
+    m_Regions[12].AddAdjacentRegion(std::make_shared<Region>(m_Regions[8]));
+    m_Regions[12].AddAdjacentRegion(std::make_shared<Region>(m_Regions[0]));
+    m_Regions[12].AddAdjacentRegion(std::make_shared<Region>(m_Regions[14]));
+
+    // 14th region
+    m_Regions[13].AddAdjacentRegion(std::make_shared<Region>(m_Regions[11]));
+    m_Regions[13].AddAdjacentRegion(std::make_shared<Region>(m_Regions[6]));
+    m_Regions[13].AddAdjacentRegion(std::make_shared<Region>(m_Regions[14]));
+
+    // 15th region
+    m_Regions[14].AddAdjacentRegion(std::make_shared<Region>(m_Regions[13]));
+    m_Regions[14].AddAdjacentRegion(std::make_shared<Region>(m_Regions[6]));
+    m_Regions[14].AddAdjacentRegion(std::make_shared<Region>(m_Regions[0]));
+    m_Regions[14].AddAdjacentRegion(std::make_shared<Region>(m_Regions[12]));
 }
 
-Server::Map::Map() {
-    m_Map[0] = {1, 1, 2, 2, 3, 4};
-    m_Map[1] = {1, 2, 2, 3, 3, 4};
-    m_Map[2] = {1, 1, 5, 3, 4, 4};
-    m_Map[3] = {5, 5, 5, 6, 6, 7};
-    m_Map[4] = {8, 8, 6, 6, 7, 7};
-    m_Map[5] = {8, 8, 8, 7, 7, 7};
+std::vector<Region> &Server::Map::GetRegions() {
+    return m_Regions;
 }
