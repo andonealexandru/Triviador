@@ -19,9 +19,9 @@ namespace Server {
         void MakeBase();
 
         // getters
-        int GetId();
-        int GetUserId();
-        bool IsBase();
+        int GetId() const;
+        int GetUserId() const;
+        bool IsBase() const;
 
         // others
         void AddAdjacentRegion(std::shared_ptr<Region> region);

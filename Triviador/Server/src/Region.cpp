@@ -26,11 +26,11 @@ void Server::Region::SetUserId(int userId) {
     m_UserId = userId;
 }
 
-int Server::Region::GetId() {
+int Server::Region::GetId() const {
     return m_Id;
 }
 
-int Server::Region::GetUserId() {
+int Server::Region::GetUserId() const {
     return m_UserId;
 }
 
@@ -38,6 +38,6 @@ void Server::Region::MakeBase() {
     m_isBase = true;
 }
 
-bool Server::Region::IsBase() {
+bool Server::Region::IsBase() const {
     return m_isBase;
 }

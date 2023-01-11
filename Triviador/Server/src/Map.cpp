@@ -106,6 +106,6 @@ void Server::Map::GenerateThreePlayerMap() {
     m_Regions[14].AddAdjacentRegion(std::make_shared<Region>(m_Regions[12]));
 }
 
-std::vector<Region> &Server::Map::GetRegions() {
+std::vector<Server::Region> &Server::Map::GetRegions() {
     return m_Regions;
 }

@@ -285,6 +285,21 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         return crow::response(200);
     });
 
+    CROW_ROUTE(app, "/game/map")([&](const crow::request& req) {
+        std::vector<crow::json::wvalue> res;
+
+        for (const auto& region : m_Map.GetRegions()) {
+            res.push_back(crow::json::wvalue{
+                    { "id", region.GetId() },
+                    { "userId", region.GetUserId() },
+                    { "isBase", region.IsBase() }
+            });
+        }
+
+        return crow::json::wvalue{ res };
+    });
+    //TODO: afer seing all results change to InGame
+    //TODO: afer seing map change to InGame
 }
 
 Server::Backend::Backend()
