@@ -151,6 +151,25 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         };
     });
 
+    CROW_ROUTE(app, "/game/players")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        std::vector<crow::json::wvalue> res_json;
+
+        for (const auto& player : m_players) {
+            res_json.push_back(crow::json::wvalue{
+                    {"id", player.first},
+                    {"name", storage->Get<DB::User>(player.first).GetName()}
+            });
+        }
+
+        return crow::json::wvalue{
+                { "status", ToString(m_status) },
+                { "players", res_json }
+        };
+    });
+
     CROW_ROUTE(app, "/game/start")
             .methods("POST"_method)
                     ([&](const crow::request& req) {
@@ -178,7 +197,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             SetNewCurrentQuestion(true);
         }
 
-        return m_Map.GetJsonMap();
+        return crow::json::wvalue{ {"mapId", m_Map.GetId()} };
     });
 
     CROW_ROUTE(app, "/game/firstQuestion")([&](const crow::request& req) {
@@ -186,6 +205,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         int id = std::stoi(header);
 
         ChangePlayerStatus(id, Status::Answer);
+        m_status = Status::BaseChoice;
 
         return crow::json::wvalue{
                 { "status", ToString(m_status) },
@@ -204,7 +224,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         ChangePlayerStatus(id, Status::WaitingForAnswers);
 
-        if (body["answer"].s() != "NoAnswer")
+        if (body["answer"].t() != crow::json::type::String)
             AddPlayerAnswer(id, body["answer"].i(), body["timeRemaining"].i());
         else AddPlayerAnswer(id, -1, 0);
 
@@ -213,6 +233,55 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             ChangeAllPlayersStatus(Status::AllPlayersAnswered);
         }
 
+        return crow::response(200);
+    });
+
+    CROW_ROUTE(app, "/game/allAnswers")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        std::vector<crow::json::wvalue> res;
+
+        for (const auto& player : m_playerRanking) {
+            res.push_back(crow::json::wvalue{
+                    {"id", player}
+            });
+        }
+
+        switch (m_status) {
+            case Status::BaseChoice:
+                ChangePlayerStatus(m_playerRanking.front(), Status::BaseChoice); // first players chooses base
+            default:
+                break;
+        }
+
+        return crow::json::wvalue{ res };
+    });
+
+    CROW_ROUTE(app, "/game/baseChoice").methods("POST"_method)([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        auto body = crow::json::load(req.body);
+        if (!body)
+            return crow::response(400);
+
+        m_Map.GetRegions()[body["base"].i() - 1].MakeBase();
+        m_Map.GetRegions()[body["base"].i() - 1].SetUserId(id);
+
+        // all players need to update map
+        ChangeAllPlayersStatus(Status::MapChanged);
+
+        // erase first player from list
+        if (!m_playerRanking.empty())
+            m_playerRanking.erase(m_playerRanking.cbegin());
+
+        if (!m_playerRanking.empty())
+            ChangePlayerStatus(m_playerRanking.front(), Status::BaseChoice);
+        else {// all players have base, starting RegionChoice
+            m_status = Status::RegionChoice;
+            ChangeAllPlayersStatus(Status::SecondQuestion); // TODO: must also get map, maybe insert intermediary status
+        }
         return crow::response(200);
     });
 
@@ -271,7 +340,15 @@ void Server::Backend::SetNewCurrentQuestion(bool numeric) {
 void Server::Backend::GenerateNewMap() {
     int playersNumber = m_players.size();
 
-    // TODO: initialize map?
+    switch (playersNumber) {
+        case 2:
+            break;
+        case 3:
+            m_Map.GenerateThreePlayerMap();
+            break;
+        case 4:
+            break;
+    }
 }
 
 void Server::Backend::ErasePlayerAnswers() {
@@ -311,7 +388,7 @@ void Server::Backend::GeneratePlayerRanking() {
     // sort
     for (int i = 0; i < differences.size() - 1; ++i) {
         for (int j = i+1; j < differences.size(); ++j) {
-            if (differences[i].first < differences[j].first) {
+            if (differences[i].first > differences[j].first) {
                 std::swap(differences[i], differences[j]);
                 std::swap(m_playerRanking[i], m_playerRanking[j]);
             }
