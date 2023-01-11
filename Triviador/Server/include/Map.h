@@ -15,7 +15,9 @@ namespace Server {
         const std::vector<std::shared_ptr<Region>>& GetRegions() const;
 
         int GetId();
+        void GenerateTwoPlayerMap();
         void GenerateThreePlayerMap();
+        std::vector<int> GetValidBaseChoices();
 
     private:
         int m_Id;

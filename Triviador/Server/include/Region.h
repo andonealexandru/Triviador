@@ -23,6 +23,7 @@ namespace Server {
         int GetUserId() const;
         bool IsBase() const;
         int GetScore() const;
+        std::vector<std::weak_ptr<Region>> GetAdjacentRegions() const;
 
         // others
         void AddAdjacentRegion(const std::weak_ptr<Region> &region);

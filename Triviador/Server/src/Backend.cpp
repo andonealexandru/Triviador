@@ -270,6 +270,20 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         return crow::json::wvalue{ {"answers", res} };
     });
 
+    CROW_ROUTE(app, "/game/baseChoice")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        std::vector<crow::json::wvalue> res;
+        const auto& validChoices = m_Map.GetValidBaseChoices();
+
+        for (const auto& validChoice : validChoices) {
+            res.push_back(crow::json::wvalue(validChoice));
+        }
+
+        return crow::response( crow::json::wvalue{ res } );
+    });
+
     CROW_ROUTE(app, "/game/baseChoice").methods("POST"_method)([&](const crow::request& req) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
@@ -403,6 +417,7 @@ void Server::Backend::GenerateNewMap() {
 
     switch (playersNumber) {
         case 2:
+            m_Map.GenerateTwoPlayerMap();
             break;
         case 3:
             m_Map.GenerateThreePlayerMap();
