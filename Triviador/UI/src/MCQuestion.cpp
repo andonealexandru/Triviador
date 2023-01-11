@@ -4,42 +4,35 @@
 #include <QPropertyAnimation>
 #include <QTimer>
 #include <iostream>
+#include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
 
-MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::string>answers, bool ho1, bool ho2, bool ho3, QWidget* parent)
-	: m_correctAnswer(correctAnswer),
-	  m_question(question),
-	  m_answers(answers),
-	  m_ho1(ho1),
-	  m_ho2(ho2),
-	  m_ho3(ho3),
-	  QMainWindow(parent)
+MCQuestion::MCQuestion(const std::string& question, const std::vector<std::pair<uint32_t, std::string>>& answers, QWidget* parent)
+	: m_question(question),
+    m_t(30),
+    m_selection(-1),
+    QMainWindow(parent)
 
 {
 	ui.setupUi(this);
-	m_foundCorrectAnswer = false;
-
-	connect(ui.a1, SIGNAL(clicked()), this, SLOT(a1Clicked()));
-	connect(ui.a2, SIGNAL(clicked()), this, SLOT(a2Clicked()));
-	connect(ui.a3, SIGNAL(clicked()), this, SLOT(a3Clicked()));
-	connect(ui.a4, SIGNAL(clicked()), this, SLOT(a4Clicked()));
-
-	connect(ui.ho1, SIGNAL(clicked()), this, SLOT(ho1Clicked()));
-
-	if (!ho1)ui.ho1->setVisible(false);
-	if (!ho2)ui.ho2->setVisible(false);
-	if (!ho3)ui.ho3->setVisible(false);
-
+    ui.ho1->setVisible(true);
 	timer();
-	setQuestion();
+
+    for(const auto& answer : answers)
+    {
+        auto&[id, choice] = answer;
+        m_answers.emplace_back(DB::QuestionChoice{id, choice});
+    }
+    setQuestion();
 }
 
 void MCQuestion::setQuestion()
 {
-	ui.question->setText(QString::fromStdString(m_question));
-	ui.a1->setText(QString::fromStdString(m_answers[0]));
-	ui.a2->setText(QString::fromStdString(m_answers[1]));
-	ui.a3->setText(QString::fromStdString(m_answers[2]));
-	ui.a4->setText(QString::fromStdString(m_answers[3]));
+	ui.question->setText(m_question.data());
+	ui.a1->setText(m_answers[0].GetChoice().data());
+	ui.a2->setText(m_answers[1].GetChoice().data());
+	ui.a3->setText(m_answers[2].GetChoice().data());
+	ui.a4->setText(m_answers[3].GetChoice().data());
 }
 
 void MCQuestion::paintEvent(QPaintEvent* pe)
@@ -62,64 +55,45 @@ void MCQuestion::paintEvent(QPaintEvent* pe)
 
 }
 
+MCQuestion::~MCQuestion()
+{}
+
 int MCQuestion::timer()
 {
-	static int t = 30;
-	if (t < 0)
+    if (m_t < 0)
 	{
 		close();
-		return t;
+		return m_t;
 	}
 	QTimer::singleShot(1 * 1000, this, &MCQuestion::timer);
-	QString str = QString::number(t);
+	QString str = QString::number(m_t);
 	ui.mcquestion->setText(str);
 	ui.mcquestion->setFont(QFont("Arial", 40));
-	t--;
+	m_t--;
 }
 
 void MCQuestion::a1Clicked()
 {
-	ui.a2->setDisabled(true);
-	ui.a3->setDisabled(true);
-	ui.a4->setDisabled(true);
-
-	if (m_correctAnswer == 1)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
+    m_selection = m_answers[0].GetId();
+    emit clicked();
 }
 
 void MCQuestion::a2Clicked()
 {
-	ui.a1->setDisabled(true);
-	ui.a3->setDisabled(true);
-	ui.a4->setDisabled(true);
-
-	if (m_correctAnswer == 2)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
+    m_selection = m_answers[1].GetId();
+    emit clicked();
 }
 
 void MCQuestion::a3Clicked()
 {
-	ui.a1->setDisabled(true);
-	ui.a2->setDisabled(true);
-	ui.a4->setDisabled(true);
-
-	if (m_correctAnswer == 3)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
+    m_selection = m_answers[2].GetId();
+    emit clicked();
 }
 
 void MCQuestion::a4Clicked()
 {
-	ui.a1->setDisabled(true);
-	ui.a2->setDisabled(true);
-	ui.a3->setDisabled(true);
-	ui.question->adjustSize();
-
-	if (m_correctAnswer == 4)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
+    m_selection = m_answers[3].GetId();
+    emit clicked();
 }
 
 void MCQuestion::ho1Clicked()
@@ -128,6 +102,13 @@ void MCQuestion::ho1Clicked()
 	ui.a4->setVisible(false);
 }
 
+int MCQuestion::GetRemainingTime() const
+{
+    return m_t;
+}
 
-MCQuestion::~MCQuestion()
-{}
+int MCQuestion::GetSelection() const
+{
+    return m_selection;
+}
+
