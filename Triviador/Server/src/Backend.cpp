@@ -176,7 +176,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                         m_status = Status::StartNewGame;
                         ChangeAllPlayersStatus(Status::StartNewGame);
 
-                        GenerateNewMap(); // TODO
+                        GenerateNewMap();
 
                         return crow::response(200);
                     });
@@ -224,9 +224,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         ChangePlayerStatus(id, Status::WaitingForAnswers);
 
-        if (body["answer"].t() != crow::json::type::String)
-            AddPlayerAnswer(id, body["answer"].i(), body["timeRemaining"].i());
-        else AddPlayerAnswer(id, -1, 0);
+        AddPlayerAnswer(id, body["answer"].i(), body["timeRemaining"].i());
 
         if (m_playerAnswers.size() == m_players.size()) {
             GeneratePlayerRanking();
@@ -244,18 +242,22 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         for (const auto& player : m_playerRanking) {
             res.push_back(crow::json::wvalue{
-                    {"id", player}
+                    {"id", std::get<0>(player)},
+                    {"name", storage->Get<DB::User>(std::get<0>(player)).GetName()},
+                    {"answer", std::get<1>(player)},
+                    {"timeRemaining", std::get<2>(player)}
             });
         }
 
+        // TODO: known bug - if someone calls /game/allAnswers after first base choice.. it fucks up
         switch (m_status) {
             case Status::BaseChoice:
-                ChangePlayerStatus(m_playerRanking.front(), Status::BaseChoice); // first players chooses base
+                ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::BaseChoice); // first players chooses base
             default:
                 break;
         }
 
-        return crow::json::wvalue{ res };
+        return crow::json::wvalue{ {"answers", res} };
     });
 
     CROW_ROUTE(app, "/game/baseChoice").methods("POST"_method)([&](const crow::request& req) {
@@ -266,8 +268,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         if (!body)
             return crow::response(400);
 
-        m_Map.GetRegions()[body["base"].i() - 1].MakeBase();
-        m_Map.GetRegions()[body["base"].i() - 1].SetUserId(id);
+        m_Map.GetRegions()[body["base"].i() - 1]->MakeBase();
+        m_Map.GetRegions()[body["base"].i() - 1]->SetUserId(id);
 
         // all players need to update map
         ChangeAllPlayersStatus(Status::MapChanged);
@@ -277,7 +279,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             m_playerRanking.erase(m_playerRanking.cbegin());
 
         if (!m_playerRanking.empty())
-            ChangePlayerStatus(m_playerRanking.front(), Status::BaseChoice);
+            ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::BaseChoice);
         else {// all players have base, starting RegionChoice
             m_status = Status::RegionChoice;
             ChangeAllPlayersStatus(Status::SecondQuestion); // TODO: must also get map, maybe insert intermediary status
@@ -290,9 +292,9 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         for (const auto& region : m_Map.GetRegions()) {
             res.push_back(crow::json::wvalue{
-                    { "id", region.GetId() },
-                    { "userId", region.GetUserId() },
-                    { "isBase", region.IsBase() }
+                    { "id", region->GetId() },
+                    { "userId", region->GetUserId() },
+                    { "isBase", region->IsBase() }
             });
         }
 
@@ -302,12 +304,32 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
     //TODO: afer seing map change to InGame
 }
 
+void Server::Backend::StartDebugEndpoints(crow::SimpleApp &app) {
+    CROW_ROUTE(app, "/status")([&]() {
+        std::vector<crow::json::wvalue> res_json;
+
+        for (const auto& player : m_players) {
+            res_json.push_back(crow::json::wvalue{
+                    {"id", player.first},
+                    {"name", storage->Get<DB::User>(player.first).GetName()},
+                    {"status", ToString(player.second)}
+            });
+        }
+
+        return crow::json::wvalue{
+            { "status", ToString(m_status) },
+            { "players", res_json }
+        };
+    });
+}
+
 Server::Backend::Backend()
     :
     m_status(Backend::Status::InLobby)
 {
 	crow::SimpleApp app;
 
+    StartDebugEndpoints(app);
     StartLoginRegister(app);
     StartLobby(app);
     StartGame(app);
@@ -392,25 +414,18 @@ int Server::Backend::ChangeAllPlayersStatus(Server::Backend::Status status) {
 void Server::Backend::GeneratePlayerRanking() {
     // get correct answer
     int correctAnswer = m_currentQuestion.GetAnswer();
-    std::vector<std::pair<int, int>> differences;
     for (const auto& answer : m_playerAnswers) {
-        m_playerRanking.push_back(answer.first); // player id
-        if (answer.second.first == -1) // did not answer
-            differences.push_back(std::make_pair(INT_MAX, answer.second.second)); // biggest difference
-        else differences.push_back(std::make_pair(abs(answer.second.first - correctAnswer),
-                                                  answer.second.second)); // answer - correctAnswer, time remaining
+        // playerId, difference, timeRemaining
+        if (answer.second.second == -1) // did not answer
+            m_playerRanking.emplace_back(answer.first, INT_MAX, answer.second.second); // biggest difference
+        else m_playerRanking.emplace_back(answer.first, answer.second.first, answer.second.second); // answer - correctAnswer, time remaining
     }
-    // sort
-    for (int i = 0; i < differences.size() - 1; ++i) {
-        for (int j = i+1; j < differences.size(); ++j) {
-            if (differences[i].first > differences[j].first) {
-                std::swap(differences[i], differences[j]);
-                std::swap(m_playerRanking[i], m_playerRanking[j]);
-            }
-            else if (differences[i].first == differences[j].first && differences[i].second < differences[j].second) {
-                std::swap(differences[i], differences[j]);
-                std::swap(m_playerRanking[i], m_playerRanking[j]);
-            }
-        }
-    }
+
+    std::sort(m_playerRanking.begin(), m_playerRanking.end(),[correctAnswer](const auto& playerAnswer1, const auto& playerAnswer2) {
+        if (std::abs(std::get<1>(playerAnswer1) - correctAnswer) < std::abs(std::get<1>(playerAnswer2) - correctAnswer)) // difference
+            return true;
+        return std::abs(std::get<1>(playerAnswer1) - correctAnswer) == std::abs(std::get<1>(playerAnswer2) - correctAnswer)
+                && std::get<2>(playerAnswer1) > std::get<2>(playerAnswer2); // time
+    });
+
 }

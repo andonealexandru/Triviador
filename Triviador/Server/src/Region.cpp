@@ -1,6 +1,6 @@
 #include "Region.h"
 
-void Server::Region::AddAdjacentRegion(std::shared_ptr<Region> region) {
+void Server::Region::AddAdjacentRegion(const std::weak_ptr<Region> &region) {
     m_AdjacentRegions.push_back(region);
 }
 

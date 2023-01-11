@@ -1,6 +1,8 @@
 #pragma once
 
 #include <unordered_set>
+#include <algorithm>
+#include <cmath>
 
 #include <User.h>
 #include "crow.h"
@@ -34,6 +36,7 @@ namespace Server
         void StartLoginRegister(crow::SimpleApp &app);
         void StartLobby(crow::SimpleApp &app);
         void StartGame(crow::SimpleApp &app);
+        void StartDebugEndpoints(crow::SimpleApp &app);
 
         // getters
         const std::unordered_map<int, Status>& GetPlayers() const;
@@ -60,7 +63,7 @@ namespace Server
         std::unordered_map<int, Status> m_players;
         DB::Question m_currentQuestion;
         std::unordered_map<int, std::pair<int, int>> m_playerAnswers;
-        std::vector<int> m_playerRanking;
+        std::vector<std::tuple<int, int, int>> m_playerRanking;
         Server::Map m_Map;
 	};
 }
