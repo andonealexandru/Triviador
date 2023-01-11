@@ -90,7 +90,6 @@ void NumericQuestion::ho2Clicked()
 
 void NumericQuestion::changePageAfterA1()
 {
-    
     ui.nqanswer->setText(QString::fromStdString(m_sa->GetAnswers()[0]));
     delete m_sa;
 }
@@ -117,8 +116,13 @@ void NumericQuestion::changePageAfterA4()
 
 void NumericQuestion::on_sendButton_clicked()
 {
-    m_answer = ui.nqanswer->text().toInt();
-    emit sendButtonPressed();
+    Validator validator;
+    QString answer = ui.nqanswer->text();
+    if(validator.IsNumeric(answer.toStdString()))
+    {
+        m_answer = answer.toInt();
+        emit sendButtonPressed();
+    }
 }
 
 int NumericQuestion::GetAnswer() const
