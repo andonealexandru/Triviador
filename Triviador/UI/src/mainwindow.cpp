@@ -66,7 +66,7 @@ void MainWindow::changePageAfterRegister()
 void MainWindow::changePageAfterLobby()
 {
     std::cout << "Game is starting\n";
-    gameWindow = new Map();
+    gameWindow = new Map(&this->user);
     gameWindow->show();
     delete lobbyWindow;
 }
@@ -127,6 +127,8 @@ void MainWindow::on_startButton_clicked()
     lobbyWindow->show();
     this->hide();
 }
+
+
 
 
 
