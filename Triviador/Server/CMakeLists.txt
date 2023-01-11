@@ -7,12 +7,14 @@ add_library(Server STATIC
     "include/Question.h"
     "include/QuestionChoice.h"
     "include/Map.h"
+    "include/Region.h"
     #.cpp
     "src/Backend.cpp"
     "src/Player.cpp"
     "src/Question.cpp"
     "src/QuestionChoice.cpp"
     "src/Map.cpp"
+    "src/Region.cpp"
 )
 
 target_link_libraries(Server
