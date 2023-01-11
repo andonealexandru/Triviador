@@ -56,3 +56,7 @@ void Server::Region::IncrementScore() {
 void Server::Region::DecrementScore() {
     m_Score -= 100;
 }
+
+std::vector<std::weak_ptr<Server::Region>> Server::Region::GetAdjacentRegions() const {
+    return m_AdjacentRegions;
+}
