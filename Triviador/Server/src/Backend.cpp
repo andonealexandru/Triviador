@@ -176,7 +176,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                         m_status = Status::StartNewGame;
                         ChangeAllPlayersStatus(Status::StartNewGame);
 
-                        GenerateNewMap(); // TODO
+                        GenerateNewMap();
 
                         return crow::response(200);
                     });
@@ -224,7 +224,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         ChangePlayerStatus(id, Status::WaitingForAnswers);
 
-        if (body["answer"].t() != crow::json::type::String)
+        if (body["answer"].t() != crow::json::type::String) // TODO: change to timeRemaining = -1
             AddPlayerAnswer(id, body["answer"].i(), body["timeRemaining"].i());
         else AddPlayerAnswer(id, -1, 0);
 
@@ -248,6 +248,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             });
         }
 
+        // TODO: known bug - if someone calls /game/allAnswers after first base choice.. it fucks up
         switch (m_status) {
             case Status::BaseChoice:
                 ChangePlayerStatus(m_playerRanking.front(), Status::BaseChoice); // first players chooses base
@@ -266,8 +267,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         if (!body)
             return crow::response(400);
 
-        m_Map.GetRegions()[body["base"].i() - 1].MakeBase();
-        m_Map.GetRegions()[body["base"].i() - 1].SetUserId(id);
+        m_Map.GetRegions()[body["base"].i() - 1]->MakeBase();
+        m_Map.GetRegions()[body["base"].i() - 1]->SetUserId(id);
 
         // all players need to update map
         ChangeAllPlayersStatus(Status::MapChanged);
@@ -290,9 +291,9 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         for (const auto& region : m_Map.GetRegions()) {
             res.push_back(crow::json::wvalue{
-                    { "id", region.GetId() },
-                    { "userId", region.GetUserId() },
-                    { "isBase", region.IsBase() }
+                    { "id", region->GetId() },
+                    { "userId", region->GetUserId() },
+                    { "isBase", region->IsBase() }
             });
         }
 
@@ -302,12 +303,32 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
     //TODO: afer seing map change to InGame
 }
 
+void Server::Backend::StartDebugEndpoints(crow::SimpleApp &app) {
+    CROW_ROUTE(app, "/status")([&]() {
+        std::vector<crow::json::wvalue> res_json;
+
+        for (const auto& player : m_players) {
+            res_json.push_back(crow::json::wvalue{
+                    {"id", player.first},
+                    {"name", storage->Get<DB::User>(player.first).GetName()},
+                    {"status", ToString(player.second)}
+            });
+        }
+
+        return crow::json::wvalue{
+            { "status", ToString(m_status) },
+            { "players", res_json }
+        };
+    });
+}
+
 Server::Backend::Backend()
     :
     m_status(Backend::Status::InLobby)
 {
 	crow::SimpleApp app;
 
+    StartDebugEndpoints(app);
     StartLoginRegister(app);
     StartLobby(app);
     StartGame(app);

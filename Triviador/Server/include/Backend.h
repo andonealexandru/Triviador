@@ -34,6 +34,7 @@ namespace Server
         void StartLoginRegister(crow::SimpleApp &app);
         void StartLobby(crow::SimpleApp &app);
         void StartGame(crow::SimpleApp &app);
+        void StartDebugEndpoints(crow::SimpleApp &app);
 
         // getters
         const std::unordered_map<int, Status>& GetPlayers() const;
