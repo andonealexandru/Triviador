@@ -22,13 +22,17 @@ namespace Server {
         int GetId() const;
         int GetUserId() const;
         bool IsBase() const;
+        int GetScore() const;
 
         // others
         void AddAdjacentRegion(const std::weak_ptr<Region> &region);
+        void IncrementScore();
+        void DecrementScore();
 
     private:
         int m_Id;
         int m_UserId;
+        int m_Score;
         std::vector<std::weak_ptr<Region>> m_AdjacentRegions;
         bool m_isBase;
     };

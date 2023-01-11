@@ -250,9 +250,19 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         }
 
         // TODO: known bug - if someone calls /game/allAnswers after first base choice.. it fucks up
+        bool allPlayersReceived = true;
         switch (m_status) {
             case Status::BaseChoice:
-                ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::BaseChoice); // first players chooses base
+                ChangePlayerStatus(id, Status::InGame);
+                // wait for all players to turn InGame
+                for (const auto& player : m_players)
+                    if (player.second != Status::InGame) {
+                        allPlayersReceived = false;
+                        break;
+                    }
+
+                if (allPlayersReceived) // first players chooses base
+                    ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::BaseChoice);
             default:
                 break;
         }
@@ -267,6 +277,10 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         auto body = crow::json::load(req.body);
         if (!body)
             return crow::response(400);
+
+        // check if player making call is the first player in the list
+        if (id != std::get<0>(m_playerRanking.front()))
+            return crow::response(403);
 
         m_Map.GetRegions()[body["base"].i() - 1]->MakeBase();
         m_Map.GetRegions()[body["base"].i() - 1]->SetUserId(id);
@@ -288,13 +302,23 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
     });
 
     CROW_ROUTE(app, "/game/map")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        switch (m_players.find(id)->second) {
+            case Status::MapChanged:
+                ChangePlayerStatus(id, Status::InGame);
+                break;
+        }
+
         std::vector<crow::json::wvalue> res;
 
         for (const auto& region : m_Map.GetRegions()) {
             res.push_back(crow::json::wvalue{
                     { "id", region->GetId() },
                     { "userId", region->GetUserId() },
-                    { "isBase", region->IsBase() }
+                    { "isBase", region->IsBase() },
+                    { "score", region->GetScore() }
             });
         }
 
