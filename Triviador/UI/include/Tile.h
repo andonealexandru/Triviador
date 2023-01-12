@@ -9,7 +9,7 @@ public:
 	void SetBorder();
 	bool IsBorder();
 	std::pair<int, int> GetCoordinate() const;
-	std::shared_ptr<Region> getParentRegion();
+	std::shared_ptr<Region> getParentRegion() const;
 
 protected:
 	bool m_isBorder;

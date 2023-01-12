@@ -29,7 +29,7 @@ std::pair<int, int> Tile::GetCoordinate() const
 	return m_coordinates;
 }
 
-std::shared_ptr<Region> Tile::getParentRegion()
+std::shared_ptr<Region> Tile::getParentRegion() const
 {
 	return m_region;
 }
