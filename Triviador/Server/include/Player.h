@@ -4,28 +4,35 @@
 #include <string>
 #include <crow.h>
 
+#include "DBAccess.h"
+#include "Status.h"
+#include "User.h"
+
 namespace Server {
     class Player
     {
     public:
         // constructors
         Player() = default;
-        Player(int id, const std::string& name);
-        Player(const Player& other) = default;
-        Player& operator=(const Player& other) = default;
+        Player(int id, int userId, Status status);
+        Player(const Player& other);
+        Player &operator=(const Player& other);
 
         ~Player() = default;
 
         // getters
         int GetId() const;
-        const std::string& GetName() const;
+        Status GetStatus() const;
+        std::shared_ptr<DB::User> GetUser() const;
 
         // setters
         void SetId(int id);
-        void SetName(const std::string& name);
+        void SetStatus(Status status);
+        void SetUser(int userId);
 
     private:
         int m_id;
-        std::string m_name;
+        std::shared_ptr<DB::User> m_user;
+        Status m_status;
     };
 }
