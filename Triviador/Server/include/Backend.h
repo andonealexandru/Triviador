@@ -11,28 +11,16 @@
 
 #include "DBAccess.h"
 #include "Map.h"
+#include "Status.h"
+#include "Player.h"
+
+#define storage DB::DBAccess::GetInstance()
 
 namespace Server
 {
 	
 	class Backend
 	{
-    public:
-        enum Status {
-            InLobby,
-            PlayersModified,
-            InGame,
-            StartNewGame,
-            FirstQuestion,
-            BaseChoice,
-            RegionQuestion,
-            RegionChoice,
-            WaitingForAnswers,
-            MapChanged,
-            Answer,
-            AllPlayersAnswered,
-            Duel,
-        };
 	public:
 
 		Backend();
@@ -42,7 +30,7 @@ namespace Server
         void StartDebugEndpoints(crow::SimpleApp &app);
 
         // getters
-        const std::unordered_map<int, Status>& GetPlayers() const;
+        const std::unordered_map<int, Player>& GetPlayers() const;
         const DB::Question &GetCurrentQuestion() const;
 
         void AddPlayer(int id, Status status);
@@ -63,11 +51,14 @@ namespace Server
         inline const std::string ToString(Status s);
 
         Status m_status;
-        std::unordered_map<int, Status> m_players;
+        std::unordered_map<int, Player> m_players;
+        // info about current question
         DB::Question m_currentQuestion;
         std::unordered_map<int, std::pair<int, int>> m_playerAnswers;
         std::vector<std::tuple<int, int, int>> m_playerRanking;
-        Server::Map m_Map;
         std::unordered_set<int> m_usedQuestionIds;
+        // info about map
+        Server::Map m_Map;
+        std::unordered_map<int, int> m_playerRegionChoices;
 	};
 }

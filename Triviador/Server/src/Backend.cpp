@@ -9,8 +9,6 @@
 #include <unordered_set>
 #include <unordered_map>
 
-auto storage = DB::DBAccess::GetInstance(); // TODO: get rid of this
-
 void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/users/register")
             .methods("POST"_method)
@@ -73,7 +71,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
 
         if (m_status == Status::InLobby)
             return crow::json::wvalue{
-                {"status", m_players.find(id) == m_players.end() ? ToString(m_status) : ToString(m_players.find(id)->second)}
+                {"status", m_players.find(id) == m_players.end() ? ToString(m_status) : ToString(m_players.find(id)->second.GetStatus())}
         };
         return crow::json::wvalue{{ "status", ToString(Status::InGame) }};
     });
@@ -89,7 +87,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
         for (const auto& player : m_players) {
             res_json.push_back(crow::json::wvalue{
                     {"id", player.first},
-                    {"name", storage->Get<DB::User>(player.first).GetName()}
+                    {"name", storage->Get<DB::User>(player.first).GetName()} // TODO
             });
         }
 
@@ -147,7 +145,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         return crow::json::wvalue{
                 {"status",
-                 m_players.find(id) == m_players.end() ? ToString(m_status) : ToString(m_players.find(id)->second)}
+                 m_players.find(id) == m_players.end() ? ToString(m_status) : ToString(m_players.find(id)->second.GetStatus())}
         };
     });
 
@@ -160,7 +158,9 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         for (const auto& player : m_players) {
             res_json.push_back(crow::json::wvalue{
                     {"id", player.first},
-                    {"name", storage->Get<DB::User>(player.first).GetName()}
+                    {"playerId", player.second.GetId()},
+                    {"name", storage->Get<DB::User>(player.first).GetName()}, // TODO
+                    {"score", 0}
             });
         }
 
@@ -187,7 +187,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         bool allGotMap = true;
         for (const auto& player : m_players)
-            if (player.second != InGame)
+            if (player.second.GetStatus() != InGame)
                 allGotMap = false;
 
         if (allGotMap) {
@@ -254,7 +254,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 ChangePlayerStatus(id, Status::InGame);
                 // wait for all players to turn InGame
                 for (const auto& player : m_players)
-                    if (player.second != Status::InGame) {
+                    if (player.second.GetStatus() != Status::InGame) {
                         allPlayersReceived = false;
                         break;
                     }
@@ -267,7 +267,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 ChangePlayerStatus(id, Status::InGame);
                 // wait for all players to turn InGame
                 for (const auto& player : m_players)
-                    if (player.second != Status::InGame) {
+                    if (player.second.GetStatus() != Status::InGame) {
                         allPlayersReceived = false;
                         break;
                     }
@@ -337,7 +337,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
 
-        switch (m_players.find(id)->second) {
+        switch (m_players.find(id)->second.GetStatus()) {
             case Status::MapChanged:
                 ChangePlayerStatus(id, Status::InGame);
                 break;
@@ -386,7 +386,7 @@ void Server::Backend::StartDebugEndpoints(crow::SimpleApp &app) {
             res_json.push_back(crow::json::wvalue{
                     {"id", player.first},
                     {"name", storage->Get<DB::User>(player.first).GetName()},
-                    {"status", ToString(player.second)}
+                    {"status", ToString(player.second.GetStatus())}
             });
         }
 
@@ -399,7 +399,7 @@ void Server::Backend::StartDebugEndpoints(crow::SimpleApp &app) {
 
 Server::Backend::Backend()
     :
-    m_status(Backend::Status::InLobby)
+    m_status(Status::InLobby)
 {
     crow::SimpleApp app;
 
@@ -411,31 +411,32 @@ Server::Backend::Backend()
 	app.port(18080).multithreaded().run();
 }
 
-const std::string Server::Backend::ToString(Server::Backend::Status s) {
+const std::string Server::Backend::ToString(Status s) {
     switch (s) {
-        case Server::Backend::Status::InLobby: return "InLobby";
-        case Server::Backend::Status::BaseChoice: return "BaseChoice";
-        case Server::Backend::Status::FirstQuestion: return "FirstQuestion";
-        case Server::Backend::Status::InGame: return "InGame";
-        case Server::Backend::Status::RegionChoice: return "RegionChoice";
-        case Server::Backend::Status::RegionQuestion: return "RegionQuestion";
-        case Server::Backend::Status::PlayersModified: return "PlayersModified";
-        case Server::Backend::Status::StartNewGame: return "StartNewGame";
-        case Server::Backend::Status::WaitingForAnswers: return "WaitingForAnswers";
-        case Server::Backend::Status::MapChanged: return "MapChanged";
-        case Server::Backend::Status::Answer: return "Answer";
-        case Server::Backend::Status::AllPlayersAnswered: return "AllPlayersAnswered";
-        case Server::Backend::Status::Duel: return "Duel";
+        case Status::InLobby: return "InLobby";
+        case Status::BaseChoice: return "BaseChoice";
+        case Status::FirstQuestion: return "FirstQuestion";
+        case Status::InGame: return "InGame";
+        case Status::RegionChoice: return "RegionChoice";
+        case Status::RegionQuestion: return "RegionQuestion";
+        case Status::PlayersModified: return "PlayersModified";
+        case Status::StartNewGame: return "StartNewGame";
+        case Status::WaitingForAnswers: return "WaitingForAnswers";
+        case Status::MapChanged: return "MapChanged";
+        case Status::Answer: return "Answer";
+        case Status::AllPlayersAnswered: return "AllPlayersAnswered";
+        case Status::Duel: return "Duel";
         default: return "Unknown";
     }
 }
 
-const std::unordered_map<int, Server::Backend::Status> &Server::Backend::GetPlayers() const {
+const std::unordered_map<int, Server::Player> &Server::Backend::GetPlayers() const {
     return m_players;
 }
 
-void Server::Backend::AddPlayer(int id, Server::Backend::Status status) {
-    m_players.insert({id, status});
+void Server::Backend::AddPlayer(int id, Status status) {
+    int newPlayerId = m_players.size() + 1;
+    m_players.insert({id, Player(newPlayerId, id, status)});
 }
 
 const DB::Question &Server::Backend::GetCurrentQuestion() const {
@@ -484,18 +485,18 @@ void Server::Backend::AddPlayerAnswer(int id, int answer, int timeRemaining) {
     m_playerAnswers.insert_or_assign(id, std::make_pair(answer, timeRemaining));
 }
 
-int Server::Backend::ChangePlayerStatus(int playerId, Server::Backend::Status status) {
+int Server::Backend::ChangePlayerStatus(int playerId, Status status) {
     auto currentPlayer = m_players.find(playerId);
     if (currentPlayer != m_players.end()) {
-        currentPlayer->second = status;
+        currentPlayer->second.SetStatus(status);
         return 0;
     }
     return -1;
 }
 
-int Server::Backend::ChangeAllPlayersStatus(Server::Backend::Status status) {
+int Server::Backend::ChangeAllPlayersStatus(Status status) {
     for (auto & player : m_players)
-        player.second = status;
+        player.second.SetStatus(status);
     return 0;
 }
 
