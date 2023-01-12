@@ -37,6 +37,7 @@ void Game::ReadMap(int id)
 	}
 
 	f.open(mapPath.data());
+    m_map.clear();
 	for (int i = 0;i <= m_type;i++)
 	{
 		auto x = std::make_shared<Region>(0, 0, i+1, false);
@@ -114,7 +115,7 @@ void Game::ReadMap(int id)
 			}
 		}
 
-		for (int i = 1; i <= m_type; i++)
+		for (int i = 0; i < m_type; i++)
 		{
 			int a, b;
 			f >> a >> b;
@@ -171,8 +172,7 @@ void Game::selectRegions(const std::vector<int>& regions)
 
 	for (const int& region : regions)
     {
-		for (auto r : m_map)
-			r->SetHighlight();
+        m_map[region - 1]->SetHighlight();
 	}
 }
 
