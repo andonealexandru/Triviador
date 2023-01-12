@@ -276,7 +276,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                     //TODO: check if all regions are assigned
                     // if not, continue
                     // else start duel
-                    ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::Duel);
+                    // TODO: player chooses n-k regions (n - nr of players, k - position in ranking) !!!!!!!
+                    ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::RegionChoice);
                 break;
 
             default:
@@ -371,6 +372,10 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 { "type", m_currentQuestion.GetType()}
         };
     });
+
+    CROW_ROUTE(app, "/game/regionChoice")([&](const crow::request& req) {
+        return crow::response( 200 );
+    });
 }
 
 void Server::Backend::StartDebugEndpoints(crow::SimpleApp &app) {
@@ -443,9 +448,16 @@ void Server::Backend::SetNewCurrentQuestion(bool numeric) {
 
     srand(time(0));
     if (numeric) {
+        // get all questions and generate random id
         auto questions = storage->GetNumericQuestions<DB::Question>();
-        int randomQuestion = rand() % questions.size();
+        int questionsSize = questions.size();
+        int randomQuestion = rand() % questionsSize;
+        // while random id question was already used find new one
+        while (m_usedQuestionIds.find(randomQuestion) != m_usedQuestionIds.end()) {
+            randomQuestion = rand() % questionsSize;
+        }
         m_currentQuestion = questions[randomQuestion];
+        m_usedQuestionIds.insert(randomQuestion);
     }
 }
 

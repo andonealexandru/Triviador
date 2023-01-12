@@ -68,5 +68,6 @@ namespace Server
         std::unordered_map<int, std::pair<int, int>> m_playerAnswers;
         std::vector<std::tuple<int, int, int>> m_playerRanking;
         Server::Map m_Map;
+        std::unordered_set<int> m_usedQuestionIds;
 	};
 }
