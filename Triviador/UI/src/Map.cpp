@@ -20,7 +20,7 @@ Map::Map(DB::User* user, QWidget* parent)
 {
     ui.setupUi(this);
     connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Map::OnGoing));
-    m_timer->start(5000);
+    m_timer->start(1000);
 }
 
 
@@ -278,6 +278,7 @@ void Map::OnGoing()
                       cpr::Body{to_string(json{{"base", m_selectedRegion}})},
                       cpr::Header{{"ID", std::to_string(m_user->GetId())}});
             g.selectRegions(regionIDs);
+            m_selectedRegion = -1;
         }
     }
     else if(status == "MapChanged")
@@ -300,6 +301,21 @@ void Map::OnGoing()
     }
     else if(status == "RegionQuestion")
     {
+        cpr::Response getMap = cpr::Get(cpr::Url{"localhost:18080/game/map"},
+                                        cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+
+        auto regionsJson = json::parse(getMap.text).get<std::vector<json>>();
+        std::vector<Region> regions;
+        for(const auto& region : regionsJson)
+        {
+            auto id = json::parse(to_string(region))["id"].get<int>();
+            auto userId = json::parse(to_string(region))["userId"].get<int>();
+            auto isBase = json::parse(to_string(region))["isBase"].get<bool>();
+            auto score = json::parse(to_string(region))["score"].get<int>();
+            regions.emplace_back(score, userId, id, isBase);
+        }
+        g.UpdateMap(regions);
+        repaint();
         // TODO
     }
 }
