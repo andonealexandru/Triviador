@@ -17,13 +17,19 @@ public:
 	void SetCenter(const std::pair<int, int>& center);
 	void SetColor(const int& color);
 	void SetNumber(const int& number);
+	void SetHighlight();
+	void SetUserId(int userId);
 	void AddNeighbour(const std::shared_ptr<Region>& region);
+	void SetBase(const bool& base);
 
 	//getters
 	int GetValue() const;
 	int GetNumber() const;
 	std::pair <int, int> GetCenter() const;
 	int GetColor() const;
+	bool GetHighlight() const;
+	int GetUserId();
+	bool IsBase();
 
 	bool operator<(const Region &p) const
 	{
@@ -33,9 +39,12 @@ public:
 	void PrintRegion();
 
 protected:
+	bool m_isBase;
+	int m_userId;		// negativ no user
 	int m_number;	
 	uint16_t m_value;
 	std::pair <int, int> m_center;
 	int m_color;
 	std::set <std::shared_ptr<Region>> m_neighbours;
+	bool m_highlight = false;
 };
