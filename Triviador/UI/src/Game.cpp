@@ -37,10 +37,9 @@ void Game::ReadMap(int id)
 	}
 
 	f.open(mapPath.data());
-	m_type = 24; //TODO: change when map is ready
 	for (int i = 0;i <= m_type;i++)
 	{
-		auto x = std::make_shared<Region>(0, 0, i);
+		auto x = std::make_shared<Region>(0, 0, i+1, false);
 		std::vector<Tile> auxTile = {};
 		m_tiles.push_back(auxTile);
 		m_map.push_back(x);
@@ -170,10 +169,20 @@ std::vector<std::vector<Tile>> Game::getTiles()
 void Game::selectRegions(const std::vector<int>& regions)
 {
 
-	for (const int& region : regions) {
-
+	for (const int& region : regions)
+    {
 		for (auto r : m_map)
 			r->SetHighlight();
-
 	}
+}
+
+void Game::UpdateMap(const std::vector<Region>& regions)
+{
+    for(const auto& region : regions)
+    {
+        m_map[region.GetNumber() - 1]->SetUserId(region.GetUserId());
+        m_map[region.GetNumber() - 1]->SetBase(region.IsBase());
+        m_map[region.GetNumber() - 1]->SetValue(region.GetValue());
+
+    }
 }

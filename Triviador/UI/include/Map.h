@@ -27,7 +27,7 @@ public slots:
     void AnswerSent();
 
 signals:
-    void mousePressed();
+    void MousePressed();
 
 private:
     enum class QuestionType : uint8_t

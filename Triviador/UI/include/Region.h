@@ -10,7 +10,7 @@ class Region
 {
 public:
 	Region() = default;
-	Region(int value, int color, int number);
+	Region(int value, int userId, int number, bool isBase);
 
 	//setters
 	void SetValue(const int& value);
@@ -28,8 +28,8 @@ public:
 	std::pair <int, int> GetCenter() const;
 	int GetColor() const;
 	bool GetHighlight() const;
-	int GetUserId();
-	bool IsBase();
+	int GetUserId() const;
+	bool IsBase() const;
 
 	bool operator<(const Region &p) const
 	{
@@ -40,11 +40,10 @@ public:
 
 protected:
 	bool m_isBase;
-	int m_userId;		// negativ no user
+	int m_userId;		// negative no user
 	int m_number;	
 	uint16_t m_value;
 	std::pair <int, int> m_center;
-	int m_color;
 	std::set <std::shared_ptr<Region>> m_neighbours;
 	bool m_highlight = false;
 };

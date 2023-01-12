@@ -1,11 +1,12 @@
 #include "Region.h"
 
-    Region::Region(int value, int color, int number) :
-        m_value(value), m_color(color), m_number(number)
+    Region::Region(int value, int userId, int number, bool isBase)
+        : m_value(value)
+        , m_userId(userId)
+        , m_number(number)
+        , m_isBase(isBase)
     {
-        m_userId = 1;
         m_center = std::make_pair(-1, -1);
-        m_isBase = false;
     }
 
     void Region::SetValue(const int& value)
@@ -18,11 +19,6 @@
         m_center = center;
     }
 
-    void Region::SetColor(const int& color)
-    {
-        m_color = color;
-    }
-
     void Region::SetNumber(const int& number)
     {
         m_number = number;
@@ -30,7 +26,7 @@
 
     void Region::SetHighlight()
     {
-        m_highlight = true;
+        m_highlight = !m_highlight;
     }
 
     void Region::SetUserId(int userId)
@@ -63,23 +59,17 @@
         return m_center;
     }
 
-
-    int Region::GetColor() const
-    {
-        return m_color;
-    }
-
     bool Region::GetHighlight() const
     {
         return m_highlight;
     }
 
-    int Region::GetUserId()
+    int Region::GetUserId() const
     {
         return m_userId;
     }
 
-    bool Region::IsBase()
+    bool Region::IsBase() const
     {
         return m_isBase;
     }
@@ -87,7 +77,6 @@
     void Region::PrintRegion()
     {
         std::cout << "Numar: " << m_number << "\n";
-        std::cout << "Culoare: " << m_color << "\n";
         std::cout << "Centru: " << m_center.first << " " << m_center.second <<"\n";
         std::cout << "Valoare: " << m_value <<"\n";
         std::cout << "Vecini: " << m_neighbours.size() << "\n\n";

@@ -88,12 +88,12 @@ void Map::paintEvent(QPaintEvent* event)
                     if (!tt.getParentRegion()->GetHighlight())
                     {
                         QPointF punct(tt.GetCoordinate().second * sectorWidth, tt.GetCoordinate().first * sectorHeight);
-                        painter.drawPixmap(punct, colorPixmaps[tt.getParentRegion()->GetUserId()].first);
+                        painter.drawPixmap(punct, colorPixmaps[tt.getParentRegion()->GetUserId() == -1 ? 0 : tt.getParentRegion()->GetUserId()].first);
                     }
                     else
                     {
                         QPointF punct(tt.GetCoordinate().second * sectorWidth, tt.GetCoordinate().first * sectorHeight);
-                        painter.drawPixmap(punct, colorPixmaps[tt.getParentRegion()->GetUserId()].second);
+                        painter.drawPixmap(punct, colorPixmaps[tt.getParentRegion()->GetUserId() == -1 ? 0 : tt.getParentRegion()->GetUserId()].second);
                     }
 
         ////paint score
@@ -271,6 +271,7 @@ void Map::OnGoing()
         QEventLoop loop;
         connect(this, &Map::MousePressed, &loop, &QEventLoop::quit);
         loop.exec();
+
         if(m_selectedRegion != -1)
         {
             cpr::Post(cpr::Url{"localhost:18080/game/baseChoice"},
@@ -328,10 +329,10 @@ void Map::SendAnswer(const std::variant<int, std::string>& answer, int remaining
                    if constexpr (std::is_same_v<T, std::string>)
                    {
                        json body =
-                               {
-                                       {"answer", arg},
-                                       {"timeRemaining", std::to_string(remainingTime)},
-                               };
+                       {
+                           {"answer", arg},
+                           {"timeRemaining", std::to_string(remainingTime)},
+                       };
                        cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/answer"},
                                                           cpr::Body{to_string(body)},
                                                           cpr::Header{{"ID", std::to_string(m_user->GetId())}});
@@ -339,10 +340,10 @@ void Map::SendAnswer(const std::variant<int, std::string>& answer, int remaining
                    else
                    {
                        json body =
-                               {
-                                       {"answer", arg},
-                                       {"timeRemaining", std::to_string(remainingTime)},
-                               };
+                       {
+                           {"answer", arg},
+                           {"timeRemaining", std::to_string(remainingTime)},
+                       };
                        cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/answer"},
                                                           cpr::Body{to_string(body)},
                                                           cpr::Header{{"ID", std::to_string(m_user->GetId())}});
