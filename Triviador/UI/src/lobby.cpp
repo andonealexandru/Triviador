@@ -15,11 +15,11 @@ Lobby::Lobby(DB::User user, QWidget *parent)
     , m_players{}
 {
     ui->setupUi(this);
+    ui->startButton->setEnabled(false);
     UpdateUsers();
     ShowUsers();
     connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Lobby::Active));
-    m_timer->start(5000);
-    ui->startButton->setEnabled(false);
+    m_timer->start(2000);
 }
 
 
@@ -43,11 +43,8 @@ Lobby::~Lobby()
 
 void Lobby::on_startButton_clicked()
 {
-    if(m_players.size() >= 2)
-    {
-        cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/start"});
-        emit startButtonPressed();
-    }
+    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/start"});
+    emit startButtonPressed();
 }
 
 void Lobby::on_exitButton_clicked()
