@@ -8,6 +8,7 @@
     <y>0</y>
     <width>748</width>
     <height>511</height>
+    <height>532</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,33 +19,17 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <spacer name="verticalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <spacer name="verticalSpacer_8">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
+         <enum>QSizePolicy::Minimum</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>30</height>
+          <height>54</height>
          </size>
         </property>
        </spacer>
@@ -54,7 +39,7 @@
         <property name="font">
          <font>
           <family>MV Boli</family>
-          <pointsize>11</pointsize>
+          <pointsize>20</pointsize>
          </font>
         </property>
         <property name="text">
@@ -64,22 +49,6 @@
          <set>Qt::AlignCenter</set>
         </property>
        </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
       </item>
       <item>
        <spacer name="verticalSpacer_6">
@@ -92,48 +61,79 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>29</height>
+          <height>65</height>
          </size>
         </property>
        </spacer>
       </item>
       <item>
-       <widget class="QLabel" name="nqquestion">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>200</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>MV Boli</family>
-          <pointsize>24</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer_7">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Minimum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>45</height>
-         </size>
-        </property>
-       </spacer>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::MinimumExpanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>90</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="nqquestion">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>MV Boli</family>
+            <pointsize>16</pointsize>
+            <strikeout>false</strikeout>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::MinimumExpanding</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>90</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
       <item>
        <spacer name="verticalSpacer_2">
@@ -146,7 +146,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>40</height>
+          <height>140</height>
          </size>
         </property>
        </spacer>
