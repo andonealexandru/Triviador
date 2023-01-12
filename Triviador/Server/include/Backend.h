@@ -3,6 +3,8 @@
 #include <unordered_set>
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 #include <User.h>
 #include "crow.h"
@@ -23,12 +25,13 @@ namespace Server
             StartNewGame,
             FirstQuestion,
             BaseChoice,
-            SecondQuestion,
+            RegionQuestion,
             RegionChoice,
             WaitingForAnswers,
             MapChanged,
             Answer,
             AllPlayersAnswered,
+            Duel,
         };
 	public:
 

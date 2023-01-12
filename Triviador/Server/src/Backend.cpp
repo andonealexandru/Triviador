@@ -170,16 +170,14 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         };
     });
 
-    CROW_ROUTE(app, "/game/start")
-            .methods("POST"_method)
-                    ([&](const crow::request& req) {
-                        m_status = Status::StartNewGame;
-                        ChangeAllPlayersStatus(Status::StartNewGame);
+    CROW_ROUTE(app, "/game/start").methods("POST"_method)([&](const crow::request& req) {
+        m_status = Status::StartNewGame;
+        ChangeAllPlayersStatus(Status::StartNewGame);
 
-                        GenerateNewMap();
+        GenerateNewMap();
 
-                        return crow::response(200);
-                    });
+        return crow::response(200);
+    });
 
     CROW_ROUTE(app, "/game/map/first")([&](const crow::request& req) {
         auto header = req.get_header_value("ID");
@@ -252,7 +250,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         // TODO: known bug - if someone calls /game/allAnswers after first base choice.. it fucks up
         bool allPlayersReceived = true;
         switch (m_status) {
-            case Status::BaseChoice:
+            case Status::BaseChoice: /// BASE CHOICE PHASE
                 ChangePlayerStatus(id, Status::InGame);
                 // wait for all players to turn InGame
                 for (const auto& player : m_players)
@@ -263,6 +261,24 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
                 if (allPlayersReceived) // first players chooses base
                     ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::BaseChoice);
+                break;
+
+            case Status::RegionChoice: /// REGION CHOICE PHASE
+                ChangePlayerStatus(id, Status::InGame);
+                // wait for all players to turn InGame
+                for (const auto& player : m_players)
+                    if (player.second != Status::InGame) {
+                        allPlayersReceived = false;
+                        break;
+                    }
+
+                if (allPlayersReceived) // first players chooses base
+                    //TODO: check if all regions are assigned
+                    // if not, continue
+                    // else start duel
+                    ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::Duel);
+                break;
+
             default:
                 break;
         }
@@ -278,7 +294,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         const auto& validChoices = m_Map.GetValidBaseChoices();
 
         for (const auto& validChoice : validChoices) {
-            res.push_back(crow::json::wvalue(validChoice));
+            res.emplace_back(validChoice);
         }
 
         return crow::response( crow::json::wvalue{ res } );
@@ -310,7 +326,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::BaseChoice);
         else {// all players have base, starting RegionChoice
             m_status = Status::RegionChoice;
-            ChangeAllPlayersStatus(Status::SecondQuestion); // TODO: must also get map, maybe insert intermediary status
+            SetNewCurrentQuestion(true);
+            ChangeAllPlayersStatus(Status::RegionQuestion); // TODO: must also get map, maybe insert intermediary status
         }
         return crow::response(200);
     });
@@ -323,11 +340,14 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             case Status::MapChanged:
                 ChangePlayerStatus(id, Status::InGame);
                 break;
+            default:
+                break;
         }
 
         std::vector<crow::json::wvalue> res;
 
-        for (const auto& region : m_Map.GetRegions()) {
+        const auto& regions =  m_Map.GetRegions();
+        for (const auto& region : regions) {
             res.push_back(crow::json::wvalue{
                     { "id", region->GetId() },
                     { "userId", region->GetUserId() },
@@ -338,8 +358,19 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         return crow::json::wvalue{ res };
     });
-    //TODO: afer seing all results change to InGame
-    //TODO: afer seing map change to InGame
+
+    CROW_ROUTE(app, "/game/regionQuestion")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        ChangePlayerStatus(id, Status::Answer);
+
+        return crow::json::wvalue{
+                { "status", ToString(m_status)},
+                { "question", m_currentQuestion.GetQuestion()},
+                { "type", m_currentQuestion.GetType()}
+        };
+    });
 }
 
 void Server::Backend::StartDebugEndpoints(crow::SimpleApp &app) {
@@ -365,7 +396,7 @@ Server::Backend::Backend()
     :
     m_status(Backend::Status::InLobby)
 {
-	crow::SimpleApp app;
+    crow::SimpleApp app;
 
     StartDebugEndpoints(app);
     StartLoginRegister(app);
@@ -382,13 +413,14 @@ const std::string Server::Backend::ToString(Server::Backend::Status s) {
         case Server::Backend::Status::FirstQuestion: return "FirstQuestion";
         case Server::Backend::Status::InGame: return "InGame";
         case Server::Backend::Status::RegionChoice: return "RegionChoice";
-        case Server::Backend::Status::SecondQuestion: return "SecondQuestion";
+        case Server::Backend::Status::RegionQuestion: return "RegionQuestion";
         case Server::Backend::Status::PlayersModified: return "PlayersModified";
         case Server::Backend::Status::StartNewGame: return "StartNewGame";
         case Server::Backend::Status::WaitingForAnswers: return "WaitingForAnswers";
         case Server::Backend::Status::MapChanged: return "MapChanged";
         case Server::Backend::Status::Answer: return "Answer";
         case Server::Backend::Status::AllPlayersAnswered: return "AllPlayersAnswered";
+        case Server::Backend::Status::Duel: return "Duel";
         default: return "Unknown";
     }
 }
@@ -406,9 +438,14 @@ const DB::Question &Server::Backend::GetCurrentQuestion() const {
 }
 
 void Server::Backend::SetNewCurrentQuestion(bool numeric) {
+    m_playerAnswers.clear();
+    m_playerRanking.clear();
+
+    srand(time(0));
     if (numeric) {
         auto questions = storage->GetNumericQuestions<DB::Question>();
-        m_currentQuestion = questions.front();
+        int randomQuestion = rand() % questions.size();
+        m_currentQuestion = questions[randomQuestion];
     }
 }
 
