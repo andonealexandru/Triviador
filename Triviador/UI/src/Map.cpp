@@ -16,6 +16,7 @@ Map::Map(DB::User* user, QWidget* parent)
     , m_question{ nullptr }
     , m_nQuestion{ nullptr }
     , m_duelResult{ nullptr }
+    , m_selectedRegion { -1 }
 {
 	ui.setupUi(this);
 	g.ReadMap();
@@ -84,7 +85,6 @@ void Map::paintEvent(QPaintEvent* event)
 			painter1.drawText(rect, Qt::AlignCenter, s);
 		}
 	}
-
 	//desenare playeri
 	int nr_players = 2;
 	for (int i = 0;i < nr_players;i++)
@@ -124,14 +124,15 @@ void Map::mouseReleaseEvent(QMouseEvent* ev)
 		for (Tile tt : t)
 			if (tt.GetCoordinate().second== x  && tt.GetCoordinate().first == y)
 			{
-				std::cout << "Ai dat click pe regiunea " << tt.getParentRegion()->GetNumber()<<std::endl;
-				std::cout << x << " " << y <<std::endl;
+                // TODO: check if region is highlighted
+				m_selectedRegion = tt.getParentRegion()->GetNumber();
 				ok = 1;
 				break;
 			}
 		if (ok == 1)
 			break;
 	}
+    emit mousePressed();
 }
 
 void Map::NumericAnswerSent()
@@ -163,7 +164,7 @@ void Map::OnGoing()
                                           cpr::Header{{"ID", std::to_string(m_user->GetId())}});
 
         auto mapId = json::parse(mapResponse.text)["mapId"].get<int>();
-        g.ReadMap(mapId);
+        g.ReadMap();
     }
     else if(status == "FirstQuestion")
     {
@@ -179,9 +180,9 @@ void Map::OnGoing()
     }
     else if(status == "AllPlayersAnswered")
     {
-        cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/game/allAnswers"},
+        cpr::Response allAnswers = cpr::Get(cpr::Url{"localhost:18080/game/allAnswers"},
                                           cpr::Header{{"ID", std::to_string(m_user->GetId())}});
-        auto answers = json::parse(response.text)["answers"].get<std::vector<json>>();
+        auto answers = json::parse(allAnswers.text)["answers"].get<std::vector<json>>();
 
         std::vector<std::tuple<int, std::string, int>> players;
         for(const auto& answer : answers)
@@ -192,6 +193,40 @@ void Map::OnGoing()
             players.emplace_back(std::make_tuple(timeRemaining, name, playerAnswer));
         }
         ShowResults(players);
+    }
+    else if(status == "BaseChoice")
+    {
+        /// GET REGIONS
+        cpr::Response getMap = cpr::Get(cpr::Url{"localhost:18080/game/map"},
+                                     cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+
+        auto regionsJson = json::parse(getMap.text).get<std::vector<json>>();
+        std::vector<Region> regions;
+        for(const auto& region : regionsJson)
+        {
+            auto id = json::parse(to_string(region))["id"].get<int>();
+            auto userId = json::parse(to_string(region))["userId"].get<int>();
+            auto isBase = json::parse(to_string(region))["isBase"].get<bool>();
+            auto score = json::parse(to_string(region))["score"].get<int>();
+            regions.emplace_back(score, userId, id);
+        }
+        /// GET BASECHOICE
+     //   cpr::Response getBaseChoice = cpr::Get(cpr::Url{"localhost:18080/game/baseChoice"},
+     //                                    cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+      //  auto regionIDs = json::parse(getBaseChoice.text).get<std::vector<int>>();
+
+        /// POST SELECTED REGION
+
+        QEventLoop loop;
+        connect(this, &Map::mousePressed, &loop, &QEventLoop::quit);
+        loop.exec();
+        if(m_selectedRegion != -1)
+        {
+            cpr::Post(cpr::Url{"localhost:18080/game/baseChoice"},
+                      cpr::Body{to_string(json{{"base", m_selectedRegion}})},
+                      cpr::Header{{"ID", std::to_string(m_user->GetId())}});
+            std::cout << m_selectedRegion << "\n";
+        }
     }
     else if(status == "RegionQuestion")
     {

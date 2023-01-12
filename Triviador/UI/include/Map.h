@@ -22,6 +22,13 @@ public:
 	virtual void mouseReleaseEvent(QMouseEvent* ev);
 	Game g;
 
+public slots:
+    void NumericAnswerSent();
+    void AnswerSent();
+
+signals:
+    void mousePressed();
+
 private:
     enum class QuestionType : uint8_t
     {
@@ -34,16 +41,12 @@ private:
     void SendAnswer(const std::variant<int, std::string>& answer, int remainingTime) const;
     void ShowResults(const std::vector<std::tuple<int, std::string, int>>& players);
 
-public slots:
-    void NumericAnswerSent();
-    void AnswerSent();
-
-private:
 	Ui::MapClass ui;
     DB::User* m_user;
     QTimer* m_timer;
     MCQuestion* m_question;
     NumericQuestion* m_nQuestion;
     DuelResult* m_duelResult;
+    int m_selectedRegion;
 };
 
