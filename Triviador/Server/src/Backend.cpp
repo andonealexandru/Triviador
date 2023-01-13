@@ -191,7 +191,9 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 allGotMap = false;
 
         if (allGotMap) {
-            ChangeAllPlayersStatus(Status::FirstQuestion);
+//            m_status = Status::BaseChoice;
+            m_status = Status::RegionChoice; // TODO: remove
+            ChangeAllPlayersStatus(Status::RegionQuestion); // TODO: change to FirstQuestion
             SetNewCurrentQuestion(true);
         }
 
@@ -203,7 +205,6 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         int id = std::stoi(header);
 
         ChangePlayerStatus(id, Status::Answer);
-        m_status = Status::BaseChoice;
 
         return crow::json::wvalue{
                 { "status", ToString(m_status) },
@@ -249,10 +250,13 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         // TODO: known bug - if someone calls /game/allAnswers after first base choice.. it fucks up
         bool allPlayersReceived = true;
+        int playerNumber = m_players.size();
+
         switch (m_status) {
             case Status::BaseChoice: /// BASE CHOICE PHASE
                 ChangePlayerStatus(id, Status::InGame);
                 // wait for all players to turn InGame
+                allPlayersReceived = true;
                 for (const auto& player : m_players)
                     if (player.second.GetStatus() != Status::InGame) {
                         allPlayersReceived = false;
@@ -266,18 +270,26 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             case Status::RegionChoice: /// REGION CHOICE PHASE
                 ChangePlayerStatus(id, Status::InGame);
                 // wait for all players to turn InGame
+                allPlayersReceived = true;
                 for (const auto& player : m_players)
                     if (player.second.GetStatus() != Status::InGame) {
                         allPlayersReceived = false;
                         break;
                     }
 
-                if (allPlayersReceived) // first players chooses base
+                if (allPlayersReceived) {// first players chooses base
                     //TODO: check if all regions are assigned
                     // if not, continue
                     // else start duel
+
                     // TODO: player chooses n-k regions (n - nr of players, k - position in ranking) !!!!!!!
+                    // update m_playerRegionChoices based on m_playerRanking aka how many
+                    for (int place = 0; place < playerNumber; ++place) {
+                        if (playerNumber - place - 1 > 0)
+                            m_playerRegionChoices.emplace(std::get<0>(m_playerRanking[place]), playerNumber - place - 1);
+                    }
                     ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::RegionChoice);
+                }
                 break;
 
             default:
@@ -315,6 +327,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         m_Map.GetRegions()[body["base"].i() - 1]->MakeBase();
         m_Map.GetRegions()[body["base"].i() - 1]->SetUserId(id);
+        m_players[id].SetScore(300);
 
         // all players need to update map
         ChangeAllPlayersStatus(Status::MapChanged);
@@ -328,7 +341,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         else {// all players have base, starting RegionChoice
             m_status = Status::RegionChoice;
             SetNewCurrentQuestion(true);
-            ChangeAllPlayersStatus(Status::RegionQuestion); // TODO: must also get map, maybe insert intermediary status
+            ChangeAllPlayersStatus(Status::RegionQuestion);
         }
         return crow::response(200);
     });
@@ -373,8 +386,60 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         };
     });
 
-    CROW_ROUTE(app, "/game/regionChoice")([&](const crow::request& req) {
-        return crow::response( 200 );
+    CROW_ROUTE(app, "/game/regionChoice")([&](const crow::request &req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        std::vector<crow::json::wvalue> res;
+        const auto& validChoices = m_Map.GetValidRegionChoices(id);
+
+        for (const auto& validChoice : validChoices) {
+            res.emplace_back(validChoice);
+        }
+
+        return crow::response( crow::json::wvalue{ res } );
+    });
+
+    CROW_ROUTE(app, "/game/regionChoice").methods("POST"_method)([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        auto body = crow::json::load(req.body);
+        if (!body)
+            return crow::response(400);
+
+        // check if player making call is the first player in the list
+        if (id != std::get<0>(m_playerRanking.front()))
+            return crow::response(403);
+
+        m_Map.GetRegions()[body["region"].i() - 1]->SetUserId(id);
+        m_Map.GetRegions()[body["region"].i() - 1]->IncrementScore();
+        m_players[id].IncrementScore();
+
+        // all players need to update map
+        ChangeAllPlayersStatus(Status::MapChanged);
+
+        m_playerRegionChoices[id]--;
+        // erase first player from list
+        if (!m_playerRanking.empty() && m_playerRegionChoices[id] == 0) {
+            m_playerRanking.erase(m_playerRanking.cbegin());
+            m_playerRegionChoices.erase(id);
+        }
+
+        if (!m_playerRanking.empty() && !m_playerRegionChoices.empty())
+            ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::RegionChoice);
+        else if (!m_Map.AllRegionsOccupied()) {
+            m_playerRegionChoices.clear();
+            m_status = Status::RegionChoice;
+            ChangeAllPlayersStatus(Status::RegionQuestion);
+            SetNewCurrentQuestion(true);
+        }
+        else {// all players have all regions
+            m_status = Status::Duel;
+            SetNewCurrentQuestion(true);
+            ChangeAllPlayersStatus(Status::Duel);
+        }
+        return crow::response(200);
     });
 }
 
