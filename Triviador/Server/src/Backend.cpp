@@ -436,7 +436,7 @@ const std::unordered_map<int, Server::Player> &Server::Backend::GetPlayers() con
 
 void Server::Backend::AddPlayer(int id, Status status) {
     int newPlayerId = m_players.size() + 1;
-    m_players.insert({id, Player(newPlayerId, id, status)});
+    m_players.insert({id, Player(newPlayerId, id, 0, status)});
 }
 
 const DB::Question &Server::Backend::GetCurrentQuestion() const {
