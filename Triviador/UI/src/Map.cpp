@@ -6,8 +6,7 @@
 #include <QBrush>
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
-
-
+#include <sstream>
 
 
 using json = nlohmann::json;
@@ -54,7 +53,6 @@ void Map::paintEvent(QPaintEvent* event)
         colors[4].first = Qt::yellow;
         colors[4].second = QColor(232, 232, 156);
 
-
         QPainter painter(this);
         painter.setPen(Qt::black);
 
@@ -95,13 +93,41 @@ void Map::paintEvent(QPaintEvent* event)
                 if (!tt.IsBorder())
                     if (!tt.getParentRegion()->GetHighlight())
                     {
+                        int userId = tt.getParentRegion()->GetUserId() == -1 ? 0 : tt.getParentRegion()->GetUserId();
+                        int index = 0;
+                        if(userId)
+                        {
+                            for(const auto& player : m_players)
+                            {
+                                const auto&[id, playerId, score, name] = player;
+                                if (id == userId)
+                                {
+                                    index = playerId;
+                                    break;
+                                }
+                            }
+                        }
                         QPointF punct(tt.GetCoordinate().second * sectorWidth, tt.GetCoordinate().first * sectorHeight);
-                        painter.drawPixmap(punct, colorPixmaps[tt.getParentRegion()->GetUserId() == -1 ? 0 : tt.getParentRegion()->GetUserId()].first);
+                        painter.drawPixmap(punct, colorPixmaps[index].first);
                     }
                     else
                     {
+                        int userId = tt.getParentRegion()->GetUserId() == -1 ? 0 : tt.getParentRegion()->GetUserId();
+                        int index = 0;
+                        if(userId)
+                        {
+                            for(const auto& player : m_players)
+                            {
+                                const auto&[id, playerId, score, name] = player;
+                                if (id == userId)
+                                {
+                                    index = playerId;
+                                    break;
+                                }
+                            }
+                        }
                         QPointF punct(tt.GetCoordinate().second * sectorWidth, tt.GetCoordinate().first * sectorHeight);
-                        painter.drawPixmap(punct, colorPixmaps[tt.getParentRegion()->GetUserId() == -1 ? 0 : tt.getParentRegion()->GetUserId()].second);
+                        painter.drawPixmap(punct, colorPixmaps[index].second);
                     }
 
         ////paint score
@@ -142,7 +168,7 @@ void Map::paintEvent(QPaintEvent* event)
         }
 
         //desenare playeri
-        for (int i = 0;i < g.GetNrPlayers();i++)
+        for (int i = 0; i < m_players.size(); i++)
         {
             QPainter pt(this);
             QFont font("Arial", 12, QFont::Bold);
@@ -152,9 +178,16 @@ void Map::paintEvent(QPaintEvent* event)
             pt.setPen(pent);
             pt.setBrush(brusht);
 
+            const auto&[id, playerId, score, name] = m_players[i];
+
+            std::ostringstream  oss;
+            oss << name << ":"
+                << "\n"
+                << score;
+
             QRect player(width, (height / g.GetNrPlayers()) * i, 2 * (this->size().width() / 10) + 5, this->size().height() / g.GetNrPlayers());
             pt.drawRect(player);
-            pt.drawText(player, Qt::AlignCenter, "Monigga:\n200");
+            pt.drawText(player, Qt::AlignCenter, oss.str().data());
         }
     }
 }
@@ -213,7 +246,7 @@ void Map::OnGoing()
     const auto state = StringToState(json::parse(requestStatus.text)["status"].get<std::string>());
 
     if(m_stateHandler.find(state) != m_stateHandler.end())
-        m_stateHandler[state](); // calls the functions bound to this state
+        m_stateHandler[state](); /// \brief calls the function bound to this state
 }
 
 void Map::NextQuestion(const Map::QuestionType type, const std::string& question, const std::vector<std::pair<uint32_t, std::string>>* answers)
@@ -314,13 +347,16 @@ void Map::UpdatePlayers()
 {
     auto getPlayers = m_requestHandler.Get("/game/players",
                                            {"ID", std::to_string(m_user->GetId())});
-    auto players = json::parse(getPlayers.text).get<std::vector<json>>();
+    auto players = json::parse(getPlayers.text)["players"].get<std::vector<json>>();
     for(const auto& player : players)
     {
         auto id = json::parse(to_string(player))["id"].get<int>();
-        auto name = json::parse(to_string(player))["name"].get<int>();
-        auto score = json::parse(to_string(player))["score"].get<bool>();
+        auto playerId = json::parse(to_string(player))["playerId"].get<int>();
+        auto score = json::parse(to_string(player))["score"].get<int>();
+        auto name = json::parse(to_string(player))["name"].get<std::string>();
+        m_players.emplace_back(id, playerId, score, name);
     }
+    repaint();
 }
 
 void Map::InitStateHandler()
@@ -336,6 +372,7 @@ void Map::InitStateHandler()
                                                 {"ID", std::to_string(m_user->GetId())});
         auto mapId = json::parse(mapResponse.text)["mapId"].get<int>();
         g.ReadMap(mapId);
+        UpdatePlayers();
     });
 
     m_stateHandler.emplace(Map::State::FirstQuestion, [&]()
@@ -363,6 +400,7 @@ void Map::InitStateHandler()
             auto timeRemaining = json::parse(to_string(answer))["timeRemaining"].get<int>();
             auto name = json::parse(to_string(answer))["name"].get<std::string>();
             auto playerAnswer = json::parse(to_string(answer))["answer"].get<int>();
+            auto correctAnswer = json::parse(to_string(answer))["correctAnswer"].get<std::string>();
             players.emplace_back(std::make_tuple(timeRemaining, name, playerAnswer));
         }
         ShowResults(players);
@@ -376,6 +414,7 @@ void Map::InitStateHandler()
 
     m_stateHandler.emplace(Map::State::MapChanged, [&]()
     {
+        UpdatePlayers();
         UpdateRegions();
     });
 
@@ -387,7 +426,6 @@ void Map::InitStateHandler()
         auto question = json::parse(regionQuestion.text)["question"].get<std::string>();
         NextQuestion(QuestionType::NUMERIC, question);
     });
-
 }
 
 Map::State Map::StringToState(const std::string &state)
@@ -414,6 +452,7 @@ Map::State Map::StringToState(const std::string &state)
         return State::AllPlayersAnswered;
     if(state == "Duel")
         return State::Duel;
+    return State{};
 }
 
 

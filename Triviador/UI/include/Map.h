@@ -69,7 +69,7 @@ private:
 	Ui::MapClass ui;
     Game g;
     DB::User* m_user;
-    std::vector<DB::User> m_players;
+    std::vector<std::tuple<int, int, int, std::string>> m_players;
     QTimer* m_timer;
     MCQuestion* m_question;
     NumericQuestion* m_nQuestion;
