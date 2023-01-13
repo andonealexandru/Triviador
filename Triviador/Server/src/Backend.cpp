@@ -308,8 +308,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                     }
                     ChangeAllPlayersStatus(Status::MapChanged);
                     m_attackerPlayerId++;
-                    if (m_attackerPlayerId == m_players.size()) // finished one round
-                        m_attackerPlayerId = 0;
+                    if (m_attackerPlayerId == m_players.size() + 1) // finished one round
+                        m_attackerPlayerId = 1;
                     for (const auto& player : m_players) {
                         if (player.second.GetId() == m_attackerPlayerId) {
                             ChangePlayerStatus(player.first, Status::Duel);
@@ -463,7 +463,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             m_attackedRegion = -1;
             m_status = Status::Duel;
             SetNewCurrentQuestion(true);
-            m_attackerPlayerId = 0;
+            m_attackerPlayerId = 1;
             ChangeAllPlayersStatus(Status::MapChanged);
             for (const auto& player : m_players) {
                 if (player.second.GetId() == m_attackerPlayerId) {
