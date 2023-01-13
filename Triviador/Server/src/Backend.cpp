@@ -503,6 +503,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         SetNewCurrentQuestion(true); // todo no parameter -> implement multiple choice q
         ChangePlayerStatus(id, Status::AttackQuestion);
         ChangePlayerStatus(attackedUser, Status::AttackQuestion);
+
+        return crow::response(200);
     });
 
     CROW_ROUTE(app, "/game/attackQuestion")([&](const crow::request& req) {
