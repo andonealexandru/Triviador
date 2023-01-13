@@ -191,9 +191,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 allGotMap = false;
 
         if (allGotMap) {
-//            m_status = Status::BaseChoice;
-            m_status = Status::RegionChoice; // TODO: remove
-            ChangeAllPlayersStatus(Status::RegionQuestion); // TODO: change to FirstQuestion
+            m_status = Status::BaseChoice;
+            ChangeAllPlayersStatus(Status::FirstQuestion);
             SetNewCurrentQuestion(true);
         }
 
@@ -225,7 +224,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         AddPlayerAnswer(id, body["answer"].i(), body["timeRemaining"].i());
 
-        if (m_playerAnswers.size() == m_players.size()) {
+        if (m_playerAnswers.size() == m_players.size() || m_status == Status::Duel && m_playerAnswers.size() == 2) {
             GeneratePlayerRanking();
             ChangeAllPlayersStatus(Status::AllPlayersAnswered);
         }
@@ -277,12 +276,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                         break;
                     }
 
-                if (allPlayersReceived) {// first players chooses base
-                    //TODO: check if all regions are assigned
-                    // if not, continue
-                    // else start duel
-
-                    // TODO: player chooses n-k regions (n - nr of players, k - position in ranking) !!!!!!!
+                if (allPlayersReceived) {
                     // update m_playerRegionChoices based on m_playerRanking aka how many
                     for (int place = 0; place < playerNumber; ++place) {
                         if (playerNumber - place - 1 > 0)
@@ -292,6 +286,37 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 }
                 break;
 
+            case Status::Duel: /// DUEL PHASE
+                ChangePlayerStatus(id, Status::InGame);
+
+                allPlayersReceived = true;
+                for (const auto& player : m_players)
+                    if (player.second.GetStatus() != Status::InGame) {
+                        allPlayersReceived = false;
+                        break;
+                    }
+
+                if (allPlayersReceived) {
+                    //ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::RegionChoice);
+                    if (std::get<0>(m_playerRanking.front()) == m_Map.GetRegion(m_attackedRegion)->GetUserId()) // if attacked user won
+                        m_Map.GetRegion(m_attackedRegion)->IncrementScore();
+                    else { // attacked user lost
+                        if (m_Map.GetRegion(m_attackedRegion)->GetScore() == 100) {
+                            m_Map.GetRegion(m_attackedRegion)->SetUserId(std::get<0>(m_playerRanking.front()));
+                        }
+                        else m_Map.GetRegion(m_attackedRegion)->DecrementScore();
+                    }
+                    ChangeAllPlayersStatus(Status::MapChanged);
+                    m_attackerPlayerId++;
+                    if (m_attackerPlayerId == m_players.size() + 1) // finished one round
+                        m_attackerPlayerId = 1;
+                    for (const auto& player : m_players) {
+                        if (player.second.GetId() == m_attackerPlayerId) {
+                            ChangePlayerStatus(player.first, Status::Duel);
+                        }
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -435,11 +460,64 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             SetNewCurrentQuestion(true);
         }
         else {// all players have all regions
+            m_attackedRegion = -1;
             m_status = Status::Duel;
             SetNewCurrentQuestion(true);
-            ChangeAllPlayersStatus(Status::Duel);
+            m_attackerPlayerId = 1;
+            ChangeAllPlayersStatus(Status::MapChanged);
+            for (const auto& player : m_players) {
+                if (player.second.GetId() == m_attackerPlayerId) {
+                    ChangePlayerStatus(player.first, Status::Duel);
+                }
+            }
         }
         return crow::response(200);
+    });
+
+    CROW_ROUTE(app, "/game/attackRegion")([&](const crow::request &req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        std::vector<crow::json::wvalue> res;
+        const auto& validChoices = m_Map.GetValidRegionToAttack(id);
+
+        for (const auto& validChoice : validChoices) {
+            res.emplace_back(validChoice);
+        }
+
+        return crow::response( crow::json::wvalue{ res } );
+    });
+
+    CROW_ROUTE(app, "/game/attackRegion").methods("POST"_method)([&](const crow::request &req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        auto body = crow::json::load(req.body);
+        if (!body)
+            return crow::response(400);
+
+        m_attackedRegion = body["region"].i() - 1;
+        int attackedUser = m_Map.GetRegion(m_attackedRegion)->GetUserId();
+
+
+        SetNewCurrentQuestion(true); // todo no parameter -> implement multiple choice q
+        ChangePlayerStatus(id, Status::AttackQuestion);
+        ChangePlayerStatus(attackedUser, Status::AttackQuestion);
+
+        return crow::response(200);
+    });
+
+    CROW_ROUTE(app, "/game/attackQuestion")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        ChangePlayerStatus(id, Status::Answer);
+
+        return crow::json::wvalue{
+                { "status", ToString(m_status) },
+                { "question", m_currentQuestion.GetQuestion() },
+                { "type", m_currentQuestion.GetType() }
+        };
     });
 }
 
@@ -491,6 +569,7 @@ const std::string Server::Backend::ToString(Status s) {
         case Status::Answer: return "Answer";
         case Status::AllPlayersAnswered: return "AllPlayersAnswered";
         case Status::Duel: return "Duel";
+        case Status::AttackQuestion: return "AttackQuestion";
         default: return "Unknown";
     }
 }
