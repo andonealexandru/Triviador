@@ -54,8 +54,8 @@ namespace Server
         std::unordered_map<int, Player> m_players;
         // info about current question
         DB::Question m_currentQuestion;
-        std::unordered_map<int, std::pair<int, int>> m_playerAnswers;
-        std::vector<std::tuple<int, int, int>> m_playerRanking;
+        std::unordered_map<int, std::pair<int, int>> m_playerAnswers; // TODO: redundant information... remove one
+        std::vector<std::tuple<int, int, int>> m_playerRanking; // id, answer, time remaining
         std::unordered_set<int> m_usedQuestionIds;
         // info about map
         Server::Map m_Map;

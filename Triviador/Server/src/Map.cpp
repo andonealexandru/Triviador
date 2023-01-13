@@ -2,11 +2,11 @@
 
 #include <vector>
 
-int Server::Map::GetId() {
+int Server::Map::GetId() const {
     return m_Id;
 }
 
-std::vector<int> Server::Map::GetValidBaseChoices() {
+std::vector<int> Server::Map::GetValidBaseChoices() const {
     std::vector<int> validBases;
 
     /* all regions that:
@@ -34,6 +34,42 @@ std::vector<int> Server::Map::GetValidBaseChoices() {
     return validBases;
 }
 
+std::vector<int> Server::Map::GetValidRegionChoices(int userId) const {
+    std::vector<int> validRegions;
+
+    /* all regions that:
+     * are not occupied
+     * have neighbour owned by userId
+     */
+
+    for (const auto& region : m_Regions) {
+        if (region->GetUserId() != -1)
+            continue;
+
+        bool hasUserNeighbour = false;
+        for (const auto& neighbour : region->GetAdjacentRegions()) {
+            auto neighbourObj = neighbour.lock();
+            if (neighbourObj->GetUserId() == userId) {
+                hasUserNeighbour = true;
+                continue;
+            }
+        }
+
+        if (hasUserNeighbour)
+            validRegions.push_back(region->GetId());
+    }
+
+    return validRegions;
+}
+
+bool Server::Map::AllRegionsOccupied() const {
+    for (const auto& region : m_Regions) {
+        if (region->GetUserId() == -1)
+            return false;
+    }
+    return true;
+}
+
 void Server::Map::GenerateTwoPlayerMap() {
     m_Id = 1;
 
@@ -44,12 +80,12 @@ void Server::Map::GenerateTwoPlayerMap() {
     // 1st region
     m_Regions[0]->AddAdjacentRegion(m_Regions[1]);
     m_Regions[0]->AddAdjacentRegion(m_Regions[2]);
-    m_Regions[0]->AddAdjacentRegion(m_Regions[4]);
+    m_Regions[0]->AddAdjacentRegion(m_Regions[3]);
 
     // 2nd region
     m_Regions[1]->AddAdjacentRegion(m_Regions[0]);
     m_Regions[1]->AddAdjacentRegion(m_Regions[3]);
-    m_Regions[1]->AddAdjacentRegion(m_Regions[5]);
+    m_Regions[1]->AddAdjacentRegion(m_Regions[4]);
 
     // 3rd region
     m_Regions[2]->AddAdjacentRegion(m_Regions[0]);

@@ -56,3 +56,11 @@ void Server::Player::SetScore(int score) {
     m_score = score;
 }
 
+void Server::Player::IncrementScore() {
+    m_score += 100;
+}
+
+void Server::Player::DecrementScore() {
+    m_score -= 100;
+}
+

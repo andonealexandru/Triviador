@@ -32,6 +32,9 @@ namespace Server {
         void SetScore(int score);
         void SetUser(int userId);
 
+        void IncrementScore();
+        void DecrementScore();
+
     private:
         int m_id;
         int m_score;
