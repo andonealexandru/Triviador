@@ -60,5 +60,7 @@ namespace Server
         // info about map
         Server::Map m_Map;
         std::unordered_map<int, int> m_playerRegionChoices;
+        int m_attackedRegion;
+        int m_attackerPlayerId;
 	};
 }

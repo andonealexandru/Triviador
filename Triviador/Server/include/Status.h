@@ -16,6 +16,7 @@ namespace Server {
         Answer,
         AllPlayersAnswered,
         Duel,
+        AttackQuestion,
     };
 }
 

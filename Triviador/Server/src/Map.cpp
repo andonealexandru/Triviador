@@ -235,3 +235,31 @@ void Server::Map::GenerateThreePlayerMap() {
 const std::vector<std::shared_ptr<Server::Region>> &Server::Map::GetRegions() const{
     return m_Regions;
 }
+
+std::vector<int> Server::Map::GetValidRegionToAttack(int userId) const {
+    std::vector<int> validRegions;
+
+    /* all regions that:
+     * have neighbour owned by userId
+     */
+
+    for (const auto& region : m_Regions) {
+        bool hasUserNeighbour = false;
+        for (const auto& neighbour : region->GetAdjacentRegions()) {
+            auto neighbourObj = neighbour.lock();
+            if (neighbourObj->GetUserId() == userId) {
+                hasUserNeighbour = true;
+                continue;
+            }
+        }
+
+        if (hasUserNeighbour)
+            validRegions.push_back(region->GetId());
+    }
+
+    return validRegions;
+}
+
+std::shared_ptr<Server::Region> Server::Map::GetRegion(int id) const {
+    return m_Regions[id];
+}
