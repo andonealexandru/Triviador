@@ -9,6 +9,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#define m_Map Server::Map::GetInstance()
+
 void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/users/register")
             .methods("POST"_method)
@@ -474,25 +476,6 @@ Server::Backend::Backend()
     StartGame(app);
 	
 	app.port(18080).multithreaded().run();
-}
-
-const std::string Server::Backend::ToString(Status s) {
-    switch (s) {
-        case Status::InLobby: return "InLobby";
-        case Status::BaseChoice: return "BaseChoice";
-        case Status::FirstQuestion: return "FirstQuestion";
-        case Status::InGame: return "InGame";
-        case Status::RegionChoice: return "RegionChoice";
-        case Status::RegionQuestion: return "RegionQuestion";
-        case Status::PlayersModified: return "PlayersModified";
-        case Status::StartNewGame: return "StartNewGame";
-        case Status::WaitingForAnswers: return "WaitingForAnswers";
-        case Status::MapChanged: return "MapChanged";
-        case Status::Answer: return "Answer";
-        case Status::AllPlayersAnswered: return "AllPlayersAnswered";
-        case Status::Duel: return "Duel";
-        default: return "Unknown";
-    }
 }
 
 const std::unordered_map<int, Server::Player> &Server::Backend::GetPlayers() const {

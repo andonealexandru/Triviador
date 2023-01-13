@@ -42,6 +42,8 @@ std::vector<int> Server::Map::GetValidRegionChoices(int userId) const {
      * have neighbour owned by userId
      */
 
+    // TODO: if there aren't any, but there are still unoccupied regions, send all unoccupied regions
+
     for (const auto& region : m_Regions) {
         if (region->GetUserId() != -1)
             continue;
@@ -232,6 +234,11 @@ void Server::Map::GenerateThreePlayerMap() {
     m_Regions[14]->AddAdjacentRegion(m_Regions[12]);
 }
 
-const std::vector<std::shared_ptr<Server::Region>> &Server::Map::GetRegions() const{
+const std::vector<std::shared_ptr<Server::Region>> &Server::Map::GetRegions() const {
     return m_Regions;
+}
+
+Server::Map &Server::Map::GetInstance() {
+    static Server::Map instance;
+    return instance;
 }

@@ -48,8 +48,6 @@ namespace Server
 		Backend& operator=(Backend&&) = delete;
 		Backend& operator=(const Backend&) = delete;
 
-        inline const std::string ToString(Status s);
-
         Status m_status;
         std::unordered_map<int, Player> m_players;
         // info about current question
@@ -58,7 +56,6 @@ namespace Server
         std::vector<std::tuple<int, int, int>> m_playerRanking; // id, answer, time remaining
         std::unordered_set<int> m_usedQuestionIds;
         // info about map
-        Server::Map m_Map;
         std::unordered_map<int, int> m_playerRegionChoices;
 	};
 }

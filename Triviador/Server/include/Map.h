@@ -8,9 +8,9 @@
 #include "Region.h"
 
 namespace Server {
-    class Map {
+    class Map { // TODO: make singleton
     public:
-        Map() = default;
+        static Map& GetInstance();
 
         const std::vector<std::shared_ptr<Region>>& GetRegions() const;
 
@@ -21,7 +21,12 @@ namespace Server {
         std::vector<int> GetValidRegionChoices(int userId) const;
         bool AllRegionsOccupied() const;
 
+        Map(Map const&) = delete;
+        void operator=(Map const&) = delete;
+
     private:
+        Map() {};
+
         int m_Id;
         std::vector<std::shared_ptr<Region>> m_Regions;
     };
