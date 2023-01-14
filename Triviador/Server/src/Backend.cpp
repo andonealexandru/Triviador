@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
+#include <random>
 
 void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/users/register")
@@ -55,6 +56,19 @@ void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
                                 crow::json::wvalue{{ "ID", users.front().GetId() }}
                         );
                     });
+
+    CROW_ROUTE(app, "/users/profile")([&](const crow::request& req) {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        const auto userStatistics = storage->GetUserStatistics<DB::UserStatistics>(id);
+        const bool noStatistics = userStatistics.empty();
+
+        return crow::json::wvalue{
+                {"games", noStatistics ? 0 : userStatistics.front().GetGameCount()},
+                {"wins",  noStatistics ? 0 : userStatistics.front().GetWonGames()}
+        };
+    });
 
     // TODO: add /users/get
 }
@@ -136,7 +150,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
                         ChangeAllPlayersStatus(Status::PlayersModified);
                         return crow::response(200);
                     });
-}   
+}
 
 void Server::Backend::StartGame(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/game")([&](const crow::request& req) {
@@ -193,6 +207,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         if (allGotMap) {
             m_status = Status::BaseChoice;
             ChangeAllPlayersStatus(Status::FirstQuestion);
+//            m_status = Status::BaseChoice;
             SetNewCurrentQuestion(true);
         }
 
@@ -224,9 +239,21 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         AddPlayerAnswer(id, body["answer"].i(), body["timeRemaining"].i());
 
-        if (m_playerAnswers.size() == m_players.size() || m_status == Status::Duel && m_playerAnswers.size() == 2) {
-            GeneratePlayerRanking();
-            ChangeAllPlayersStatus(Status::AllPlayersAnswered);
+        if (m_playerAnswers.size() == m_players.size() || m_status == Status::Duel && m_playerAnswers.size() == 2)
+        {
+            if (!m_poweredUpUsers.empty())
+            {
+                ChangeAllPlayersStatus(Status::InGame);
+                for (const auto &player: m_poweredUpUsers)
+                {
+                    ChangePlayerStatus(player.first, Status::PowerupRegionChoice);
+                }
+            }
+            else
+            {
+                GeneratePlayerRanking();
+                ChangeAllPlayersStatus(Status::AllPlayersAnswered);
+            }
         }
 
         return crow::response(200);
@@ -249,7 +276,9 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         // TODO: known bug - if someone calls /game/allAnswers after first base choice.. it fucks up
         bool allPlayersReceived = true;
+        bool powerupRegionsChosen = true;
         int playerNumber = m_players.size();
+
 
         switch (m_status) {
             case Status::BaseChoice: /// BASE CHOICE PHASE
@@ -321,7 +350,10 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                 break;
         }
 
-        return crow::json::wvalue{ {"answers", res} };
+        return crow::json::wvalue{
+            { "answers", res },
+            { "correctAnswer", m_currentQuestion.GetAnswer() }
+        };
     });
 
     CROW_ROUTE(app, "/game/baseChoice")([&](const crow::request& req) {
@@ -499,7 +531,6 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         m_attackedRegion = body["region"].i() - 1;
         int attackedUser = m_Map.GetRegion(m_attackedRegion)->GetUserId();
 
-
         SetNewCurrentQuestion(true); // todo no parameter -> implement multiple choice q
         ChangePlayerStatus(id, Status::AttackQuestion);
         ChangePlayerStatus(attackedUser, Status::AttackQuestion);
@@ -520,6 +551,120 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         };
     });
 }
+
+
+void Server::Backend::GamePowerups(crow::SimpleApp &app)
+{
+    CROW_ROUTE(app, "/game/powerup/chooseAnswer")([&](const crow::request& req)
+    {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+        m_players[id].DisablePowerup(0);
+        m_poweredUpUsers.emplace(id, false);
+
+        srand(time(0));
+        std::vector<crow::json::wvalue> answers(4);
+
+        int correctAnswerPosition = rand() % 4;
+        int correctAnswer = m_currentQuestion.GetAnswer();
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distr(-correctAnswer, correctAnswer);
+
+        answers[correctAnswerPosition] = correctAnswer;
+        for (int i = 0; i < 4; ++i)
+            if(i != correctAnswerPosition)
+                answers[i] = correctAnswer + distr(gen);
+
+        return crow::response( crow::json::wvalue{ answers } );
+    });
+
+    CROW_ROUTE(app, "/game/powerup/suggestAnswer")([&](const crow::request& req)
+    {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+        m_players[id].DisablePowerup(1);
+        m_poweredUpUsers.emplace(id, false);
+
+        int correctAnswer = m_currentQuestion.GetAnswer();
+        std::random_device rd;
+        std::mt19937 generator(rd());
+        std::uniform_int_distribution<> distribution(-10, 10);
+
+        return crow::json::wvalue {
+            { "answer", correctAnswer + distribution(generator) }
+        };
+    });
+
+    CROW_ROUTE(app, "/game/powerup/fiftyFifty")([&](const crow::request& req)
+    {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+        m_players[id].DisablePowerup(2);
+        m_poweredUpUsers.emplace(id, false);
+
+        return crow::response( crow::json::wvalue{ } );
+    });
+
+    CROW_ROUTE(app, "/game/powerup")([&](const crow::request &req)
+    {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+
+        std::vector<crow::json::wvalue> res;
+
+        const auto& validChoices = m_Map.GetAvailableRegionsForPowerups(id);
+
+        if(validChoices.empty())
+            return crow::response(crow::json::wvalue{
+                    { "chooseAnswer", false },
+                    { "suggestAnswer", false },
+                    { "fiftyFifty", false },
+            });
+
+        for (const auto& validChoice : validChoices) {
+            res.emplace_back(validChoice);
+        }
+
+        return crow::response(crow::json::wvalue{
+                { "regions", res },
+                { "chooseAnswer", m_players[id].GetPowerup(0) },
+                { "suggestAnswer", m_players[id].GetPowerup(1) },
+                { "fiftyFifty", m_players[id].GetPowerup(2) },
+        });
+    });
+
+    CROW_ROUTE(app, "/game/powerup").methods("POST"_method)([&](const crow::request &req)
+    {
+        auto header = req.get_header_value("ID");
+        int id = std::stoi(header);
+        ChangePlayerStatus(id, Status::InGame);
+        m_poweredUpUsers[id] = true;
+
+        auto body = crow::json::load(req.body);
+        if (!body)
+            return crow::response(400);
+
+        bool poweredupRegionsChosen = true;
+        for (const auto &player: m_poweredUpUsers)
+        {
+           poweredupRegionsChosen = poweredupRegionsChosen && player.second;
+        }
+        if(poweredupRegionsChosen)
+        {
+            m_poweredUpUsers.clear();
+            GeneratePlayerRanking();
+            ChangeAllPlayersStatus(Status::AllPlayersAnswered);
+        }
+
+        int selectedRegion = body["region"].i() - 1;
+        m_Map.GetRegion(selectedRegion)->DecrementScore();
+
+        return crow::response(200);
+    });
+}
+
 
 void Server::Backend::StartDebugEndpoints(crow::SimpleApp &app) {
     CROW_ROUTE(app, "/status")([&]() {
@@ -550,7 +695,8 @@ Server::Backend::Backend()
     StartLoginRegister(app);
     StartLobby(app);
     StartGame(app);
-	
+    GamePowerups(app);
+
 	app.port(18080).multithreaded().run();
 }
 
@@ -570,6 +716,7 @@ const std::string Server::Backend::ToString(Status s) {
         case Status::AllPlayersAnswered: return "AllPlayersAnswered";
         case Status::Duel: return "Duel";
         case Status::AttackQuestion: return "AttackQuestion";
+        case Status::PowerupRegionChoice: return "PowerupRegionChoice";
         default: return "Unknown";
     }
 }

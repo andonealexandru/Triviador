@@ -17,6 +17,7 @@ namespace Server {
         AllPlayersAnswered,
         Duel,
         AttackQuestion,
+        PowerupRegionChoice,
     };
 }
 

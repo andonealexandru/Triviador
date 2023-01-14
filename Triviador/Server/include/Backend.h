@@ -27,6 +27,7 @@ namespace Server
         void StartLoginRegister(crow::SimpleApp &app);
         void StartLobby(crow::SimpleApp &app);
         void StartGame(crow::SimpleApp &app);
+        void GamePowerups(crow::SimpleApp& app);
         void StartDebugEndpoints(crow::SimpleApp &app);
 
         // getters
@@ -62,5 +63,6 @@ namespace Server
         std::unordered_map<int, int> m_playerRegionChoices;
         int m_attackedRegion;
         int m_attackerPlayerId;
+        std::unordered_map<int, bool>  m_poweredUpUsers;
 	};
 }

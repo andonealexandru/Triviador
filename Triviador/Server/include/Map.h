@@ -20,6 +20,7 @@ namespace Server {
         std::vector<int> GetValidBaseChoices() const;
         std::vector<int> GetValidRegionChoices(int userId) const;
         std::vector<int> GetValidRegionToAttack(int userId) const;
+        std::vector<int> GetAvailableRegionsForPowerups(int userId) const;
         bool AllRegionsOccupied() const;
         std::shared_ptr<Region> GetRegion(int id) const;
 

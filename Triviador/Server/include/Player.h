@@ -25,6 +25,7 @@ namespace Server {
         Status GetStatus() const;
         int GetScore() const;
         std::shared_ptr<DB::User> GetUser() const;
+        bool GetPowerup(int index) const;
 
         // setters
         void SetId(int id);
@@ -32,6 +33,7 @@ namespace Server {
         void SetScore(int score);
         void SetUser(int userId);
 
+        void DisablePowerup(int index);
         void IncrementScore();
         void DecrementScore();
 
@@ -40,5 +42,6 @@ namespace Server {
         int m_score;
         std::shared_ptr<DB::User> m_user;
         Status m_status;
+        std::tuple<bool, bool, bool> m_powerups;
     };
 }
