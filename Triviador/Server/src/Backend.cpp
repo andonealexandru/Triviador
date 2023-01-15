@@ -153,6 +153,12 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         auto header = req.get_header_value("ID");
         int id = std::stoi(header);
 
+        if (m_status == Status::Endgame) {
+            return crow::json::wvalue{
+                    {"status", Status::Endgame}
+            };
+        }
+        
         return crow::json::wvalue{
                 {"status",
                  m_players.find(id) == m_players.end() ? ToString(Status::InGame) : ToString(m_players.find(id)->second.GetStatus())}
@@ -342,6 +348,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                                 // if only one player remains
                                 if (m_players.size() == 1) {
                                     ChangeAllPlayersStatus(Status::Endgame);
+                                    m_status = Status::Endgame;
                                     for (auto& loserPlayer : m_finishedPlayers)
                                         loserPlayer.SetStatus(Status::Endgame);
                                     return crow::json::wvalue{
