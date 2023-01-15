@@ -68,5 +68,6 @@ namespace Server
         int m_attackedRegion;
         int m_attackerPlayerId;
         std::unordered_map<int, bool>  m_poweredUpUsers;
+        bool m_addedStatisticsInDB;
 	};
 }

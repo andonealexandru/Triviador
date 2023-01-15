@@ -18,7 +18,7 @@ class Map : public QMainWindow
 	Q_OBJECT
 
 public:
-    Map() = default;
+    Map();
 	Map(DB::User* = nullptr, QWidget *parent = nullptr);
 	~Map();
 	virtual void paintEvent(QPaintEvent* event);

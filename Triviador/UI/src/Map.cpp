@@ -171,15 +171,15 @@ void Map::paintEvent(QPaintEvent* event)
         //desenare playeri
         for (int i = 0; i < m_players.size(); i++)
         {
+            const auto&[id, playerId, score, name] = m_players[i];
+
             QPainter pt(this);
             QFont font("Arial", 12, QFont::Bold);
             pt.setFont(font);
             QPen pent(Qt::black, 3);
-            QBrush brusht(QColor(185, 91, 36));
+            QBrush brusht(colorPixmaps[playerId].first);
             pt.setPen(pent);
             pt.setBrush(brusht);
-
-            const auto&[id, playerId, score, name] = m_players[i];
 
             std::ostringstream  oss;
             oss << name << ":"
