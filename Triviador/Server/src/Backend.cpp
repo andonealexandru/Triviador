@@ -583,7 +583,9 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         }
     });
 
-//    CROW_ROUTE(app, "/game/endgame")
+    CROW_ROUTE(app, "/game/endgame")([&](const crow::request& req) {
+        return crow::response(200);
+    });
 }
 
 
@@ -882,4 +884,17 @@ std::string Server::Backend::GetAnswerAsString(int answer) const {
         return std::to_string(answer);
     }
     return storage->Get<DB::QuestionChoice>(answer).GetChoice();
+}
+
+std::vector<Server::Player> Server::Backend::GetOrderedPlayers() const {
+    std::vector<Player> res;
+    for (const auto& player : m_players) {
+        res.push_back(player.second);
+    }
+
+    std::sort(res.begin(), res.end(), [](const auto &playerAnswer1, const auto &playerAnswer2) {
+        return playerAnswer1.GetScore() < playerAnswer2.GetScore();
+    });
+
+    return res;
 }

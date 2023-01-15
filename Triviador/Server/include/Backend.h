@@ -44,6 +44,7 @@ namespace Server
         void GeneratePlayerRanking();
         std::string GetCorrectAnswerAsString() const;
         std::string GetAnswerAsString(int answer) const;
+        std::vector<Player> GetOrderedPlayers() const;
 
     private:
 		Backend(Backend&&) = delete;

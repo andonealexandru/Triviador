@@ -85,7 +85,7 @@ namespace DB
 
         /// \brief Returns the question choices for specific question from table
         template <typename T>
-        T GetCorrectQuestionChoice(int questionId);
+        QuestionChoice GetCorrectQuestionChoice(int questionId);
 
         /// \brief Returns the number of elements inside a table
         template <typename T>
@@ -291,11 +291,12 @@ namespace DB
     }
 
     template<typename T>
-    inline T DBAccess::GetCorrectQuestionChoice(int questionId) {
+    inline QuestionChoice DBAccess::GetCorrectQuestionChoice(int questionId) {
         try
         {
             std::vector<T> res = storage.get_all<T>(where(c(&QuestionChoice::GetQuestionId) == questionId
-                                                          and c(&QuestionChoice::GetIsCorrect) == true));
+                                                          and c(&QuestionChoice::GetIsCorrect) == "TRUE"));
+
             return res.front();
         }
         catch (std::system_error& e)
@@ -306,7 +307,7 @@ namespace DB
         {
             std::cout << "unknown exception" << '\n';
         }
-        return T();
+        return QuestionChoice();
     }
 
 }//namespace DB
