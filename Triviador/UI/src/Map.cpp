@@ -35,6 +35,8 @@ Map::~Map()
 {
     delete m_user;
     delete m_timer;
+    if(!m_duelResult)
+        delete m_duelResult;
 }
 
 void Map::paintEvent(QPaintEvent* event)
@@ -508,8 +510,6 @@ void Map::InitStateHandler()
         });
         ShowResults(results, "End Game");
     });
-
-
 }
 
 Map::State Map::StringToState(const std::string &state)
