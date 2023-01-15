@@ -60,3 +60,7 @@ void Server::Region::DecrementScore() {
 std::vector<std::weak_ptr<Server::Region>> Server::Region::GetAdjacentRegions() const {
     return m_AdjacentRegions;
 }
+
+void Server::Region::DestroyBase() {
+    m_isBase = false;
+}

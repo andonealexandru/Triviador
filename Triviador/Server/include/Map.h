@@ -23,6 +23,7 @@ namespace Server {
         std::vector<int> GetAvailableRegionsForPowerups(int userId) const;
         bool AllRegionsOccupied() const;
         std::shared_ptr<Region> GetRegion(int id) const;
+        void ChangeRegionsOwners(int oldId, int newId);
 
     private:
         int m_Id;

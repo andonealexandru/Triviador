@@ -17,6 +17,7 @@ namespace Server {
         void SetId(int id);
         void SetUserId(int userId);
         void MakeBase();
+        void DestroyBase();
 
         // getters
         int GetId() const;

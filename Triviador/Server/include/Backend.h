@@ -42,6 +42,8 @@ namespace Server
         int ChangePlayerStatus(int playerId, Status status);
         int ChangeAllPlayersStatus(Status status);
         void GeneratePlayerRanking();
+        std::string GetCorrectAnswerAsString() const;
+        std::string GetAnswerAsString(int answer) const;
 
     private:
 		Backend(Backend&&) = delete;

@@ -69,8 +69,6 @@ void Server::Backend::StartLoginRegister(crow::SimpleApp &app) {
                 {"wins",  noStatistics ? 0 : userStatistics.front().GetWonGames()}
         };
     });
-
-    // TODO: add /users/get
 }
 
 void Server::Backend::StartLobby(crow::SimpleApp &app) {
@@ -101,7 +99,7 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
         for (const auto& player : m_players) {
             res_json.push_back(crow::json::wvalue{
                     {"id", player.first},
-                    {"name", storage->Get<DB::User>(player.first).GetName()} // TODO
+                    {"name", player.second.GetUser()->GetName()}
             });
         }
 
@@ -117,8 +115,6 @@ void Server::Backend::StartLobby(crow::SimpleApp &app) {
                     ([&](const crow::request& req) {
                         auto header = req.get_header_value("ID");
                         int id = std::stoi(header);
-
-                        // TODO:check if user exists in DB
 
                         // check if user already in lobby
                         auto player = m_players.find(id);
@@ -173,8 +169,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             res_json.push_back(crow::json::wvalue{
                     {"id", player.first},
                     {"playerId", player.second.GetId()},
-                    {"name", storage->Get<DB::User>(player.first).GetName()}, // TODO
-                    {"score", 0}
+                    {"name", player.second.GetUser()->GetName()},
+                    {"score", player.second.GetScore()}
             });
         }
 
@@ -207,7 +203,6 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         if (allGotMap) {
             m_status = Status::BaseChoice;
             ChangeAllPlayersStatus(Status::FirstQuestion);
-//            m_status = Status::BaseChoice;
             SetNewCurrentQuestion(true);
         }
 
@@ -268,17 +263,14 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         for (const auto& player : m_playerRanking) {
             res.push_back(crow::json::wvalue{
                     {"id", std::get<0>(player)},
-                    {"name", storage->Get<DB::User>(std::get<0>(player)).GetName()},
-                    {"answer", std::get<1>(player)},
+                    {"name", m_players[std::get<0>(player)].GetUser()->GetName()},
+                    {"answer", GetAnswerAsString(std::get<1>(player))}, // TODO: get answer as string
                     {"timeRemaining", std::get<2>(player)}
             });
         }
 
-        // TODO: known bug - if someone calls /game/allAnswers after first base choice.. it fucks up
         bool allPlayersReceived = true;
-        bool powerupRegionsChosen = true;
         int playerNumber = m_players.size();
-
 
         switch (m_status) {
             case Status::BaseChoice: /// BASE CHOICE PHASE
@@ -327,13 +319,26 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
                 if (allPlayersReceived) {
                     //ChangePlayerStatus(std::get<0>(m_playerRanking.front()), Status::RegionChoice);
-                    if (std::get<0>(m_playerRanking.front()) == m_Map.GetRegion(m_attackedRegion)->GetUserId()) // if attacked user won
+                    if (std::get<0>(m_playerRanking.front()) == m_Map.GetRegion(m_attackedRegion)->GetUserId()) { // if attacked user won
                         m_Map.GetRegion(m_attackedRegion)->IncrementScore();
+                        m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].IncrementScore();
+                    }
                     else { // attacked user lost
                         if (m_Map.GetRegion(m_attackedRegion)->GetScore() == 100) {
-                            m_Map.GetRegion(m_attackedRegion)->SetUserId(std::get<0>(m_playerRanking.front()));
+                            if (!m_Map.GetRegion(m_attackedRegion)->IsBase()) {
+                                m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].DecrementScore();
+                                m_Map.GetRegion(m_attackedRegion)->SetUserId(std::get<0>(m_playerRanking.front()));
+                                m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].IncrementScore();
+                            }
+                            else { // lost base
+                                // TODO: handle in endgame
+                                m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].SetScore(0);
+                                m_Map.GetRegion(m_attackedRegion)->DestroyBase();
+                                m_Map.ChangeRegionsOwners(m_Map.GetRegion(m_attackedRegion)->GetUserId(), m_attackerPlayerId);
+                            }
                         }
                         else m_Map.GetRegion(m_attackedRegion)->DecrementScore();
+                        m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].DecrementScore();
                     }
                     ChangeAllPlayersStatus(Status::MapChanged);
                     m_attackerPlayerId++;
@@ -352,7 +357,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         return crow::json::wvalue{
             { "answers", res },
-            { "correctAnswer", m_currentQuestion.GetAnswer() }
+            { "correctAnswer", GetCorrectAnswerAsString() }
         };
     });
 
@@ -494,7 +499,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         else {// all players have all regions
             m_attackedRegion = -1;
             m_status = Status::Duel;
-            SetNewCurrentQuestion(true);
+            SetNewCurrentQuestion();
             m_attackerPlayerId = 1;
             ChangeAllPlayersStatus(Status::MapChanged);
             for (const auto& player : m_players) {
@@ -531,7 +536,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
         m_attackedRegion = body["region"].i() - 1;
         int attackedUser = m_Map.GetRegion(m_attackedRegion)->GetUserId();
 
-        SetNewCurrentQuestion(true); // todo no parameter -> implement multiple choice q
+        SetNewCurrentQuestion();
         ChangePlayerStatus(id, Status::AttackQuestion);
         ChangePlayerStatus(attackedUser, Status::AttackQuestion);
 
@@ -544,11 +549,32 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         ChangePlayerStatus(id, Status::Answer);
 
-        return crow::json::wvalue{
-                { "status", ToString(m_status) },
-                { "question", m_currentQuestion.GetQuestion() },
-                { "type", m_currentQuestion.GetType() }
-        };
+        if (m_currentQuestion.GetType() == "single_choice") {
+
+            return crow::json::wvalue{
+                    {"status",   ToString(m_status)},
+                    {"question", m_currentQuestion.GetQuestion()},
+                    {"type",     m_currentQuestion.GetType()}
+            };
+        }
+        else {
+            std::vector<crow::json::wvalue> choices;
+
+            for (const auto &choice: DB::DBAccess::GetInstance()->GetQuestionChoices<DB::QuestionChoice>(
+                    m_currentQuestion.GetId())) {
+                choices.push_back(crow::json::wvalue{
+                        {"choice", choice.GetChoice()},
+                        {"id", choice.GetId()}
+                });
+            }
+
+            return crow::json::wvalue{
+                    {"status",   ToString(m_status)},
+                    {"question", m_currentQuestion.GetQuestion()},
+                    {"type",     m_currentQuestion.GetType()},
+                    {"choices",  crow::json::wvalue{ choices }}
+            };
+        }
     });
 }
 
@@ -660,6 +686,7 @@ void Server::Backend::GamePowerups(crow::SimpleApp &app)
 
         int selectedRegion = body["region"].i() - 1;
         m_Map.GetRegion(selectedRegion)->DecrementScore();
+        m_players[id].DecrementScore();
 
         return crow::response(200);
     });
@@ -734,23 +761,27 @@ const DB::Question &Server::Backend::GetCurrentQuestion() const {
     return m_currentQuestion;
 }
 
-void Server::Backend::SetNewCurrentQuestion(bool numeric) {
+void Server::Backend::SetNewCurrentQuestion(bool numericOnly) {
     m_playerAnswers.clear();
     m_playerRanking.clear();
 
     srand(time(0));
-    if (numeric) {
-        // get all questions and generate random id
-        auto questions = storage->GetNumericQuestions<DB::Question>();
-        int questionsSize = questions.size();
-        int randomQuestion = rand() % questionsSize;
-        // while random id question was already used find new one
-        while (m_usedQuestionIds.find(randomQuestion) != m_usedQuestionIds.end()) {
-            randomQuestion = rand() % questionsSize;
-        }
-        m_currentQuestion = questions[randomQuestion];
-        m_usedQuestionIds.insert(randomQuestion);
+    std::vector<DB::Question> questions;
+    if (numericOnly) {
+        questions = storage->GetNumericQuestions<DB::Question>();
     }
+    else {
+        questions = DB::DBAccess::GetInstance()->GetAll<DB::Question>();
+    }
+
+    int questionsSize = questions.size();
+    int randomQuestion = rand() % questionsSize;
+    // while random id question was already used find new one
+    while (m_usedQuestionIds.find(randomQuestion) != m_usedQuestionIds.end()) {
+        randomQuestion = rand() % questionsSize;
+    }
+    m_currentQuestion = questions[randomQuestion];
+    m_usedQuestionIds.insert(randomQuestion);
 }
 
 void Server::Backend::GenerateNewMap() {
@@ -792,20 +823,54 @@ int Server::Backend::ChangeAllPlayersStatus(Status status) {
 }
 
 void Server::Backend::GeneratePlayerRanking() {
-    // get correct answer
-    int correctAnswer = m_currentQuestion.GetAnswer();
     for (const auto& answer : m_playerAnswers) {
         // playerId, difference, timeRemaining
         if (answer.second.second == -1) // did not answer
-            m_playerRanking.emplace_back(answer.first, INT_MAX, answer.second.second); // biggest difference
+            m_playerRanking.emplace_back(answer.first, answer.second.first, answer.second.second); // biggest difference
         else m_playerRanking.emplace_back(answer.first, answer.second.first, answer.second.second); // answer - correctAnswer, time remaining
     }
 
-    std::sort(m_playerRanking.begin(), m_playerRanking.end(),[correctAnswer](const auto& playerAnswer1, const auto& playerAnswer2) {
-        if (std::abs(std::get<1>(playerAnswer1) - correctAnswer) < std::abs(std::get<1>(playerAnswer2) - correctAnswer)) // difference
-            return true;
-        return std::abs(std::get<1>(playerAnswer1) - correctAnswer) == std::abs(std::get<1>(playerAnswer2) - correctAnswer)
-                && std::get<2>(playerAnswer1) > std::get<2>(playerAnswer2); // time
-    });
+    if (m_currentQuestion.GetType() == "single_choice") {
+        int correctAnswer = m_currentQuestion.GetAnswer();
+        std::sort(m_playerRanking.begin(), m_playerRanking.end(),
+                  [correctAnswer](const auto &playerAnswer1, const auto &playerAnswer2) {
+                      if (std::get<1>(playerAnswer1) != -1 && std::get<1>(playerAnswer2) == -1) // no response
+                          return true;
+                      if (std::abs(std::get<1>(playerAnswer1) - correctAnswer) <
+                          std::abs(std::get<1>(playerAnswer2) - correctAnswer)) // difference
+                          return true;
+                      return std::abs(std::get<1>(playerAnswer1) - correctAnswer) ==
+                             std::abs(std::get<1>(playerAnswer2) - correctAnswer)
+                             && std::get<2>(playerAnswer1) > std::get<2>(playerAnswer2); // time
+                  });
+    }
+    else {
+        int correctAnswer = DB::DBAccess::GetInstance()->GetCorrectQuestionChoice<DB::QuestionChoice>(
+                m_currentQuestion.GetId()).GetId();
+        std::sort(m_playerRanking.begin(), m_playerRanking.end(),
+                  [correctAnswer](const auto &playerAnswer1, const auto &playerAnswer2) {
+                      if (std::get<1>(playerAnswer1) != -1 && std::get<1>(playerAnswer2) == -1) // no response
+                          return true;
+                      if (std::get<1>(playerAnswer1) == correctAnswer &&
+                          std::get<1>(playerAnswer2) != correctAnswer) // difference
+                          return true;
+                      return std::get<1>(playerAnswer1) == correctAnswer && std::get<1>(playerAnswer2) != correctAnswer
+                             && std::get<2>(playerAnswer1) > std::get<2>(playerAnswer2); // time
+                  });
+    }
 
+}
+
+std::string Server::Backend::GetCorrectAnswerAsString() const {
+    if (m_currentQuestion.GetType() == "single_choice") {
+        return std::to_string(m_currentQuestion.GetAnswer());
+    }
+    return storage->GetCorrectQuestionChoice<DB::QuestionChoice>(m_currentQuestion.GetId()).GetChoice();
+}
+
+std::string Server::Backend::GetAnswerAsString(int answer) const {
+    if (m_currentQuestion.GetType() == "single_choice") {
+        return std::to_string(answer);
+    }
+    return storage->Get<DB::QuestionChoice>(answer).GetChoice();
 }

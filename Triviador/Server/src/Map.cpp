@@ -57,6 +57,14 @@ std::vector<int> Server::Map::GetValidRegionChoices(int userId) const {
 
         if (hasUserNeighbour)
             validRegions.push_back(region->GetId());
+
+    }
+
+    if (validRegions.empty()) {
+        for (const auto& region : m_Regions) {
+            if (region->GetUserId() == -1)
+                validRegions.push_back(region->GetId());
+        }
     }
 
     return validRegions;
@@ -244,6 +252,9 @@ std::vector<int> Server::Map::GetValidRegionToAttack(int userId) const {
      */
 
     for (const auto& region : m_Regions) {
+        if (region->GetUserId() != userId)
+            continue;
+
         bool hasUserNeighbour = false;
         for (const auto& neighbour : region->GetAdjacentRegions()) {
             auto neighbourObj = neighbour.lock();
@@ -273,4 +284,11 @@ std::vector<int> Server::Map::GetAvailableRegionsForPowerups(int userId) const
             validRegions.push_back(region->GetId());
     }
     return validRegions;
+}
+
+void Server::Map::ChangeRegionsOwners(int oldId, int newId) {
+    for (const auto& region : m_Regions) {
+        if (region->GetUserId() == oldId)
+            region->SetUserId(newId);
+    }
 }

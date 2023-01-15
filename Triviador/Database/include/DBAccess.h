@@ -79,6 +79,14 @@ namespace DB
         template <typename T>
         std::vector<T> GetNumericQuestions();
 
+        /// \brief Returns the question choices for specific question from table
+        template <typename T>
+        std::vector<T> GetQuestionChoices(int questionId);
+
+        /// \brief Returns the question choices for specific question from table
+        template <typename T>
+        T GetCorrectQuestionChoice(int questionId);
+
         /// \brief Returns the number of elements inside a table
         template <typename T>
         uint32_t Count();
@@ -249,7 +257,7 @@ namespace DB
     }
 
     template<typename T>
-    std::vector<T> DBAccess::GetNumericQuestions() {
+    inline std::vector<T> DBAccess::GetNumericQuestions() {
         try
         {
             return storage.get_all<T>(where(c(&Question::GetType) == "single_choice"));
@@ -263,6 +271,42 @@ namespace DB
             std::cout << "unknown exception" << '\n';
         }
         return std::vector<T>();
+    }
+
+    template<typename T>
+    inline std::vector<T> DBAccess::GetQuestionChoices(int questionId) {
+        try
+        {
+            return storage.get_all<T>(where(c(&QuestionChoice::GetQuestionId) == questionId));
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
+    }
+
+    template<typename T>
+    inline T DBAccess::GetCorrectQuestionChoice(int questionId) {
+        try
+        {
+            std::vector<T> res = storage.get_all<T>(where(c(&QuestionChoice::GetQuestionId) == questionId
+                                                          && c(&QuestionChoice::GetIsCorrect) == true));
+            return res.front();
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return T();
     }
 
 }//namespace DB
