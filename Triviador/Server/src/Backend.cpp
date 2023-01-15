@@ -354,7 +354,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                     m_attackerPlayerId++;
                     if (m_players.find(m_attackerPlayerId) == m_players.end())
                         m_attackerPlayerId++;
-                    if (m_attackerPlayerId == m_players.size() + 1) { // finished one round
+                    if (m_attackerPlayerId >= m_players.size() + 1) { // finished one round
                         m_attackerPlayerId = 1;
                         m_Map.RoundPlayed();
                         if (m_Map.GetRounds() == 0) {
