@@ -155,7 +155,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         return crow::json::wvalue{
                 {"status",
-                 m_players.find(id) == m_players.end() ? ToString(m_status) : ToString(m_players.find(id)->second.GetStatus())}
+                 m_players.find(id) == m_players.end() ? ToString(Status::InGame) : ToString(m_players.find(id)->second.GetStatus())}
         };
     });
 
@@ -332,13 +332,23 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                             }
                             else { // lost base
                                 // TODO: handle in endgame
-                                m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].SetScore(0);
+                                int loser = m_Map.GetRegion(m_attackedRegion)->GetUserId();
+                                m_players[m_attackerPlayerId].SetScore(m_players[m_attackerPlayerId].GetScore() + m_players[loser].GetScore());
+                                m_players[loser].SetScore(0);
+                                m_finishedPlayers.push_back(m_players[loser]);
+                                m_players.erase(loser);
                                 m_Map.GetRegion(m_attackedRegion)->DestroyBase();
-                                m_Map.ChangeRegionsOwners(m_Map.GetRegion(m_attackedRegion)->GetUserId(), m_attackerPlayerId);
+                                m_Map.ChangeRegionsOwners(loser, m_attackerPlayerId);
+                                // if only one player remains
+                                if (m_players.size() == 1) {
+                                    ChangeAllPlayersStatus(Status::Endgame);
+                                }
                             }
                         }
-                        else m_Map.GetRegion(m_attackedRegion)->DecrementScore();
-                        m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].DecrementScore();
+                        else {
+                            m_Map.GetRegion(m_attackedRegion)->DecrementScore();
+                            m_players[m_Map.GetRegion(m_attackedRegion)->GetUserId()].DecrementScore();
+                        }
                     }
                     ChangeAllPlayersStatus(Status::MapChanged);
                     m_attackerPlayerId++;
@@ -584,7 +594,15 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
     });
 
     CROW_ROUTE(app, "/game/endgame")([&](const crow::request& req) {
-        return crow::response(200);
+        auto players = GetOrderedPlayers();
+
+        std::vector<crow::json::wvalue> res;
+
+        for (const auto& player : players) {
+            res.push_back(crow::json::wvalue{ player.GetUser()->GetName() });
+        }
+
+        return crow::json::wvalue{ res };
     });
 }
 
@@ -887,7 +905,7 @@ std::string Server::Backend::GetAnswerAsString(int answer) const {
 }
 
 std::vector<Server::Player> Server::Backend::GetOrderedPlayers() const {
-    std::vector<Player> res;
+    std::vector<Player> res = m_finishedPlayers;
     for (const auto& player : m_players) {
         res.push_back(player.second);
     }

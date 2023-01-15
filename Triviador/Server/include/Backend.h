@@ -56,6 +56,7 @@ namespace Server
 
         Status m_status;
         std::unordered_map<int, Player> m_players;
+        std::vector<Player> m_finishedPlayers;
         // info about current question
         DB::Question m_currentQuestion;
         std::unordered_map<int, std::pair<int, int>> m_playerAnswers; // TODO: redundant information... remove one
