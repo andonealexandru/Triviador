@@ -30,7 +30,10 @@ DuelResult::DuelResult(const std::vector<std::tuple<int, std::string, std::strin
         }
     }
     else
+    {
+        ui.correctAnswer->setText("");
         ShowEndGame(players);
+    }
 }
 
 void DuelResult::paintEvent(QPaintEvent* pe)

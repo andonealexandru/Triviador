@@ -224,7 +224,6 @@ void Map::mouseReleaseEvent(QMouseEvent* ev)
     }
     emit MousePressed();
 }
-
 void Map::NumericAnswerSent()
 {
     bool isPoweredUp = m_nQuestion->PoweredUp();
@@ -240,7 +239,6 @@ void Map::NumericAnswerSent()
         UpdateRegions();
     }
 }
-
 void Map::AnswerSent()
 {
     bool isPoweredUp = m_question->PoweredUp();
@@ -256,7 +254,6 @@ void Map::AnswerSent()
         UpdateRegions();
     }
 }
-
 void Map::OnGoing()
 {
     const auto requestStatus = m_requestHandler.Get("/game", HEADER);
@@ -459,6 +456,7 @@ void Map::InitStateHandler()
     m_stateHandler.emplace(Map::State::Duel, [&]()
     {
         UpdateRegions();
+        UpdatePlayers();
         PostChosenRegion("/game/attackRegion", "region");
     });
 
@@ -469,6 +467,8 @@ void Map::InitStateHandler()
         auto question = questionData["question"].get<std::string>();
         auto type = StringToQuestionType(questionData["type"].get<std::string>());
 
+        UpdatePlayers();
+        UpdateRegions();
         switch(type)
         {
             case QuestionType::NUMERIC:
