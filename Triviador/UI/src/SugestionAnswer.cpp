@@ -1,6 +1,6 @@
 #include "SugestionAnswer.h"
 
-SugestionAnswer::SugestionAnswer(std::string question, std::vector<std::string>answers,int t,QWidget *parent)
+SugestionAnswer::SugestionAnswer(std::string question, std::vector<int>answers,int t,QWidget *parent)
 	: m_question(question),
 	m_answers(answers),
 	m_t(t),
@@ -68,13 +68,13 @@ int SugestionAnswer::timer()
 void SugestionAnswer::setQuestion()
 {
 	ui.question->setText(QString::fromStdString(m_question));
-	ui.a1->setText(QString::fromStdString(m_answers[0]));
-	ui.a2->setText(QString::fromStdString(m_answers[1]));
-	ui.a3->setText(QString::fromStdString(m_answers[2]));
-	ui.a4->setText(QString::fromStdString(m_answers[3]));
+	ui.a1->setText(QString::fromStdString(std::to_string(m_answers[0])));
+	ui.a2->setText(QString::fromStdString(std::to_string(m_answers[1])));
+	ui.a3->setText(QString::fromStdString(std::to_string(m_answers[2])));
+	ui.a4->setText(QString::fromStdString(std::to_string(m_answers[3])));
 }
 
-std::vector<std::string> SugestionAnswer::GetAnswers()
+std::vector<int> SugestionAnswer::GetAnswers()
 {
 	return m_answers;
 }

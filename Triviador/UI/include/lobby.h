@@ -38,7 +38,7 @@ private:
 
     Ui::Lobby *ui;
     DB::User m_user;
-    QTimer* timer;
+    QTimer* m_timer;
     std::vector<DB::User> m_players;
 };
 

@@ -1,17 +1,32 @@
 #include "DuelResult.h"
+#include <sstream>
 
-
-DuelResult::DuelResult(std::vector<std::string> players,QWidget *parent)
-	: m_players(players),
-    QMainWindow(parent)
+DuelResult::DuelResult(const std::vector<std::tuple<int, std::string, std::string>>& players,
+                       const std::string& correctAnswer, QWidget *parent)
+	: m_players(players)
+    , QMainWindow(parent)
 {
     ui.setupUi(this);
-    ui.lb1->setText(QString::fromStdString("1. "+players[0]));
-    ui.lb2->setText(QString::fromStdString("2. "+players[1]));
-    if(players.size()>2)
-        ui.lb3->setText(QString::fromStdString("3. "+players[2]));
-    if(players.size()==4)
-        ui.lb4->setText(QString::fromStdString("4. "+players[3]));
+
+    ui.correctAnswer->setText(("Correct answer: " + correctAnswer).data());
+
+    std::array<QLabel*, 4> labels = { ui.lb1, ui.lb2, ui.lb3, ui.lb4 };
+    for (int i = 0; i < players.size(); ++i)
+    {
+        std::ostringstream oss;
+        const auto&[timeRemaining, name, answer] = players[i];
+
+        if(timeRemaining == -1)
+        {
+            oss << i+1 << ": " << name << "\n"
+                << "\t Nu a raspuns. ";
+        }
+        else oss << i+1 << ": " << name << "\n"
+                 << "\t time: " << timeRemaining
+                 << ", answer: " << answer;
+
+        labels[i]->setText(QString::fromStdString(oss.str()));
+    }
 }
 
 void DuelResult::paintEvent(QPaintEvent* pe)

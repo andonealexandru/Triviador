@@ -4,28 +4,44 @@
 #include <string>
 #include <crow.h>
 
+#include "DBAccess.h"
+#include "Status.h"
+#include "User.h"
+
 namespace Server {
     class Player
     {
     public:
         // constructors
         Player() = default;
-        Player(int id, const std::string& name);
-        Player(const Player& other) = default;
-        Player& operator=(const Player& other) = default;
+        Player(int id, int userId, int score, Status status);
+        Player(const Player& other);
+        Player &operator=(const Player& other);
 
         ~Player() = default;
 
         // getters
         int GetId() const;
-        const std::string& GetName() const;
+        Status GetStatus() const;
+        int GetScore() const;
+        std::shared_ptr<DB::User> GetUser() const;
+        bool GetPowerup(int index) const;
 
         // setters
         void SetId(int id);
-        void SetName(const std::string& name);
+        void SetStatus(Status status);
+        void SetScore(int score);
+        void SetUser(int userId);
+
+        void DisablePowerup(int index);
+        void IncrementScore();
+        void DecrementScore();
 
     private:
         int m_id;
-        std::string m_name;
+        int m_score;
+        std::shared_ptr<DB::User> m_user;
+        Status m_status;
+        std::tuple<bool, bool, bool> m_powerups;
     };
 }

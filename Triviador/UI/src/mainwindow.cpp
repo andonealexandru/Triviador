@@ -16,8 +16,9 @@ MainWindow::MainWindow(QWidget* parent)
     , loginWindow(nullptr)
     , registerWindow(nullptr)
     , lobbyWindow(nullptr)
+    , profileWindow(nullptr)
+    , gameWindow(nullptr)
 {
-    //ui = new Ui::MainWindow();
     ui->setupUi(this);
     ui->startButton->setVisible(false);
     ui->profileButton->setVisible(true);
@@ -46,8 +47,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::changePageAfterLogin()
 {
-    ui->openButton->deleteLater();
-    ui->openButton_2->deleteLater();
+    ui->openButton->hide();
+    ui->openButton_2->hide();
     user = loginWindow->GetUser();
     ui->startButton->setVisible(true);
     delete loginWindow;
@@ -55,8 +56,8 @@ void MainWindow::changePageAfterLogin()
 
 void MainWindow::changePageAfterRegister()
 {
-    ui->openButton->deleteLater();
-    ui->openButton_2->deleteLater();
+    ui->openButton->hide();
+    ui->openButton_2->hide();
     user = registerWindow->GetUser();
     ui->startButton->setVisible(true);
     delete registerWindow;
@@ -64,8 +65,10 @@ void MainWindow::changePageAfterRegister()
 
 void MainWindow::changePageAfterLobby()
 {
+    std::cout << "Game is starting\n";
+    gameWindow = new Map(&this->user);
+    gameWindow->show();
     delete lobbyWindow;
-    // TODO: the game window should start
 }
 
 
@@ -89,7 +92,6 @@ void MainWindow::changePageAfterExitProfile()
     delete profileWindow;
 }
 
-
 void MainWindow::on_openButton_clicked()
 {
     registerWindow = new Register();
@@ -108,7 +110,11 @@ void MainWindow::on_openButton_2_clicked()
 
 void MainWindow::on_profileButton_clicked()
 {
-    profileWindow = new Profile();
+    auto profileJson = cpr::Get(cpr::Url{"localhost:18080/users/profile"},
+              cpr::Header{{"ID", std::to_string(user.GetId())}});
+
+    auto profile =  json::parse(profileJson.text);
+    profileWindow = new Profile({ profile["games"].get<int>(), profile["wins"].get<int>() });
     QObject::connect(profileWindow, SIGNAL(pushButtonExitPressed()), this, SLOT(changePageAfterExitProfile()));
     profileWindow->show();
 }
@@ -119,27 +125,14 @@ void MainWindow::on_startButton_clicked()
                                        cpr::Body(to_string(json())),
                                        cpr::Header{{"ID", std::to_string(user.GetId())}});
 
-    switch(response.status_code)
-    {
-        case 400:
-            QMessageBox::warning(this, " ", "Eroare de server.");
-            break;
-        case 409:
-            QMessageBox::warning(this, " ", "Utilizatorul exista deja.");
-            break;
-        case 201:
-            QMessageBox::information(this, " ", "Utilizatorul a fost creat.");
-            break;
-        default:
-            break;
-    }
-
     lobbyWindow = new Lobby(user);
     QObject::connect(lobbyWindow, SIGNAL(startButtonPressed()), this, SLOT(changePageAfterLobby()));
     QObject::connect(lobbyWindow, SIGNAL(exitButtonPressed()), this, SLOT(changePageAfterExitLobby()));
     lobbyWindow->show();
     this->hide();
 }
+
+
 
 
 

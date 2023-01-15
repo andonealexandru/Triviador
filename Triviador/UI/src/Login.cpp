@@ -49,7 +49,6 @@ void Login::on_pushButton_clicked()
         {"name", username.toStdString()},
         {"password", password.toStdString()},
     };
-
     cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/login"},
                                        cpr::Body{to_string(userJson)});
 
@@ -57,13 +56,13 @@ void Login::on_pushButton_clicked()
     {
         case 400:
             QMessageBox::warning(this, " ", "Eroare de server.");
-            break;
+            return;
         case 409:
             QMessageBox::warning(this, " ", "Utilizatorul nu exista.");
-            break;
+            return;
         case 401:
             QMessageBox::warning(this, " ", "Parola incorecta.");
-            break;
+            return;
         case 200:
             QMessageBox::information(this, " ", "Conectare cu succes.");
             break;

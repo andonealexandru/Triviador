@@ -10,6 +10,7 @@ namespace DB
     public:
         //constructors
         QuestionChoice() = default;
+        QuestionChoice(const uint32_t id, const std::string& choice);
         QuestionChoice(const uint32_t id, const uint32_t questionId, const std::string& choice, const uint8_t isCorrect);
         QuestionChoice(const uint32_t questionId, const std::string& choice, const uint8_t isCorrect);
         QuestionChoice(const QuestionChoice& other);

@@ -4,29 +4,44 @@
 #include "QPainter"
 #include <QPushButton>
 #include <vector>
+#include <QuestionChoice.h>
 
 class MCQuestion : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	MCQuestion(int correctAnswer,std::string question, std::vector<std::string>answers,bool ho1,bool ho2, bool ho3, QWidget* parent = nullptr);
+	MCQuestion(const std::string& question, const int playerId,
+               const std::string& playerName,
+               const std::array<std::pair<uint32_t, std::string>, 4>& answers,
+               const bool powerupAvailable,
+               QWidget* parent = nullptr);
 	void setQuestion();
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	int timer();
+
 	~MCQuestion();
 
+    int GetRemainingTime() const;
+    int GetSelection() const;
+    bool PoweredUp() const;
+
+signals:
+    void clicked();
+
 private slots:
-	void a1Clicked();
-	void a2Clicked(); 
-	void a3Clicked();
-	void a4Clicked();
-	void ho1Clicked();
+    void on_a1_clicked();
+    void on_a2_clicked();
+    void on_a3_clicked();
+    void on_a4_clicked();
+	void on_ho1_clicked();
 
 private:
 	Ui::MCQuestionClass ui;
-	int m_correctAnswer;
 	std::string m_question;
-	std::vector<std::string>m_answers;
-	bool m_foundCorrectAnswer,m_ho1, m_ho2,m_ho3; //variante ajutatoare
+	std::array<DB::QuestionChoice, 4> m_answers;
+    int m_t;
+    int m_selection;
+    int m_playerId;
+    bool m_powerupUsed;
 };

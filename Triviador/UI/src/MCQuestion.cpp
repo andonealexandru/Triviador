@@ -4,42 +4,47 @@
 #include <QPropertyAnimation>
 #include <QTimer>
 #include <iostream>
+#include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
-MCQuestion::MCQuestion(int correctAnswer,std::string question, std::vector<std::string>answers, bool ho1, bool ho2, bool ho3, QWidget* parent)
-	: m_correctAnswer(correctAnswer),
-	  m_question(question),
-	  m_answers(answers),
-	  m_ho1(ho1),
-	  m_ho2(ho2),
-	  m_ho3(ho3),
-	  QMainWindow(parent)
+MCQuestion::MCQuestion(const std::string& question, const int playerId,
+                       const std::string& playerName,
+                       const std::array<std::pair<uint32_t, std::string>, 4>& answers,
+                       const bool powerupAvailable,
+                       QWidget* parent)
+	: m_question{ question }
+    , m_t{ 30 }
+    , m_selection{ -1 }
+    , m_powerupUsed{ false }
+    , m_playerId{ playerId }
+    , QMainWindow{ parent }
 
 {
 	ui.setupUi(this);
-	m_foundCorrectAnswer = false;
-
-	connect(ui.a1, SIGNAL(clicked()), this, SLOT(a1Clicked()));
-	connect(ui.a2, SIGNAL(clicked()), this, SLOT(a2Clicked()));
-	connect(ui.a3, SIGNAL(clicked()), this, SLOT(a3Clicked()));
-	connect(ui.a4, SIGNAL(clicked()), this, SLOT(a4Clicked()));
-
-	connect(ui.ho1, SIGNAL(clicked()), this, SLOT(ho1Clicked()));
-
-	if (!ho1)ui.ho1->setVisible(false);
-	if (!ho2)ui.ho2->setVisible(false);
-	if (!ho3)ui.ho3->setVisible(false);
-
+    ui.ho2->setVisible(false);
+    ui.ho3->setVisible(false);
+    ui.ho1->setVisible(true);
+    ui.ho1->setEnabled(powerupAvailable);
+    ui.player_name->setText(("Player: " + playerName).data());
 	timer();
-	setQuestion();
+
+    uint32_t index = 0;
+    for(const auto& answer : answers)
+    {
+        auto&[id, choice] = answer;
+        m_answers[index++] = DB::QuestionChoice{id, choice};
+    }
+    setQuestion();
 }
 
 void MCQuestion::setQuestion()
 {
-	ui.question->setText(QString::fromStdString(m_question));
-	ui.a1->setText(QString::fromStdString(m_answers[0]));
-	ui.a2->setText(QString::fromStdString(m_answers[1]));
-	ui.a3->setText(QString::fromStdString(m_answers[2]));
-	ui.a4->setText(QString::fromStdString(m_answers[3]));
+	ui.question->setText(m_question.data());
+	ui.a1->setText(m_answers[0].GetChoice().data());
+	ui.a2->setText(m_answers[1].GetChoice().data());
+	ui.a3->setText(m_answers[2].GetChoice().data());
+	ui.a4->setText(m_answers[3].GetChoice().data());
 }
 
 void MCQuestion::paintEvent(QPaintEvent* pe)
@@ -59,75 +64,84 @@ void MCQuestion::paintEvent(QPaintEvent* pe)
 	ui.ho1->setStyleSheet("background:#E1C16E;");
 	ui.ho2->setStyleSheet("background:#E1C16E;");
 	ui.ho3->setStyleSheet("background:#E1C16E;");
-
+    ui.player_name->setStyleSheet("background:#E1C16E;");
 }
-
-int MCQuestion::timer()
-{
-	static int t = 30;
-	if (t < 0)
-	{
-		close();
-		return t;
-	}
-	QTimer::singleShot(1 * 1000, this, &MCQuestion::timer);
-	QString str = QString::number(t);
-	ui.mcquestion->setText(str);
-	ui.mcquestion->setFont(QFont("Arial", 40));
-	t--;
-}
-
-void MCQuestion::a1Clicked()
-{
-	ui.a2->setDisabled(true);
-	ui.a3->setDisabled(true);
-	ui.a4->setDisabled(true);
-
-	if (m_correctAnswer == 1)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
-}
-
-void MCQuestion::a2Clicked()
-{
-	ui.a1->setDisabled(true);
-	ui.a3->setDisabled(true);
-	ui.a4->setDisabled(true);
-
-	if (m_correctAnswer == 2)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
-}
-
-void MCQuestion::a3Clicked()
-{
-	ui.a1->setDisabled(true);
-	ui.a2->setDisabled(true);
-	ui.a4->setDisabled(true);
-
-	if (m_correctAnswer == 3)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
-}
-
-void MCQuestion::a4Clicked()
-{
-	ui.a1->setDisabled(true);
-	ui.a2->setDisabled(true);
-	ui.a3->setDisabled(true);
-	ui.question->adjustSize();
-
-	if (m_correctAnswer == 4)
-		m_foundCorrectAnswer = true;
-	std::cout << m_foundCorrectAnswer;
-}
-
-void MCQuestion::ho1Clicked()
-{
-	ui.a1->setVisible(false);
-	ui.a4->setVisible(false);
-}
-
 
 MCQuestion::~MCQuestion()
 {}
+
+int MCQuestion::timer()
+{
+    if (m_t < 0)
+	{
+		close();
+        m_t = -1;
+        m_selection = INT_MAX;
+        emit clicked();
+		return m_t;
+	}
+	QTimer::singleShot(1 * 1000, this, &MCQuestion::timer);
+	QString str = QString::number(m_t);
+	ui.mcquestion->setText(str);
+	ui.mcquestion->setFont(QFont("Arial", 40));
+	m_t--;
+}
+
+void MCQuestion::on_a1_clicked()
+{
+    m_selection = m_answers[0].GetId();
+    emit clicked();
+}
+
+void MCQuestion::on_a2_clicked()
+{
+    m_selection = m_answers[1].GetId();
+    emit clicked();
+}
+
+void MCQuestion::on_a3_clicked()
+{
+    m_selection = m_answers[2].GetId();
+    emit clicked();
+}
+
+void MCQuestion::on_a4_clicked()
+{
+    m_selection = m_answers[3].GetId();
+    emit clicked();
+}
+
+void MCQuestion::on_ho1_clicked()
+{
+    m_powerupUsed = true;
+    std::array<QPushButton* ,4> choices = { ui.a1, ui.a2, ui.a3, ui.a4 };
+
+    cpr::Response powerup = cpr::Get(cpr::Url{"localhost:18080/game/powerup/fiftyFifty"},
+                                     cpr::Header{{ "ID", std::to_string(m_playerId) }});
+
+    auto fiftyFifty = json::parse(powerup.text);
+    for (int i = 0; i < m_answers.size(); ++i)
+    {
+        if (m_answers[i].GetId() == fiftyFifty["choice1"].get<uint32_t>() ||
+            m_answers[i].GetId() == fiftyFifty["choice2"].get<uint32_t>())
+        {
+            choices[i]->setVisible(false);
+        }
+    }
+}
+
+int MCQuestion::GetRemainingTime() const
+{
+    return m_t;
+}
+
+int MCQuestion::GetSelection() const
+{
+    return m_selection;
+}
+
+bool MCQuestion::PoweredUp() const
+{
+    return m_powerupUsed;
+}
+

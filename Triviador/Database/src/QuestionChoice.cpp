@@ -36,5 +36,11 @@ namespace DB
         m_questionId = other.m_questionId;
     }
 
+    QuestionChoice::QuestionChoice(const uint32_t id, const std::string &choice)
+        : m_id(id)
+        , m_choice(choice)
+    {
+    }
+
 }//namespace DB
 

@@ -68,6 +68,9 @@ namespace DB
         template <typename T>
         T Get(const uint32_t id);
 
+        template <typename T>
+        std::vector<T> GetUserStatistics(const uint32_t userId);
+
         /// \brief Returns the users with the specific username from a table
         template <typename T>
         std::vector<T> GetUserByUsername(const std::string& username);
@@ -75,6 +78,14 @@ namespace DB
         /// \brief Returns the numeric questions from table
         template <typename T>
         std::vector<T> GetNumericQuestions();
+
+        /// \brief Returns the question choices for specific question from table
+        template <typename T>
+        std::vector<T> GetQuestionChoices(int questionId);
+
+        /// \brief Returns the question choices for specific question from table
+        template <typename T>
+        QuestionChoice GetCorrectQuestionChoice(int questionId);
 
         /// \brief Returns the number of elements inside a table
         template <typename T>
@@ -157,6 +168,25 @@ namespace DB
     }
 
     template<typename T>
+    inline std::vector<T> DBAccess::GetUserStatistics(const uint32_t id)
+    {
+        try
+        {
+            return storage.get_all<T>(where(c(&UserStatistics::GetUserId) == id));
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
+    }
+
+
+    template<typename T>
     inline std::vector<T> DBAccess::GetUserByUsername(const std::string& username)
     {
         try
@@ -227,7 +257,7 @@ namespace DB
     }
 
     template<typename T>
-    std::vector<T> DBAccess::GetNumericQuestions() {
+    inline std::vector<T> DBAccess::GetNumericQuestions() {
         try
         {
             return storage.get_all<T>(where(c(&Question::GetType) == "single_choice"));
@@ -241,6 +271,43 @@ namespace DB
             std::cout << "unknown exception" << '\n';
         }
         return std::vector<T>();
+    }
+
+    template<typename T>
+    inline std::vector<T> DBAccess::GetQuestionChoices(int questionId) {
+        try
+        {
+            return storage.get_all<T>(where(c(&QuestionChoice::GetQuestionId) == questionId));
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
+    }
+
+    template<typename T>
+    inline QuestionChoice DBAccess::GetCorrectQuestionChoice(int questionId) {
+        try
+        {
+            std::vector<T> res = storage.get_all<T>(where(c(&QuestionChoice::GetQuestionId) == questionId
+                                                          and c(&QuestionChoice::GetIsCorrect) == "TRUE"));
+
+            return res.front();
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return QuestionChoice();
     }
 
 }//namespace DB

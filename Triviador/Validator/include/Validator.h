@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include <regex>
 
 class __declspec(dllexport) Validator

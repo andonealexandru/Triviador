@@ -9,11 +9,20 @@ class NumericQuestion : public QMainWindow
 	Q_OBJECT
 
 public:
-	NumericQuestion(int correctAnswer, std::string question, bool ho1, bool ho2, bool ho3, QWidget* parent = nullptr);
+	NumericQuestion(const std::string& question,
+                    const int playerId,
+                    const std::string& playerName,
+                    const std::pair<bool, bool> powerups,
+                    QWidget* parent = nullptr);
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	~NumericQuestion();
+
 	int timer();
-	void setSugestionAnswer(std::string question, std::vector<std::string>answers,int t);
+
+	void setSugestionAnswer(const std::string& question, const std::vector<int>& answers);
+    int GetAnswer() const;
+    int GetRemainingTime() const;
+    bool PoweredUp() const;
 
 public slots:
 	void changePageAfterA1();
@@ -22,14 +31,21 @@ public slots:
 	void changePageAfterA4();
 
 
+signals:
+    void sendButtonPressed();
+
+
 private slots:
 	void ho3Clicked();
 	void ho2Clicked();
+    void on_sendButton_clicked();
 
 private:
 	Ui::NumericQuestionClass ui;
 	SugestionAnswer* m_sa ;
-	int m_correctAnswer,m_t=30;
+	int m_t;
+    int m_playerId;
 	std::string m_question;
-	bool m_ho1, m_ho2, m_ho3; //variante ajutatoare
+    int m_answer;
+    bool m_powerupUsed;
 };
