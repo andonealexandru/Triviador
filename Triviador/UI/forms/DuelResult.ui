@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>585</width>
-    <height>540</height>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,10 +36,10 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>120</x>
       <y>140</y>
-      <width>331</width>
-      <height>321</height>
+      <width>351</width>
+      <height>381</height>
      </rect>
     </property>
     <property name="font">
@@ -110,6 +110,13 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="correctAnswer">
+       <property name="text">
+        <string>TextLabel</string>
        </property>
       </widget>
      </item>
