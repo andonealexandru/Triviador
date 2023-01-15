@@ -598,8 +598,36 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         std::vector<crow::json::wvalue> res;
 
+        bool first = true;
         for (const auto& player : players) {
-            res.push_back(crow::json::wvalue{ player.GetUser()->GetName() });
+            bool updated = false;
+            std::vector<DB::UserStatistics> userStatistics = storage->GetAll<DB::UserStatistics>();
+            if (!userStatistics.empty()) {
+                for (const auto& statistic : userStatistics) {
+                    if (statistic.GetUserId() == player.GetUser()->GetId()) {
+                        DB::UserStatistics userStatistic = statistic;
+                        if (first) userStatistic.AddWin();
+                        else userStatistic.AddGame();
+                        storage->GetStorage().update(userStatistic);
+                        updated = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!updated) {
+                DB::UserStatistics userStatistic;
+                userStatistic.SetUser(player.GetUser()->GetId());
+                if (first) userStatistic.SetWonGames(1);
+                else userStatistic.SetWonGames(0);
+                userStatistic.SetGameCount(1);
+                storage->Insert(userStatistic);
+            }
+            res.push_back(crow::json::wvalue{
+                {"name", player.GetUser()->GetName()},
+                {"score", player.GetScore()}
+            });
+            first = false;
         }
 
         return crow::json::wvalue{ res };
@@ -911,7 +939,7 @@ std::vector<Server::Player> Server::Backend::GetOrderedPlayers() const {
     }
 
     std::sort(res.begin(), res.end(), [](const auto &playerAnswer1, const auto &playerAnswer2) {
-        return playerAnswer1.GetScore() < playerAnswer2.GetScore();
+        return playerAnswer1.GetScore() > playerAnswer2.GetScore();
     });
 
     return res;

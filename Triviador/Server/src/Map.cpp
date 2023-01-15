@@ -141,7 +141,7 @@ void Server::Map::GenerateTwoPlayerMap() {
 
 void Server::Map::GenerateThreePlayerMap() {
     m_Id = 2;
-    m_Rounds = 4;
+    m_Rounds = 3;
     // m_Regions.resize(15);
 
     for (int i = 0; i < 15; i++) {
