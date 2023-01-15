@@ -172,7 +172,7 @@ namespace DB
     {
         try
         {
-            return storage.get_all<T>(where(c(&User::GetId) == id));
+            return storage.get_all<T>(where(c(&UserStatistics::GetUserId) == id));
         }
         catch (std::system_error& e)
         {

@@ -10,12 +10,12 @@ class DuelResult : public QMainWindow
 	Q_OBJECT
 
 public:
-	DuelResult(const std::vector<std::tuple<int, std::string, int>>& players,
-               const int correctAnswer, QWidget *parent = nullptr);
+	DuelResult(const std::vector<std::tuple<int, std::string, std::string>>& players,
+               const std::string& correctAnswer, QWidget *parent = nullptr);
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	~DuelResult();
 
 private:
 	Ui::DuelResultClass ui;
-    std::vector<std::tuple<int, std::string, int>> m_players;
+    std::vector<std::tuple<int, std::string, std::string>> m_players;
 };
