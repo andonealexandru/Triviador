@@ -17,6 +17,7 @@ namespace Server {
         int GetId() const;
         void GenerateTwoPlayerMap();
         void GenerateThreePlayerMap();
+        void GenerateFourPlayerMap();
         std::vector<int> GetValidBaseChoices() const;
         std::vector<int> GetValidRegionChoices(int userId) const;
         std::vector<int> GetValidRegionToAttack(int userId) const;

@@ -600,28 +600,30 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         bool first = true;
         for (const auto& player : players) {
-            bool updated = false;
-            std::vector<DB::UserStatistics> userStatistics = storage->GetAll<DB::UserStatistics>();
-            if (!userStatistics.empty()) {
-                for (const auto& statistic : userStatistics) {
-                    if (statistic.GetUserId() == player.GetUser()->GetId()) {
-                        DB::UserStatistics userStatistic = statistic;
-                        if (first) userStatistic.AddWin();
-                        else userStatistic.AddGame();
-                        storage->GetStorage().update(userStatistic);
-                        updated = true;
-                        break;
+            if (!m_addedStatisticsInDB) {
+                bool updated = false;
+                std::vector<DB::UserStatistics> userStatistics = storage->GetAll<DB::UserStatistics>();
+                if (!userStatistics.empty()) {
+                    for (const auto &statistic: userStatistics) {
+                        if (statistic.GetUserId() == player.GetUser()->GetId()) {
+                            DB::UserStatistics userStatistic = statistic;
+                            if (first) userStatistic.AddWin();
+                            else userStatistic.AddGame();
+                            storage->GetStorage().update(userStatistic);
+                            updated = true;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (!updated) {
-                DB::UserStatistics userStatistic;
-                userStatistic.SetUser(player.GetUser()->GetId());
-                if (first) userStatistic.SetWonGames(1);
-                else userStatistic.SetWonGames(0);
-                userStatistic.SetGameCount(1);
-                storage->Insert(userStatistic);
+                if (!updated) {
+                    DB::UserStatistics userStatistic;
+                    userStatistic.SetUser(player.GetUser()->GetId());
+                    if (first) userStatistic.SetWonGames(1);
+                    else userStatistic.SetWonGames(0);
+                    userStatistic.SetGameCount(1);
+                    storage->Insert(userStatistic);
+                }
             }
             res.push_back(crow::json::wvalue{
                 {"name", player.GetUser()->GetName()},
@@ -630,6 +632,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             first = false;
         }
 
+        m_addedStatisticsInDB = true;
         return crow::json::wvalue{ res };
     });
 }
@@ -787,6 +790,7 @@ Server::Backend::Backend()
 {
     crow::SimpleApp app;
 
+    m_addedStatisticsInDB = false;
     StartDebugEndpoints(app);
     StartLoginRegister(app);
     StartLobby(app);
@@ -865,6 +869,7 @@ void Server::Backend::GenerateNewMap() {
             m_Map.GenerateThreePlayerMap();
             break;
         case 4:
+            m_Map.GenerateFourPlayerMap();
             break;
     }
 }

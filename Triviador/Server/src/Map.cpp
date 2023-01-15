@@ -242,6 +242,159 @@ void Server::Map::GenerateThreePlayerMap() {
     m_Regions[14]->AddAdjacentRegion(m_Regions[12]);
 }
 
+void Server::Map::GenerateFourPlayerMap() {
+    m_Id = 3;
+    m_Rounds = 3;
+    // m_Regions.resize(15);
+
+    for (int i = 0; i < 22; i++) {
+        m_Regions.push_back(std::make_shared<Region>(Region(i+1)));
+        //m_Regions[i]->SetId(i + 1);
+    }
+
+    // 1st region
+    m_Regions[0]->AddAdjacentRegion(m_Regions[8]);
+    m_Regions[0]->AddAdjacentRegion(m_Regions[20]);
+    m_Regions[0]->AddAdjacentRegion(m_Regions[16]);
+    m_Regions[0]->AddAdjacentRegion(m_Regions[18]);
+    m_Regions[0]->AddAdjacentRegion(m_Regions[14]);
+    m_Regions[0]->AddAdjacentRegion(m_Regions[12]);
+
+    // 2nd region
+    m_Regions[1]->AddAdjacentRegion(m_Regions[3]);
+    m_Regions[1]->AddAdjacentRegion(m_Regions[4]);
+    m_Regions[1]->AddAdjacentRegion(m_Regions[21]);
+    m_Regions[1]->AddAdjacentRegion(m_Regions[2]);
+
+    // 3rd region
+    m_Regions[2]->AddAdjacentRegion(m_Regions[1]);
+    m_Regions[2]->AddAdjacentRegion(m_Regions[21]);
+    m_Regions[2]->AddAdjacentRegion(m_Regions[9]);
+
+    // 4th region
+    m_Regions[3]->AddAdjacentRegion(m_Regions[1]);
+    m_Regions[3]->AddAdjacentRegion(m_Regions[4]);
+    m_Regions[3]->AddAdjacentRegion(m_Regions[5]);
+
+    // 5th region
+    m_Regions[4]->AddAdjacentRegion(m_Regions[21]);
+    m_Regions[4]->AddAdjacentRegion(m_Regions[1]);
+    m_Regions[4]->AddAdjacentRegion(m_Regions[3]);
+    m_Regions[4]->AddAdjacentRegion(m_Regions[5]);
+    m_Regions[4]->AddAdjacentRegion(m_Regions[7]);
+    m_Regions[4]->AddAdjacentRegion(m_Regions[20]);
+
+    // 6th region
+    m_Regions[5]->AddAdjacentRegion(m_Regions[3]);
+    m_Regions[5]->AddAdjacentRegion(m_Regions[4]);
+    m_Regions[5]->AddAdjacentRegion(m_Regions[7]);
+
+    // 7th region
+    m_Regions[6]->AddAdjacentRegion(m_Regions[11]);
+    m_Regions[6]->AddAdjacentRegion(m_Regions[10]);
+    m_Regions[6]->AddAdjacentRegion(m_Regions[16]);
+    m_Regions[6]->AddAdjacentRegion(m_Regions[18]);
+    m_Regions[6]->AddAdjacentRegion(m_Regions[13]);
+    m_Regions[6]->AddAdjacentRegion(m_Regions[17]);
+
+    // 8th region
+    m_Regions[7]->AddAdjacentRegion(m_Regions[5]);
+    m_Regions[7]->AddAdjacentRegion(m_Regions[4]);
+    m_Regions[7]->AddAdjacentRegion(m_Regions[20]);
+    m_Regions[7]->AddAdjacentRegion(m_Regions[8]);
+
+    // 9th region
+    m_Regions[8]->AddAdjacentRegion(m_Regions[7]);
+    m_Regions[8]->AddAdjacentRegion(m_Regions[20]);
+    m_Regions[8]->AddAdjacentRegion(m_Regions[0]);
+    m_Regions[8]->AddAdjacentRegion(m_Regions[12]);
+
+    // 10th region
+    m_Regions[9]->AddAdjacentRegion(m_Regions[2]);
+    m_Regions[9]->AddAdjacentRegion(m_Regions[21]);
+    m_Regions[9]->AddAdjacentRegion(m_Regions[10]);
+    m_Regions[9]->AddAdjacentRegion(m_Regions[15]);
+
+    // 11th region
+    m_Regions[10]->AddAdjacentRegion(m_Regions[9]);
+    m_Regions[10]->AddAdjacentRegion(m_Regions[21]);
+    m_Regions[10]->AddAdjacentRegion(m_Regions[16]);
+    m_Regions[10]->AddAdjacentRegion(m_Regions[6]);
+    m_Regions[10]->AddAdjacentRegion(m_Regions[11]);
+    m_Regions[10]->AddAdjacentRegion(m_Regions[15]);
+
+    // 12th region
+    m_Regions[11]->AddAdjacentRegion(m_Regions[15]);
+    m_Regions[11]->AddAdjacentRegion(m_Regions[10]);
+    m_Regions[11]->AddAdjacentRegion(m_Regions[6]);
+    m_Regions[11]->AddAdjacentRegion(m_Regions[17]);
+
+    // 13th region
+    m_Regions[12]->AddAdjacentRegion(m_Regions[8]);
+    m_Regions[12]->AddAdjacentRegion(m_Regions[0]);
+    m_Regions[12]->AddAdjacentRegion(m_Regions[14]);
+    m_Regions[12]->AddAdjacentRegion(m_Regions[19]);
+
+    // 14th region
+    m_Regions[13]->AddAdjacentRegion(m_Regions[17]);
+    m_Regions[13]->AddAdjacentRegion(m_Regions[6]);
+    m_Regions[13]->AddAdjacentRegion(m_Regions[18]);
+    m_Regions[13]->AddAdjacentRegion(m_Regions[14]);
+
+    // 15th region
+    m_Regions[14]->AddAdjacentRegion(m_Regions[13]);
+    m_Regions[14]->AddAdjacentRegion(m_Regions[18]);
+    m_Regions[14]->AddAdjacentRegion(m_Regions[0]);
+    m_Regions[14]->AddAdjacentRegion(m_Regions[12]);
+    m_Regions[14]->AddAdjacentRegion(m_Regions[19]);
+
+    // 16th region
+    m_Regions[15]->AddAdjacentRegion(m_Regions[9]);
+    m_Regions[15]->AddAdjacentRegion(m_Regions[10]);
+    m_Regions[15]->AddAdjacentRegion(m_Regions[11]);
+
+    // 17th region
+    m_Regions[16]->AddAdjacentRegion(m_Regions[10]);
+    m_Regions[16]->AddAdjacentRegion(m_Regions[6]);
+    m_Regions[16]->AddAdjacentRegion(m_Regions[18]);
+    m_Regions[16]->AddAdjacentRegion(m_Regions[0]);
+    m_Regions[16]->AddAdjacentRegion(m_Regions[20]);
+    m_Regions[16]->AddAdjacentRegion(m_Regions[21]);
+
+    // 18th region
+    m_Regions[17]->AddAdjacentRegion(m_Regions[11]);
+    m_Regions[17]->AddAdjacentRegion(m_Regions[6]);
+    m_Regions[17]->AddAdjacentRegion(m_Regions[13]);
+
+    // 19th region
+    m_Regions[18]->AddAdjacentRegion(m_Regions[13]);
+    m_Regions[18]->AddAdjacentRegion(m_Regions[6]);
+    m_Regions[18]->AddAdjacentRegion(m_Regions[16]);
+    m_Regions[18]->AddAdjacentRegion(m_Regions[0]);
+    m_Regions[18]->AddAdjacentRegion(m_Regions[14]);
+
+    // 20th region
+    m_Regions[19]->AddAdjacentRegion(m_Regions[14]);
+    m_Regions[19]->AddAdjacentRegion(m_Regions[0]);
+    m_Regions[19]->AddAdjacentRegion(m_Regions[12]);
+
+    // 21th region
+    m_Regions[20]->AddAdjacentRegion(m_Regions[4]);
+    m_Regions[20]->AddAdjacentRegion(m_Regions[7]);
+    m_Regions[20]->AddAdjacentRegion(m_Regions[8]);
+    m_Regions[20]->AddAdjacentRegion(m_Regions[0]);
+    m_Regions[20]->AddAdjacentRegion(m_Regions[16]);
+
+    // 22th region
+    m_Regions[21]->AddAdjacentRegion(m_Regions[2]);
+    m_Regions[21]->AddAdjacentRegion(m_Regions[1]);
+    m_Regions[21]->AddAdjacentRegion(m_Regions[4]);
+    m_Regions[21]->AddAdjacentRegion(m_Regions[16]);
+    m_Regions[21]->AddAdjacentRegion(m_Regions[10]);
+    m_Regions[21]->AddAdjacentRegion(m_Regions[9]);
+}
+
+
 const std::vector<std::shared_ptr<Server::Region>> &Server::Map::GetRegions() const{
     return m_Regions;
 }
