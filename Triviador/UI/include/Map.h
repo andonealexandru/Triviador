@@ -10,8 +10,8 @@
 #include <MCQuestion.h>
 #include <NumericQuestion.h>
 #include <DuelResult.h>
-#include <RequestHandler.h>
 #include <unordered_map>
+#include <RequestHandler.h>
 
 class Map : public QMainWindow
 {
@@ -24,7 +24,7 @@ public:
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void mouseReleaseEvent(QMouseEvent* ev);
 
-public slots:
+private slots:
     void NumericAnswerSent();
     void AnswerSent();
 
@@ -45,8 +45,9 @@ private:
         Answer,
         AllPlayersAnswered,
         Duel,
+        AttackQuestion,
+        PowerupRegionChoice,
     };
-
     State StringToState(const std::string& state);
 
     enum class QuestionType : uint8_t
@@ -54,18 +55,20 @@ private:
         MULTIPLE_CHOICE,
         NUMERIC,
     };
+    QuestionType StringToQuestionType(const std::string& state);
 
     void OnGoing();
-    void NextQuestion(const QuestionType type, const std::string& question, const std::vector<std::pair<uint32_t, std::string>>* answers = nullptr);
+    void NextQuestion(const QuestionType type,
+                      const std::string& question,
+                      const std::vector<std::pair<uint32_t, std::string>>* answers = nullptr);
     void SendAnswer(const std::variant<int, std::string>& answer, int remainingTime) const;
-    void ShowResults(const std::vector<std::tuple<int, std::string, int>>& players);
-
+    void ShowResults(const std::vector<std::tuple<int, std::string, int>>& players, const int correctAnswer);
     void InitStateHandler();
-
     void UpdateRegions();
     void UpdatePlayers();
-    void PostChosenBase();
+    void PostChosenRegion(const std::string& endPoint, const std::string toPost);
 
+private:
 	Ui::MapClass ui;
     Game g;
     DB::User* m_user;

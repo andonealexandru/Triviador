@@ -52,7 +52,7 @@ void Register::on_pushButton_clicked()
     }
     if(!validator.ValidatePassword(password.toStdString()))
     {
-        QMessageBox::warning(this, " ", "Parola nu corespunde cerintelor.\nParola trebuie sa aiba cel putin 6 caractere, dintre care un cel putin un numar");
+        QMessageBox::warning(this, " ", "Parola nu corespunde cerintelor.\nParola trebuie sa aiba cel putin 6 caractere, dintre care cel putin o cifra");
         return;
     }
 
@@ -63,8 +63,8 @@ void Register::on_pushButton_clicked()
         {"password", password.toStdString()},
     };
 
-    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/register"},
-                                    cpr::Body{to_string(userJson)});
+    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/login"},
+                                       cpr::Body{to_string(userJson)});
 
     switch(response.status_code)
     {

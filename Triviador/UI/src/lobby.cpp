@@ -1,8 +1,8 @@
 #include "lobby.h"
 #include <QPainter>
 #include "ui_Lobby.h"
-#include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
+#include <cpr/cpr.h>
 
 using json = nlohmann::json;
 
@@ -19,7 +19,7 @@ Lobby::Lobby(DB::User user, QWidget *parent)
     UpdateUsers();
     ShowUsers();
     connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Lobby::Active));
-    m_timer->start(2000);
+    m_timer->start(1000);
 }
 
 
@@ -43,14 +43,14 @@ Lobby::~Lobby()
 
 void Lobby::on_startButton_clicked()
 {
-    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/game/start"});
+    cpr::Post(cpr::Url{"localhost:18080/game/start"});
     emit startButtonPressed();
 }
 
 void Lobby::on_exitButton_clicked()
 {
     cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/lobby/leave"},
-                                      cpr::Header{{"ID", std::to_string(m_user.GetId())}});
+                                       cpr::Header{{"ID", std::to_string(m_user.GetId())}});
     emit exitButtonPressed();
 }
 
@@ -58,7 +58,6 @@ void Lobby::UpdateUsers()
 {
     cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/lobby/players"},
                                       cpr::Header{{"ID", std::to_string(m_user.GetId())}});
-
     auto players = json::parse(response.text)["players"];
 
     m_players.clear();
@@ -83,10 +82,10 @@ void Lobby::ShowUsers() const
 
 void Lobby::Active()
 {
-    cpr::Response response = cpr::Get(cpr::Url{"localhost:18080/lobby"},
-                                      cpr::Header{{"ID", std::to_string(m_user.GetId())}});
-
+    auto response =  cpr::Get(cpr::Url{"localhost:18080/lobby"},
+                               cpr::Header{{"ID", std::to_string(m_user.GetId())}});
     auto status = json::parse(response.text)["status"].get<std::string>();
+
     if(status == "InLobby")
     {
         return;

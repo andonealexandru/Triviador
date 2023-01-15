@@ -9,7 +9,7 @@ class Profile : public QMainWindow
 	Q_OBJECT
 
 public:
-	Profile(QWidget *parent = nullptr);
+	Profile(const std::pair<int, int>& statistics, QWidget *parent = nullptr);
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	~Profile();
 

@@ -16,12 +16,13 @@ int main(int argc, char* argv[])
     MainWindow w;
   //  Map map;
   //  map.g.ReadMap(2);// TODO: apelez functia de paintevent dupa cr
-    //NumericQuestion nq(3, "intrebare", 1, 1, 1);
+   // NumericQuestion nq("intrebare", "nimeni");
   //  MCQuestion mcq(2, "intrebare", { "r1","r2","r3","r4" }, 1, 0, 1);
    
     //DuelResult dr({ "Iulian","Eduard","Mihai" });
     //dr.show();
     w.show();
+   //nq.show();
     //mcq.show();
    // map.show();
 

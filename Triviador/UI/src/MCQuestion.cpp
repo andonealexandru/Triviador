@@ -7,15 +7,23 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
-MCQuestion::MCQuestion(const std::string& question, const std::vector<std::pair<uint32_t, std::string>>& answers, QWidget* parent)
-	: m_question(question),
-    m_t(30),
-    m_selection(-1),
-    QMainWindow(parent)
+MCQuestion::MCQuestion(const std::string& question, const int playerId,
+                       const std::string& playerName,
+                       const std::vector<std::pair<uint32_t, std::string>>& answers,
+                       const bool powerupAvailable,
+                       QWidget* parent)
+	: m_question{ question }
+    , m_t{ 30 }
+    , m_selection{ -1 }
+    , m_powerupUsed{ false }
+    , m_playerId{ playerId }
+    , QMainWindow{ parent }
 
 {
 	ui.setupUi(this);
     ui.ho1->setVisible(true);
+    ui.ho1->setEnabled(powerupAvailable);
+    ui.player_name->setText(("Player: " + playerName).data());
 	timer();
 
     for(const auto& answer : answers)
@@ -52,6 +60,7 @@ void MCQuestion::paintEvent(QPaintEvent* pe)
 	ui.ho1->setStyleSheet("background:#E1C16E;");
 	ui.ho2->setStyleSheet("background:#E1C16E;");
 	ui.ho3->setStyleSheet("background:#E1C16E;");
+    ui.player_name->setStyleSheet("background:#E1C16E;");
 
 }
 
@@ -63,6 +72,9 @@ int MCQuestion::timer()
     if (m_t < 0)
 	{
 		close();
+        m_t = -1;
+        m_selection = INT_MAX;
+        emit clicked();
 		return m_t;
 	}
 	QTimer::singleShot(1 * 1000, this, &MCQuestion::timer);
@@ -98,8 +110,9 @@ void MCQuestion::a4Clicked()
 
 void MCQuestion::ho1Clicked()
 {
-	ui.a1->setVisible(false);
-	ui.a4->setVisible(false);
+    ui.a1->setVisible(false);
+    ui.a4->setVisible(false);
+    m_powerupUsed = true;
 }
 
 int MCQuestion::GetRemainingTime() const
@@ -110,5 +123,10 @@ int MCQuestion::GetRemainingTime() const
 int MCQuestion::GetSelection() const
 {
     return m_selection;
+}
+
+bool MCQuestion::PoweredUp() const
+{
+    return m_powerupUsed;
 }
 
