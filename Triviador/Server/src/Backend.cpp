@@ -352,8 +352,14 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                     }
                     ChangeAllPlayersStatus(Status::MapChanged);
                     m_attackerPlayerId++;
-                    if (m_players.find(m_attackerPlayerId) == m_players.end())
-                        m_attackerPlayerId++;
+                    bool found = false;
+                    for (const auto& x : m_players) {
+                        if (x.second.GetId() == m_attackerPlayerId) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) m_attackerPlayerId++;
                     if (m_attackerPlayerId >= m_players.size() + 1) { // finished one round
                         m_attackerPlayerId = 1;
                         m_Map.RoundPlayed();
