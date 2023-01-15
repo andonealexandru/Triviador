@@ -342,6 +342,10 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                                 // if only one player remains
                                 if (m_players.size() == 1) {
                                     ChangeAllPlayersStatus(Status::Endgame);
+                                    return crow::json::wvalue{
+                                            { "answers", res },
+                                            { "correctAnswer", GetCorrectAnswerAsString() }
+                                    };
                                 }
                             }
                         }
