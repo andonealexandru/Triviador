@@ -28,7 +28,7 @@ Map::Map(DB::User* user, QWidget* parent)
     ui.setupUi(this);
     InitStateHandler();
     connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Map::OnGoing));
-    m_timer->start(1000);
+    m_timer->start(500);
 }
 
 

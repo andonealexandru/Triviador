@@ -63,7 +63,7 @@ void Register::on_pushButton_clicked()
         {"password", password.toStdString()},
     };
 
-    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/login"},
+    cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/register"},
                                        cpr::Body{to_string(userJson)});
 
     switch(response.status_code)
