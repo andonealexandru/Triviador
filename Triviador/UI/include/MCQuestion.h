@@ -13,7 +13,7 @@ class MCQuestion : public QMainWindow
 public:
 	MCQuestion(const std::string& question, const int playerId,
                const std::string& playerName,
-               const std::vector<std::pair<uint32_t, std::string>>& answers,
+               const std::array<std::pair<uint32_t, std::string>, 4>& answers,
                const bool powerupAvailable,
                QWidget* parent = nullptr);
 	void setQuestion();
@@ -30,16 +30,16 @@ signals:
     void clicked();
 
 private slots:
-	void a1Clicked();
-	void a2Clicked();
-	void a3Clicked();
-	void a4Clicked();
-	void ho1Clicked();
+    void on_a1_clicked();
+    void on_a2_clicked();
+    void on_a3_clicked();
+    void on_a4_clicked();
+	void on_ho1_clicked();
 
 private:
 	Ui::MCQuestionClass ui;
 	std::string m_question;
-	std::vector<DB::QuestionChoice> m_answers;
+	std::array<DB::QuestionChoice, 4> m_answers;
     int m_t;
     int m_selection;
     int m_playerId;

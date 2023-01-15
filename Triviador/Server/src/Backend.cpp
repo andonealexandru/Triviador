@@ -686,7 +686,20 @@ void Server::Backend::GamePowerups(crow::SimpleApp &app)
         m_players[id].DisablePowerup(2);
         m_poweredUpUsers.emplace(id, false);
 
-        return crow::response( crow::json::wvalue{ } );
+        srand(time(0));
+        auto choices = storage->GetQuestionChoices<DB::QuestionChoice>(
+                m_currentQuestion.GetId());
+        auto correctChoice = std::remove_if(choices.begin(), choices.end(),
+                                            [&](DB::QuestionChoice &questionChoice)
+                                            {
+                                                return questionChoice.GetIsCorrect();
+                                            });
+        choices.erase(choices.begin() + rand() % 2);
+
+        return crow::response(crow::json::wvalue{
+                {"choice1", choices[0].GetId()},
+                {"choice2", choices[1].GetId()}
+        });
     });
 
     CROW_ROUTE(app, "/game/powerup")([&](const crow::request &req)

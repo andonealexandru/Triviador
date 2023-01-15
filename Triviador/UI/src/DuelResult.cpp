@@ -1,14 +1,14 @@
 #include "DuelResult.h"
 #include <sstream>
 
-DuelResult::DuelResult(const std::vector<std::tuple<int, std::string, int>>& players,
-                       const int correctAnswer, QWidget *parent)
+DuelResult::DuelResult(const std::vector<std::tuple<int, std::string, std::string>>& players,
+                       const std::string& correctAnswer, QWidget *parent)
 	: m_players(players)
     , QMainWindow(parent)
 {
     ui.setupUi(this);
 
-    ui.correctAnswer->setText(("Correct answer: " + std::to_string(correctAnswer)).data());
+    ui.correctAnswer->setText(("Correct answer: " + correctAnswer).data());
 
     std::array<QLabel*, 4> labels = { ui.lb1, ui.lb2, ui.lb3, ui.lb4 };
     for (int i = 0; i < players.size(); ++i)

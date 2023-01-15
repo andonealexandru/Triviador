@@ -60,9 +60,9 @@ private:
     void OnGoing();
     void NextQuestion(const QuestionType type,
                       const std::string& question,
-                      const std::vector<std::pair<uint32_t, std::string>>* answers = nullptr);
-    void SendAnswer(const std::variant<int, std::string>& answer, int remainingTime) const;
-    void ShowResults(const std::vector<std::tuple<int, std::string, int>>& players, const int correctAnswer);
+                      const std::array<std::pair<uint32_t, std::string>, 4>* answers = nullptr);
+    void SendAnswer(const int answer, int remainingTime) const;
+    void ShowResults(const std::vector<std::tuple<int, std::string, std::string>>& players, const std::string& correctAnswer);
     void InitStateHandler();
     void UpdateRegions();
     void UpdatePlayers();

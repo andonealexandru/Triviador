@@ -6,10 +6,11 @@
 #include <iostream>
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 MCQuestion::MCQuestion(const std::string& question, const int playerId,
                        const std::string& playerName,
-                       const std::vector<std::pair<uint32_t, std::string>>& answers,
+                       const std::array<std::pair<uint32_t, std::string>, 4>& answers,
                        const bool powerupAvailable,
                        QWidget* parent)
 	: m_question{ question }
@@ -21,15 +22,18 @@ MCQuestion::MCQuestion(const std::string& question, const int playerId,
 
 {
 	ui.setupUi(this);
+    ui.ho2->setVisible(false);
+    ui.ho3->setVisible(false);
     ui.ho1->setVisible(true);
     ui.ho1->setEnabled(powerupAvailable);
     ui.player_name->setText(("Player: " + playerName).data());
 	timer();
 
+    uint32_t index = 0;
     for(const auto& answer : answers)
     {
         auto&[id, choice] = answer;
-        m_answers.emplace_back(DB::QuestionChoice{id, choice});
+        m_answers[index++] = DB::QuestionChoice{id, choice};
     }
     setQuestion();
 }
@@ -61,7 +65,6 @@ void MCQuestion::paintEvent(QPaintEvent* pe)
 	ui.ho2->setStyleSheet("background:#E1C16E;");
 	ui.ho3->setStyleSheet("background:#E1C16E;");
     ui.player_name->setStyleSheet("background:#E1C16E;");
-
 }
 
 MCQuestion::~MCQuestion()
@@ -84,35 +87,47 @@ int MCQuestion::timer()
 	m_t--;
 }
 
-void MCQuestion::a1Clicked()
+void MCQuestion::on_a1_clicked()
 {
     m_selection = m_answers[0].GetId();
     emit clicked();
 }
 
-void MCQuestion::a2Clicked()
+void MCQuestion::on_a2_clicked()
 {
     m_selection = m_answers[1].GetId();
     emit clicked();
 }
 
-void MCQuestion::a3Clicked()
+void MCQuestion::on_a3_clicked()
 {
     m_selection = m_answers[2].GetId();
     emit clicked();
 }
 
-void MCQuestion::a4Clicked()
+void MCQuestion::on_a4_clicked()
 {
     m_selection = m_answers[3].GetId();
     emit clicked();
 }
 
-void MCQuestion::ho1Clicked()
+void MCQuestion::on_ho1_clicked()
 {
-    ui.a1->setVisible(false);
-    ui.a4->setVisible(false);
     m_powerupUsed = true;
+    std::array<QPushButton* ,4> choices = { ui.a1, ui.a2, ui.a3, ui.a4 };
+
+    cpr::Response powerup = cpr::Get(cpr::Url{"localhost:18080/game/powerup/fiftyFifty"},
+                                     cpr::Header{{ "ID", std::to_string(m_playerId) }});
+
+    auto fiftyFifty = json::parse(powerup.text);
+    for (int i = 0; i < m_answers.size(); ++i)
+    {
+        if (m_answers[i].GetId() == fiftyFifty["choice1"].get<uint32_t>() ||
+            m_answers[i].GetId() == fiftyFifty["choice2"].get<uint32_t>())
+        {
+            choices[i]->setVisible(false);
+        }
+    }
 }
 
 int MCQuestion::GetRemainingTime() const
