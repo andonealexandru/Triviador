@@ -11,7 +11,11 @@ class MCQuestion : public QMainWindow
 	Q_OBJECT
 
 public:
-	MCQuestion(const std::string& question, const std::vector<std::pair<uint32_t, std::string>>& answers, QWidget* parent = nullptr);
+	MCQuestion(const std::string& question, const int playerId,
+               const std::string& playerName,
+               const std::vector<std::pair<uint32_t, std::string>>& answers,
+               const bool powerupAvailable,
+               QWidget* parent = nullptr);
 	void setQuestion();
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	int timer();
@@ -20,6 +24,7 @@ public:
 
     int GetRemainingTime() const;
     int GetSelection() const;
+    bool PoweredUp() const;
 
 signals:
     void clicked();
@@ -36,5 +41,7 @@ private:
 	std::string m_question;
 	std::vector<DB::QuestionChoice> m_answers;
     int m_t;
-    uint32_t m_selection;
+    int m_selection;
+    int m_playerId;
+    bool m_powerupUsed;
 };

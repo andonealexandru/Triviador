@@ -9,11 +9,11 @@ class SugestionAnswer : public QMainWindow
 	Q_OBJECT
 
 public:
-	SugestionAnswer(std::string question, std::vector<std::string>answers, int t, QWidget* parent = nullptr);
+	SugestionAnswer(std::string question, std::vector<int>answers, int t, QWidget* parent = nullptr);
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	void setQuestion();
 	int timer();
-	std::vector<std::string>GetAnswers();
+	std::vector<int>GetAnswers();
 	~SugestionAnswer();
 
 signals:
@@ -31,6 +31,6 @@ private slots:
 private:
 	Ui::SugestionAnswerClass ui;
 	std::string m_question;
-	std::vector<std::string>m_answers;
+	std::vector<int>m_answers;
 	int m_t;
 };

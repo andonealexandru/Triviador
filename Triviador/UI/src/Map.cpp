@@ -7,9 +7,10 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 #include <sstream>
-
-
+#include <algorithm>
 using json = nlohmann::json;
+
+#define HEADER {"ID", std::to_string(m_user->GetId())}
 
 Map::Map(DB::User* user, QWidget* parent)
         : QMainWindow{ parent }
@@ -21,13 +22,13 @@ Map::Map(DB::User* user, QWidget* parent)
         , m_nQuestion{ nullptr }
         , m_duelResult{ nullptr }
         , m_selectedRegion{ -1 }
-        , m_requestHandler{ "localhost:18080" }
         , m_stateHandler{}
+        , m_requestHandler{ "localhost:18080" }
 {
     ui.setupUi(this);
     InitStateHandler();
     connect(m_timer, &QTimer::timeout, this, QOverload<>::of(&Map::OnGoing));
-    m_timer->start(2000);
+    m_timer->start(1000);
 }
 
 
@@ -218,11 +219,11 @@ void Map::mouseReleaseEvent(QMouseEvent* ev)
             if (canClickOnRegion)
             {
                 m_selectedRegion = tt.getParentRegion()->GetNumber();
-                regionSelected = 1;
+                regionSelected = true;
                 break;
             }
         }
-        if (regionSelected == 1)
+        if (regionSelected)
             break;
     }
     emit MousePressed();
@@ -230,36 +231,67 @@ void Map::mouseReleaseEvent(QMouseEvent* ev)
 
 void Map::NumericAnswerSent()
 {
-    SendAnswer(m_nQuestion->GetAnswer(), m_nQuestion->GetRemainingTime());
+    bool isPoweredUp = m_nQuestion->PoweredUp();
+    int answer = m_nQuestion->GetAnswer();
+    int remainingTime = m_nQuestion->GetRemainingTime();
     delete m_nQuestion;
+
+    SendAnswer(answer, remainingTime);
+    if(isPoweredUp)
+    {
+        PostChosenRegion("/game/powerup", "region");
+        UpdateRegions();
+    }
 }
 
 void Map::AnswerSent()
 {
-    SendAnswer(m_question->GetSelection(), m_question->GetRemainingTime());
+    bool isPoweredUp = m_question->PoweredUp();
+    int answer = m_question->GetSelection();
+    int remainingTime = m_question->GetRemainingTime();
     delete m_question;
+
+    SendAnswer(answer,remainingTime);
+    if(isPoweredUp)
+    {
+        PostChosenRegion("/game/powerup", "region");
+    }
 }
 
 void Map::OnGoing()
 {
-    const auto requestStatus = m_requestHandler.Get("/game", {"ID", std::to_string(m_user->GetId())});
+    const auto requestStatus = m_requestHandler.Get("/game", HEADER);
     const auto state = StringToState(json::parse(requestStatus.text)["status"].get<std::string>());
-
+    std::cout << json::parse(requestStatus.text)["status"].get<std::string>() <<"\n";
     if(m_stateHandler.find(state) != m_stateHandler.end())
         m_stateHandler[state](); /// \brief calls the function bound to this state
 }
 
-void Map::NextQuestion(const Map::QuestionType type, const std::string& question, const std::vector<std::pair<uint32_t, std::string>>* answers)
+void Map::NextQuestion(const Map::QuestionType type,
+                       const std::string& question,
+                       const std::vector<std::pair<uint32_t, std::string>>* answers)
 {
+    auto name = std::find_if(m_players.begin(),
+                             m_players.end(),
+                             [&](decltype(m_players[0])& player)
+                             {
+                                 return std::get<0>(player) == m_user->GetId();
+                             });
+
+    auto powerup = m_requestHandler.Get("/game/powerup", HEADER);
+    auto availablePowerups = json::parse(powerup.text);
+
     switch(type)
     {
         case QuestionType::MULTIPLE_CHOICE:
-            m_question = new MCQuestion(question, *answers);
+            m_question = new MCQuestion(question, m_user->GetId(), std::get<3>(*name), *answers,
+                                        availablePowerups["fiftyFifty"]);
             QObject::connect(m_question, SIGNAL(clicked()), this, SLOT(AnswerSent()));
             m_nQuestion->show();
             break;
         case QuestionType::NUMERIC:
-            m_nQuestion = new NumericQuestion(question);
+            m_nQuestion = new NumericQuestion(question, m_user->GetId(), std::get<3>(*name),
+                    { availablePowerups["chooseAnswer"], availablePowerups["suggestAnswer"] });
             QObject::connect(m_nQuestion, SIGNAL(sendButtonPressed()), this, SLOT(NumericAnswerSent()));
             m_nQuestion->show();
             break;
@@ -278,9 +310,7 @@ void Map::SendAnswer(const std::variant<int, std::string>& answer, int remaining
                 {"answer", arg},
                 {"timeRemaining", std::to_string(remainingTime)},
             };
-            (void)m_requestHandler.Post("/game/answer",
-                                  to_string(body),
-                                  {"ID", std::to_string(m_user->GetId())});
+            (void)m_requestHandler.Post("/game/answer", to_string(body), HEADER);
         }
         else
         {
@@ -289,44 +319,46 @@ void Map::SendAnswer(const std::variant<int, std::string>& answer, int remaining
                 {"answer", arg},
                 {"timeRemaining", std::to_string(remainingTime)},
             };
-            (void)m_requestHandler.Post("/game/answer",
-                                        to_string(body),
-                                        {"ID", std::to_string(m_user->GetId())});
+            (void)m_requestHandler.Post("/game/answer", to_string(body), HEADER);
         }
     }, answer);
 }
 
-void Map::ShowResults(const std::vector<std::tuple<int, std::string, int>>& players)
+void Map::ShowResults(const std::vector<std::tuple<int, std::string, int>>& players, const int correctAnswer)
 {
-    m_duelResult = new DuelResult{ players };
+    m_duelResult = new DuelResult{ players, correctAnswer };
     m_duelResult->show();
     QTimer::singleShot(5000, this, [&](){ delete m_duelResult; });
 }
 
 void Map::UpdateRegions()
 {
-    auto getMap = m_requestHandler.Get("/game/map", {"ID", std::to_string(m_user->GetId())});
+    auto getMap = m_requestHandler.Get("/game/map", HEADER);
     auto regionsJson = json::parse(getMap.text).get<std::vector<json>>();
 
     std::vector<Region> regions;
-    for (const auto &region: regionsJson)
+    std::for_each(regionsJson.begin(), regionsJson.end(), [&](decltype(regionsJson[0])& regionJson)
     {
-        auto id = json::parse(to_string(region))["id"].get<int>();
-        auto userId = json::parse(to_string(region))["userId"].get<int>();
-        auto isBase = json::parse(to_string(region))["isBase"].get<bool>();
-        auto score = json::parse(to_string(region))["score"].get<int>();
+        auto region = json::parse(to_string(regionJson));
+        auto id = region["id"].get<int>();
+        auto userId = region["userId"].get<int>();
+        auto isBase = region["isBase"].get<bool>();
+        auto score = region["score"].get<int>();
         regions.emplace_back(score, userId, id, isBase);
-    }
+    });
+
     g.UpdateMap(regions);
     repaint();
 }
 
-
-void Map::PostChosenBase()
+void Map::PostChosenRegion(const std::string& endPoint, const std::string toPost)
 {
-    auto getBaseChoice = m_requestHandler.Get("/game/baseChoice",
-                                              {"ID", std::to_string(m_user->GetId())});
-    auto regionIDs = json::parse(getBaseChoice.text).get<std::vector<int>>();
+    auto getBaseChoice = m_requestHandler.Get(endPoint, HEADER);
+    std::vector<int> regionIDs;
+    if(endPoint == "/game/powerup")
+        regionIDs = json::parse(getBaseChoice.text)["regions"].get<std::vector<int>>();
+    else
+        regionIDs = json::parse(getBaseChoice.text).get<std::vector<int>>();
     g.selectRegions(regionIDs);
 
     QEventLoop loop;
@@ -335,9 +367,10 @@ void Map::PostChosenBase()
 
     if (m_selectedRegion != -1)
     {
-        m_requestHandler.Post("/game/baseChoice",
-                              to_string(json{{"base", m_selectedRegion}}),
-                              {"ID", std::to_string(m_user->GetId())});
+        m_requestHandler.Post(endPoint,
+                              to_string(json{{ toPost, m_selectedRegion }}),
+                              HEADER);
+
         g.selectRegions(regionIDs);
         m_selectedRegion = -1;
     }
@@ -345,17 +378,18 @@ void Map::PostChosenBase()
 
 void Map::UpdatePlayers()
 {
-    auto getPlayers = m_requestHandler.Get("/game/players",
-                                           {"ID", std::to_string(m_user->GetId())});
+    auto getPlayers = m_requestHandler.Get("/game/players", HEADER);
     auto players = json::parse(getPlayers.text)["players"].get<std::vector<json>>();
-    for(const auto& player : players)
+
+    std::for_each(players.begin(), players.end(), [&](decltype(players[0])& playerJson)
     {
-        auto id = json::parse(to_string(player))["id"].get<int>();
-        auto playerId = json::parse(to_string(player))["playerId"].get<int>();
-        auto score = json::parse(to_string(player))["score"].get<int>();
-        auto name = json::parse(to_string(player))["name"].get<std::string>();
+        auto player =  json::parse(to_string(playerJson));
+        auto id = player["id"].get<int>();
+        auto playerId = player["playerId"].get<int>();
+        auto score = player["score"].get<int>();
+        auto name = player["name"].get<std::string>();
         m_players.emplace_back(id, playerId, score, name);
-    }
+    });
     repaint();
 }
 
@@ -368,8 +402,7 @@ void Map::InitStateHandler()
 
     m_stateHandler.emplace(Map::State::StartNewGame, [&]()
     {
-        auto mapResponse = m_requestHandler.Get("/game/map/first",
-                                                {"ID", std::to_string(m_user->GetId())});
+        auto mapResponse = m_requestHandler.Get("/game/map/first", HEADER);
         auto mapId = json::parse(mapResponse.text)["mapId"].get<int>();
         g.ReadMap(mapId);
         UpdatePlayers();
@@ -377,8 +410,7 @@ void Map::InitStateHandler()
 
     m_stateHandler.emplace(Map::State::FirstQuestion, [&]()
     {
-        auto firstQuestion = m_requestHandler.Get("/game/firstQuestion",
-                                                  {"ID",  std::to_string(m_user->GetId())});
+        auto firstQuestion = m_requestHandler.Get("/game/firstQuestion", HEADER);
         auto question = json::parse(firstQuestion.text)["question"].get<std::string>();
         NextQuestion(QuestionType::NUMERIC, question);
     });
@@ -390,26 +422,27 @@ void Map::InitStateHandler()
 
     m_stateHandler.emplace(Map::State::AllPlayersAnswered, [&]()
     {
-        cpr::Response allAnswers = cpr::Get(cpr::Url{"localhost:18080/game/allAnswers"},
-                                            cpr::Header{{"ID", std::to_string(m_user->GetId())}});
-        auto answers = json::parse(allAnswers.text)["answers"].get<std::vector<json>>();
+        auto allAnswers = m_requestHandler.Get("/game/allAnswers", HEADER);
+        auto answerData = json::parse(allAnswers.text);
+        auto answers = answerData["answers"].get<std::vector<json>>();
+        auto correctAnswer = answerData["correctAnswer"].get<int>();
 
         std::vector<std::tuple<int, std::string, int>> players;
-        for(const auto& answer : answers)
+        std::for_each(answers.begin(), answers.end(), [&](decltype(answers[0])& answerJson)
         {
-            auto timeRemaining = json::parse(to_string(answer))["timeRemaining"].get<int>();
-            auto name = json::parse(to_string(answer))["name"].get<std::string>();
-            auto playerAnswer = json::parse(to_string(answer))["answer"].get<int>();
-            auto correctAnswer = json::parse(to_string(answer))["correctAnswer"].get<std::string>();
+            auto answer = json::parse(to_string(answerJson));
+            auto timeRemaining = answer["timeRemaining"].get<int>();
+            auto name = answer["name"].get<std::string>();
+            auto playerAnswer = answer["answer"].get<int>();
             players.emplace_back(std::make_tuple(timeRemaining, name, playerAnswer));
-        }
-        ShowResults(players);
+        });
+        ShowResults(players, correctAnswer);
     });
 
     m_stateHandler.emplace(Map::State::BaseChoice, [&]()
     {
         UpdateRegions();
-        PostChosenBase();
+        PostChosenRegion("/game/baseChoice", "base");
     });
 
     m_stateHandler.emplace(Map::State::MapChanged, [&]()
@@ -421,38 +454,63 @@ void Map::InitStateHandler()
     m_stateHandler.emplace(Map::State::RegionQuestion, [&]()
     {
         UpdateRegions();
-        auto regionQuestion = m_requestHandler.Get("/game/regionQuestion",
-                                                   {"ID", std::to_string(m_user->GetId())});
+        auto regionQuestion = m_requestHandler.Get("/game/regionQuestion", HEADER);
+
         auto question = json::parse(regionQuestion.text)["question"].get<std::string>();
         NextQuestion(QuestionType::NUMERIC, question);
     });
+
+    m_stateHandler.emplace(Map::State::RegionChoice, [&]()
+    {
+        UpdateRegions();
+        PostChosenRegion("/game/regionChoice", "region");
+    });
+
+    m_stateHandler.emplace(Map::State::Duel, [&]()
+    {
+        UpdateRegions();
+        PostChosenRegion("/game/attackRegion", "region");
+    });
+
+    m_stateHandler.emplace(Map::State::AttackQuestion, [&]()
+    {
+        auto firstQuestion = m_requestHandler.Get("/game/attackQuestion", HEADER);
+        auto questionData = json::parse(firstQuestion.text);
+        auto question = questionData["question"].get<std::string>();
+        auto type = StringToQuestionType(questionData["type"].get<std::string>());
+        NextQuestion(type, question);
+    });
+
+    m_stateHandler.emplace(Map::State::PowerupRegionChoice, [&]()
+    {
+        return;
+    });
+
 }
 
 Map::State Map::StringToState(const std::string &state)
 {
-    if(state == "InGame")
-        return State::InGame;
-    if(state == "StartNewGame")
-        return State::StartNewGame;
-    if(state == "FirstQuestion")
-        return State::FirstQuestion;
-    if(state == "BaseChoice")
-        return State::BaseChoice;
-    if(state == "RegionQuestion")
-        return State::RegionQuestion;
-    if(state == "RegionChoice")
-        return State::RegionChoice;
-    if(state == "WaitingForAnswers")
-        return State::WaitingForAnswers;
-    if(state == "MapChanged")
-        return State::MapChanged;
-    if(state == "Answer")
-        return State::Answer;
-    if(state == "AllPlayersAnswered")
-        return State::AllPlayersAnswered;
-    if(state == "Duel")
-        return State::Duel;
+    if (state == "InGame") return State::InGame;
+    if (state == "StartNewGame") return State::StartNewGame;
+    if (state == "FirstQuestion") return State::FirstQuestion;
+    if (state == "BaseChoice") return State::BaseChoice;
+    if (state == "RegionQuestion") return State::RegionQuestion;
+    if (state == "RegionChoice") return State::RegionChoice;
+    if (state == "WaitingForAnswers") return State::WaitingForAnswers;
+    if (state == "MapChanged") return State::MapChanged;
+    if (state == "Answer") return State::Answer;
+    if (state == "AllPlayersAnswered") return State::AllPlayersAnswered;
+    if (state == "Duel") return State::Duel;
+    if (state == "AttackQuestion") return State::AttackQuestion;
+    if (state == "PowerupRegionChoice") return State::PowerupRegionChoice;
     return State{};
+}
+
+Map::QuestionType Map::StringToQuestionType(const std::string &state)
+{
+    if(state == "single_choice") return QuestionType::NUMERIC;
+    if(state == "multiple_choice") return QuestionType::MULTIPLE_CHOICE;
+    return QuestionType{};
 }
 
 

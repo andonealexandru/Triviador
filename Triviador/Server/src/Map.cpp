@@ -242,3 +242,42 @@ Server::Map &Server::Map::GetInstance() {
     static Server::Map instance;
     return instance;
 }
+
+std::vector<int> Server::Map::GetValidRegionToAttack(int userId) const {
+    std::vector<int> validRegions;
+
+    /* all regions that:
+     * have neighbour owned by userId
+     */
+
+    for (const auto& region : m_Regions) {
+        bool hasUserNeighbour = false;
+        for (const auto& neighbour : region->GetAdjacentRegions()) {
+            auto neighbourObj = neighbour.lock();
+            if (neighbourObj->GetUserId() == userId) {
+                hasUserNeighbour = true;
+                continue;
+            }
+        }
+
+        if (hasUserNeighbour)
+            validRegions.push_back(region->GetId());
+    }
+
+    return validRegions;
+}
+
+std::shared_ptr<Server::Region> Server::Map::GetRegion(int id) const {
+    return m_Regions[id];
+}
+
+std::vector<int> Server::Map::GetAvailableRegionsForPowerups(int userId) const
+{
+    std::vector<int> validRegions;
+    for (const auto& region : m_Regions)
+    {
+        if(region->GetUserId() == userId && region->GetScore() >= 200)
+            validRegions.push_back(region->GetId());
+    }
+    return validRegions;
+}

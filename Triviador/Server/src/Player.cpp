@@ -6,6 +6,7 @@ Server::Player::Player(int id, int userId, int score, Status status)
     ,m_status(status)
     ,m_score(score)
     ,m_user(std::make_shared<DB::User>(DB::DBAccess::GetInstance()->Get<DB::User>(userId)))
+    ,m_powerups(true, true, true)
 {}
 
 Server::Player::Player(const Server::Player &other)
@@ -14,6 +15,7 @@ Server::Player::Player(const Server::Player &other)
     ,m_status(other.m_status)
     ,m_score(other.m_score)
     ,m_user(std::make_shared<DB::User>(*other.GetUser()))
+    ,m_powerups(other.m_powerups)
 {}
 
 Server::Player &Server::Player::operator=(const Server::Player &other) {
@@ -21,6 +23,7 @@ Server::Player &Server::Player::operator=(const Server::Player &other) {
     m_status = other.m_status;
     m_score = other.m_score;
     m_user = std::make_shared<DB::User>(*other.GetUser());
+    m_powerups = other.m_powerups;
     return *this;
 }
 
@@ -63,4 +66,39 @@ void Server::Player::IncrementScore() {
 void Server::Player::DecrementScore() {
     m_score -= 100;
 }
+
+void Server::Player::DisablePowerup(int index)
+{
+    switch(index)
+    {
+        case 0:
+            std::get<0>(m_powerups) = false;
+            break;
+        case 1:
+            std::get<1>(m_powerups) = false;
+            break;
+        case 2:
+            std::get<2>(m_powerups) = false;
+            break;
+        default:
+            break;
+    }
+}
+
+bool Server::Player::GetPowerup(int index) const
+{
+    switch(index)
+    {
+        case 0:
+            return std::get<0>(m_powerups);
+        case 1:
+            return std::get<1>(m_powerups);
+        case 2:
+            return std::get<2>(m_powerups);
+        default:
+            return false;
+    }
+}
+
+
 

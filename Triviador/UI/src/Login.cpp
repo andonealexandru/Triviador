@@ -49,7 +49,6 @@ void Login::on_pushButton_clicked()
         {"name", username.toStdString()},
         {"password", password.toStdString()},
     };
-
     cpr::Response response = cpr::Post(cpr::Url{"localhost:18080/users/login"},
                                        cpr::Body{to_string(userJson)});
 

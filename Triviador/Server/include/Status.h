@@ -18,6 +18,8 @@ namespace Server {
         Answer,
         AllPlayersAnswered,
         Duel,
+        AttackQuestion,
+        PowerupRegionChoice,
     };
 
     inline std::string ToString(Status status) { // TODO: best approach?

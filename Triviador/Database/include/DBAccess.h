@@ -68,6 +68,9 @@ namespace DB
         template <typename T>
         T Get(const uint32_t id);
 
+        template <typename T>
+        std::vector<T> GetUserStatistics(const uint32_t userId);
+
         /// \brief Returns the users with the specific username from a table
         template <typename T>
         std::vector<T> GetUserByUsername(const std::string& username);
@@ -155,6 +158,25 @@ namespace DB
         }
         return T();
     }
+
+    template<typename T>
+    inline std::vector<T> DBAccess::GetUserStatistics(const uint32_t id)
+    {
+        try
+        {
+            return storage.get_all<T>(where(c(&User::GetId) == id));
+        }
+        catch (std::system_error& e)
+        {
+            std::cout << e.what() << '\n';
+        }
+        catch (...)
+        {
+            std::cout << "unknown exception" << '\n';
+        }
+        return std::vector<T>();
+    }
+
 
     template<typename T>
     inline std::vector<T> DBAccess::GetUserByUsername(const std::string& username)

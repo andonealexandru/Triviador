@@ -110,7 +110,11 @@ void MainWindow::on_openButton_2_clicked()
 
 void MainWindow::on_profileButton_clicked()
 {
-    profileWindow = new Profile();
+    auto profileJson = cpr::Get(cpr::Url{"localhost:18080/users/profile"},
+              cpr::Header{{"ID", std::to_string(user.GetId())}});
+
+    auto profile =  json::parse(profileJson.text);
+    profileWindow = new Profile({ profile["games"].get<int>(), profile["wins"].get<int>() });
     QObject::connect(profileWindow, SIGNAL(pushButtonExitPressed()), this, SLOT(changePageAfterExitProfile()));
     profileWindow->show();
 }
