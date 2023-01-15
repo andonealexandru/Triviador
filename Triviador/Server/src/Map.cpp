@@ -254,7 +254,7 @@ std::vector<int> Server::Map::GetValidRegionToAttack(int userId) const {
      */
 
     for (const auto& region : m_Regions) {
-        if (region->GetUserId() != userId)
+        if (region->GetUserId() == userId)
             continue;
 
         bool hasUserNeighbour = false;

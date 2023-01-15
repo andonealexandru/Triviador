@@ -345,6 +345,10 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                     if (m_attackerPlayerId == m_players.size() + 1) { // finished one round
                         m_attackerPlayerId = 1;
                         m_Map.RoundPlayed();
+                        if (m_Map.GetRounds() == 0) {
+                            ChangeAllPlayersStatus(Status::Endgame);
+                            break;
+                        }
                     }
                     for (const auto& player : m_players) {
                         if (player.second.GetId() == m_attackerPlayerId) {

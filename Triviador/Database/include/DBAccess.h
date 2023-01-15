@@ -295,7 +295,7 @@ namespace DB
         try
         {
             std::vector<T> res = storage.get_all<T>(where(c(&QuestionChoice::GetQuestionId) == questionId
-                                                          && c(&QuestionChoice::GetIsCorrect) == true));
+                                                          and c(&QuestionChoice::GetIsCorrect) == true));
             return res.front();
         }
         catch (std::system_error& e)
