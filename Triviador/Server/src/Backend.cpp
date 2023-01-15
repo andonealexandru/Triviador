@@ -342,8 +342,10 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                     }
                     ChangeAllPlayersStatus(Status::MapChanged);
                     m_attackerPlayerId++;
-                    if (m_attackerPlayerId == m_players.size() + 1) // finished one round
+                    if (m_attackerPlayerId == m_players.size() + 1) { // finished one round
                         m_attackerPlayerId = 1;
+                        m_Map.RoundPlayed();
+                    }
                     for (const auto& player : m_players) {
                         if (player.second.GetId() == m_attackerPlayerId) {
                             ChangePlayerStatus(player.first, Status::Duel);
@@ -576,6 +578,8 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
             };
         }
     });
+
+//    CROW_ROUTE(app, "/game/endgame")
 }
 
 
@@ -744,6 +748,7 @@ const std::string Server::Backend::ToString(Status s) {
         case Status::Duel: return "Duel";
         case Status::AttackQuestion: return "AttackQuestion";
         case Status::PowerupRegionChoice: return "PowerupRegionChoice";
+        case Status::Endgame: return "Endgame";
         default: return "Unknown";
     }
 }

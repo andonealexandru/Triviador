@@ -80,6 +80,7 @@ bool Server::Map::AllRegionsOccupied() const {
 
 void Server::Map::GenerateTwoPlayerMap() {
     m_Id = 1;
+    m_Rounds = 4;
 
     for (int i = 0; i < 9; i++) {
         m_Regions.push_back(std::make_shared<Region>(Region(i+1)));
@@ -140,6 +141,7 @@ void Server::Map::GenerateTwoPlayerMap() {
 
 void Server::Map::GenerateThreePlayerMap() {
     m_Id = 2;
+    m_Rounds = 4;
     // m_Regions.resize(15);
 
     for (int i = 0; i < 15; i++) {
@@ -291,4 +293,12 @@ void Server::Map::ChangeRegionsOwners(int oldId, int newId) {
         if (region->GetUserId() == oldId)
             region->SetUserId(newId);
     }
+}
+
+int Server::Map::GetRounds() const {
+    return m_Rounds;
+}
+
+void Server::Map::RoundPlayed() {
+    m_Rounds--;
 }

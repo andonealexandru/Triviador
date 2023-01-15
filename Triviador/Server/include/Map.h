@@ -24,9 +24,12 @@ namespace Server {
         bool AllRegionsOccupied() const;
         std::shared_ptr<Region> GetRegion(int id) const;
         void ChangeRegionsOwners(int oldId, int newId);
+        int GetRounds() const;
+        void RoundPlayed();
 
     private:
         int m_Id;
+        int m_Rounds;
         std::vector<std::shared_ptr<Region>> m_Regions;
     };
 }

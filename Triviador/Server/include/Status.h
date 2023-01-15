@@ -18,6 +18,7 @@ namespace Server {
         Duel,
         AttackQuestion,
         PowerupRegionChoice,
+        Endgame
     };
 }
 
