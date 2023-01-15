@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
     ui->startButton->setVisible(false);
-    ui->profileButton->setVisible(true);
+    ui->profileButton->setVisible(false);
 }
 
 void MainWindow::paintEvent(QPaintEvent* pe)
@@ -51,6 +51,7 @@ void MainWindow::changePageAfterLogin()
     ui->openButton_2->hide();
     user = loginWindow->GetUser();
     ui->startButton->setVisible(true);
+    ui->profileButton->setVisible(true);
     delete loginWindow;
 }
 
@@ -60,6 +61,7 @@ void MainWindow::changePageAfterRegister()
     ui->openButton_2->hide();
     user = registerWindow->GetUser();
     ui->startButton->setVisible(true);
+    ui->profileButton->setVisible(true);
     delete registerWindow;
 }
 
