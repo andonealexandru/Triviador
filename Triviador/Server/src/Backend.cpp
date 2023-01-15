@@ -155,7 +155,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
 
         if (m_status == Status::Endgame) {
             return crow::json::wvalue{
-                    {"status", Status::Endgame}
+                    {"status", ToString(Status::Endgame)}
             };
         }
 
