@@ -31,7 +31,6 @@ Map::Map(DB::User* user, QWidget* parent)
     m_timer->start(500);
 }
 
-
 Map::~Map()
 {
     delete m_user;
@@ -132,7 +131,6 @@ void Map::paintEvent(QPaintEvent* event)
                     }
 
         ////paint score
-
         float widthLabel = this->size().width() / 25;
         float heightLabel = this->size().height() / 25;
 
@@ -177,7 +175,7 @@ void Map::paintEvent(QPaintEvent* event)
             QFont font("Arial", 12, QFont::Bold);
             pt.setFont(font);
             QPen pent(Qt::black, 3);
-            QBrush brusht(colorPixmaps[playerId].first);
+            QBrush brusht(id == m_user->GetId() ? colorPixmaps[playerId].first : colorPixmaps[playerId].second);
             pt.setPen(pent);
             pt.setBrush(brusht);
 
@@ -266,6 +264,9 @@ void Map::OnGoing()
     std::cout << json::parse(requestStatus.text)["status"].get<std::string>() <<"\n";
     if(m_stateHandler.find(state) != m_stateHandler.end())
         m_stateHandler[state](); /// \brief calls the function bound to this state
+
+    if(state == State::Endgame)
+        m_timer->stop();
 }
 
 void Map::NextQuestion(const Map::QuestionType type,
@@ -492,6 +493,23 @@ void Map::InitStateHandler()
         return;
     });
 
+    m_stateHandler.emplace(Map::State::Endgame, [&]()
+    {
+        auto endgameResponse = m_requestHandler.Get("/game/endgame", HEADER);
+        auto endGameJson = json::parse(endgameResponse.text).get<std::vector<json>>();
+
+        std::vector<std::tuple<int, std::string, std::string>> results;
+        std::for_each(endGameJson.begin(), endGameJson.end(), [&](decltype(endGameJson[0])& resultJson)
+        {
+            auto result = json::parse(to_string(resultJson));
+            auto name = result["name"].get<std::string>();
+            auto score = result["score"].get<int>();
+            results.emplace_back(std::make_tuple(score, name, ""));
+        });
+        ShowResults(results, "End Game");
+    });
+
+
 }
 
 Map::State Map::StringToState(const std::string &state)
@@ -509,6 +527,7 @@ Map::State Map::StringToState(const std::string &state)
     if (state == "Duel") return State::Duel;
     if (state == "AttackQuestion") return State::AttackQuestion;
     if (state == "PowerupRegionChoice") return State::PowerupRegionChoice;
+    if (state == "Endgame") return State::Endgame;
     return State{};
 }
 

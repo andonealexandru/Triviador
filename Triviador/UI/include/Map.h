@@ -46,6 +46,7 @@ private:
         Duel,
         AttackQuestion,
         PowerupRegionChoice,
+        Endgame,
     };
     State StringToState(const std::string& state);
 

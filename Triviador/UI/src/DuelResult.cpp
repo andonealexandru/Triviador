@@ -7,26 +7,30 @@ DuelResult::DuelResult(const std::vector<std::tuple<int, std::string, std::strin
     , QMainWindow(parent)
 {
     ui.setupUi(this);
-
-    ui.correctAnswer->setText(("Correct answer: " + correctAnswer).data());
-
-    std::array<QLabel*, 4> labels = { ui.lb1, ui.lb2, ui.lb3, ui.lb4 };
-    for (int i = 0; i < players.size(); ++i)
+    if(correctAnswer != "End Game")
     {
-        std::ostringstream oss;
-        const auto&[timeRemaining, name, answer] = players[i];
+        ui.correctAnswer->setText(("Correct answer: " + correctAnswer).data());
 
-        if(timeRemaining == -1)
+        std::array<QLabel*, 4> labels = { ui.lb1, ui.lb2, ui.lb3, ui.lb4 };
+        for (int i = 0; i < players.size(); ++i)
         {
-            oss << i+1 << ": " << name << "\n"
-                << "\t Nu a raspuns. ";
-        }
-        else oss << i+1 << ": " << name << "\n"
-                 << "\t time: " << timeRemaining
-                 << ", answer: " << answer;
+            std::ostringstream oss;
+            const auto&[timeRemaining, name, answer] = players[i];
 
-        labels[i]->setText(QString::fromStdString(oss.str()));
+            if(timeRemaining == -1)
+            {
+                oss << i+1 << ": " << name << "\n"
+                    << "\t Nu a raspuns. ";
+            }
+            else oss << i+1 << ": " << name << "\n"
+                     << "\t time: " << timeRemaining
+                     << ", answer: " << answer;
+
+            labels[i]->setText(QString::fromStdString(oss.str()));
+        }
     }
+    else
+        ShowEndGame(players);
 }
 
 void DuelResult::paintEvent(QPaintEvent* pe)
@@ -43,3 +47,23 @@ void DuelResult::paintEvent(QPaintEvent* pe)
 
 DuelResult::~DuelResult()
 {}
+
+void DuelResult::ShowEndGame(const std::vector<std::tuple<int, std::string, std::string>>& players)
+{
+    std::array<QLabel*, 4> labels = { ui.lb1, ui.lb2, ui.lb3, ui.lb4 };
+    for (int i = 0; i < players.size(); ++i)
+    {
+        std::ostringstream oss;
+        const auto&[score, name, answer] = players[i];
+
+        if(i+1 == 1)
+            oss << i+1 << ": " << name << "\n"
+                << "\t score: " << score
+                << " - WINNER!";
+        else
+            oss << i+1 << ": " << name << "\n"
+                << "\t score: " << score;
+
+        labels[i]->setText(QString::fromStdString(oss.str()));
+    }
+}

@@ -15,6 +15,8 @@ public:
 	void paintEvent(QPaintEvent* pe = nullptr) override;
 	~DuelResult();
 
+    void ShowEndGame(const std::vector<std::tuple<int, std::string, std::string>>& players);
+
 private:
 	Ui::DuelResultClass ui;
     std::vector<std::tuple<int, std::string, std::string>> m_players;
