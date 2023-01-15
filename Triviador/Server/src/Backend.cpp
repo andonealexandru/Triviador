@@ -158,7 +158,7 @@ void Server::Backend::StartGame(crow::SimpleApp &app) {
                     {"status", Status::Endgame}
             };
         }
-        
+
         return crow::json::wvalue{
                 {"status",
                  m_players.find(id) == m_players.end() ? ToString(Status::InGame) : ToString(m_players.find(id)->second.GetStatus())}
@@ -716,7 +716,8 @@ void Server::Backend::GamePowerups(crow::SimpleApp &app)
         auto correctChoice = std::remove_if(choices.begin(), choices.end(),
                                             [&](DB::QuestionChoice &questionChoice)
                                             {
-                                                return questionChoice.GetIsCorrect();
+                                                return questionChoice.GetId()
+                                                        == storage->GetCorrectQuestionChoice<DB::QuestionChoice>(m_currentQuestion.GetId()).GetId();
                                             });
         choices.erase(choices.begin() + rand() % 2);
 
